@@ -6,6 +6,6 @@ private:
 
 public:
 	CardDemo(int value);
-	int getValue();
+	int getValue() const;
 };
 
