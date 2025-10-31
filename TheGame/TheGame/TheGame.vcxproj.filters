@@ -19,6 +19,10 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Deck.cpp">
+    <ClCompile Include="PlacingStack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StackType.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CardDemo.cpp">
@@ -27,9 +31,21 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Deck.h">
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="PlacingStack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StackType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CardDemo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
