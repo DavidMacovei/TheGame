@@ -2,33 +2,33 @@
 
 Player::Player(std::string username)
 {
-	this->username = username;
+	this->m_username = username;
 }
 
 void Player::addCardToHand(CardDemo c)
 {
-	hand.push_back(c);
+	m_hand.push_back(c);
 }
 
 CardDemo Player::playCard(int handIndex)
 {
-	CardDemo copy = hand[handIndex];
-	hand.erase(hand.begin() + handIndex);
+	CardDemo copy = m_hand[handIndex];
+	m_hand.erase(m_hand.begin() + handIndex);
 	return copy;
 }
 
 int Player::getCardsInHand() const
 {
-	return hand.size();
+	return m_hand.size();
 }
 
 const std::vector<CardDemo>& Player::getHand() const
 {
-	return hand;
+	return m_hand;
 }
 
 const std::string& Player::getUsername() const
 {
-	return username;
+	return m_username;
 }
 

@@ -13,7 +13,7 @@ public:
 	const std::string& getUsername() const;
 
 private:
-	std::string username;
-	std::vector<CardDemo>hand;
+	std::string m_username;
+	std::vector<CardDemo>m_hand;
 };
 
