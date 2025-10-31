@@ -1,11 +1,13 @@
 #pragma once
+
+#include<iostream>
+
 class CardDemo
 {
 private:
-	int m_value;
-
+	std::uint8_t m_value;
 public:
-	CardDemo(int value);
-	int getValue() const;
+	CardDemo();
+	CardDemo(uint8_t value);
+	std::uint8_t getValue() const;
 };
-
