@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GameStatus.h"
-#include "Players.n"
+#include "Player.h"
 #include "DrawingDeck.h"
 #include "PlacingStack.h"
 #include <vector>
