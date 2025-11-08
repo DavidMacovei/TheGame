@@ -1,5 +1,7 @@
 #include "Game.h"
 
+#include <algorithm>
+
 Game::Game(const std::vector<std::string>& playerNames)
 {
 	initializeGame(playerNames);
@@ -17,27 +19,27 @@ bool Game::endTurn(int playerIndex)
 
 GameStatus Game::getStatus() const
 {
-	return GameStatus();
+	return status;
 }
 
 int Game::getCurrentPlayerIndex() const
 {
-	return 0;
+	return currentPlayerIndex;
 }
 
 const std::vector<Player>& Game::getPlayers() const
 {
-	// TODO: insert return statement here
+	return players;
 }
 
 const std::array<PlacingStack, 4>& Game::getPlacingStacks() const
 {
-	// TODO: insert return statement here
+	return placingStacks;
 }
 
 int Game::getMinimumNumberOfCardsToPlay() const
 {
-	return 0;
+	return minimumNumberOfCardsToPlay;
 }
 
 void Game::initializeGame(const std::vector<std::string>& playerNames)
@@ -92,11 +94,25 @@ void Game::initializeGame(const std::vector<std::string>& playerNames)
 
 void Game::nextPlayer()
 {
-
+	currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+	cardsPlayedThisTurn = 0;
 }
 
 void Game::updateGameStatus()
 {
+	bool allEmpty = std::all_of(players.begin(), players.end(),
+		[](const Player& p) { return p.getHand().empty(); });
+	if (allEmpty && drawingDeck.isEmpty())
+	{
+		status = GameStatus::Won;
+		return;
+	}
+
+	if (!currentPlayerCanPlay())
+	{
+		status = GameStatus::Lost;
+		return;
+	}
 }
 
 bool Game::currentPlayerCanPlay() const
