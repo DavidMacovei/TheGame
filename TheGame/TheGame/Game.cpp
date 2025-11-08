@@ -1,8 +1,14 @@
 #include "Game.h"
-
 #include <algorithm>
 
-Game::Game(const std::vector<std::string>& playerNames)
+Game::Game(const std::vector<std::string>& playerNames) :
+	m_drawingDeck(),
+	m_placingStacks{
+		PlacingStack(StackType::Ascending),
+		PlacingStack(StackType::Ascending),
+		PlacingStack(StackType::Descending),
+		PlacingStack(StackType::Descending)
+	}
 {
 	InitializeGame(playerNames);
 }
@@ -44,23 +50,15 @@ int Game::GetMinimumNumberOfCardsToPlay() const
 
 void Game::InitializeGame(const std::vector<std::string>& playerNames)
 {
-	m_drawingDeck = DrawingDeck();
-
-	m_placingStacks = {
-		PlacingStack(StackType::ASCENDING),
-		PlacingStack(StackType::ASCENDING),
-		PlacingStack(StackType::DESCENDING),
-		PlacingStack(StackType::DESCENDING) 
-	};
-
 	m_players.clear();
+
 	for (const auto& name : playerNames)
 	{
 		m_players.emplace_back(name);
 	}
 
 	int n = (int)m_players.size();
-	if(n<2 || n>5)
+	if (n < 2 || n>5)
 	{
 		throw std::invalid_argument("Number of players must be between 2 and 5.");
 	}
