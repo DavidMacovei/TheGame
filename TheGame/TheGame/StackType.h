@@ -1,5 +1,7 @@
 #pragma once
-enum class StackType
+#include <cstdint>
+
+enum class StackType : std::uint8_t
 {
 	Ascending,
 	Descending

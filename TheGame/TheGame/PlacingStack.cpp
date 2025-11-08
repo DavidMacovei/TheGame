@@ -7,7 +7,7 @@ constexpr int BACKWARDS_TRICK_OFFSET = 10;
 
 PlacingStack::PlacingStack(StackType type) : m_type{type}
 {
-	(type == StackType::ASCENDING) ? (m_currentValue = 1) : (m_currentValue = 100);
+	(type == StackType::Ascending) ? (m_currentValue = 1) : (m_currentValue = 100);
 }
 
 int PlacingStack::GetCurrentValue() const
@@ -20,11 +20,11 @@ StackType PlacingStack::GetType() const
 	return m_type;
 }
 
-bool PlacingStack::CanPlace(const CardDemo& card) const
+bool PlacingStack::CanPlace(const Card& card) const
 {
 	int cardValue = card.getValue();
 
-	if (m_type == StackType::ASCENDING)
+	if (m_type == StackType::Ascending)
 	{
 		if (cardValue > m_currentValue)
 			return true;
@@ -43,7 +43,7 @@ bool PlacingStack::CanPlace(const CardDemo& card) const
 	return false;
 }
 
-void PlacingStack::PlaceCard(const CardDemo& card)
+void PlacingStack::PlaceCard(const Card& card)
 {
 	assert(CanPlace(card) && "PRECONDITION FAILED: Cannot place this card!");
 
