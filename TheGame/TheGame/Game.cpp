@@ -1,6 +1,13 @@
 #include "Game.h"
 
-Game::Game(const std::vector<std::string>& playerNames)
+Game::Game(const std::vector<std::string>& playerNames) : 
+	drawingDeck(), 
+	placingStacks{
+		PlacingStack(StackType::Ascending),
+		PlacingStack(StackType::Ascending),
+		PlacingStack(StackType::Descending),
+		PlacingStack(StackType::Descending) 
+	}
 {
 	initializeGame(playerNames);
 }
@@ -42,15 +49,6 @@ int Game::getMinimumNumberOfCardsToPlay() const
 
 void Game::initializeGame(const std::vector<std::string>& playerNames)
 {
-	drawingDeck = DrawingDeck();
-
-	placingStacks = {
-		PlacingStack(StackType::ASCENDING),
-		PlacingStack(StackType::ASCENDING),
-		PlacingStack(StackType::DESCENDING),
-		PlacingStack(StackType::DESCENDING) 
-	};
-
 	players.clear();
 	for (const auto& name : playerNames)
 	{

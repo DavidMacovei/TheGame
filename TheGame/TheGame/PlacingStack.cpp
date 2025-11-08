@@ -3,24 +3,24 @@
 #include "PlacingStack.h"
 
 
-constexpr int  BACKWARDS_TRICK_OFFSET = 10;
+constexpr int BACKWARDS_TRICK_OFFSET = 10;
 
 PlacingStack::PlacingStack(StackType type) : m_type{type}
 {
 	(type == StackType::ASCENDING) ? (m_currentValue = 1) : (m_currentValue = 100);
 }
 
-int PlacingStack::getCurrentValue() const
+int PlacingStack::GetCurrentValue() const
 {
 	return m_currentValue;
 }
 
-StackType PlacingStack::getType() const
+StackType PlacingStack::GetType() const
 {
 	return m_type;
 }
 
-bool PlacingStack::canPlace(const CardDemo& card) const
+bool PlacingStack::CanPlace(const CardDemo& card) const
 {
 	int cardValue = card.getValue();
 
@@ -43,9 +43,9 @@ bool PlacingStack::canPlace(const CardDemo& card) const
 	return false;
 }
 
-void PlacingStack::placeCard(const CardDemo& card)
+void PlacingStack::PlaceCard(const CardDemo& card)
 {
-	assert(canPlace(card) && "PRECONDITION FAILED: Cannot place this card!");
+	assert(CanPlace(card) && "PRECONDITION FAILED: Cannot place this card!");
 
 	m_currentValue = card.getValue();
 }

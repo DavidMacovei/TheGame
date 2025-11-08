@@ -1,6 +1,5 @@
 #pragma once
 #include "StackType.h"
-
 #include "CardDemo.h"
 
 class PlacingStack
@@ -8,11 +7,11 @@ class PlacingStack
 public:
 	PlacingStack(StackType type);
 
-	int getCurrentValue() const;
-	StackType getType() const;
+	int GetCurrentValue() const;
+	StackType GetType() const;
 
-	bool canPlace(const CardDemo& card) const;
-	void placeCard(const CardDemo& card);
+	bool CanPlace(const CardDemo& card) const;
+	void PlaceCard(const CardDemo& card);
 
 
 private:
