@@ -13,25 +13,25 @@ class Game
 {
 public:
 	Game(const std::vector<std::string>& playerNames);
-	bool playCard(int playerIndex, int cardValue, int stackIndex);
-	bool endTurn(int playerIndex);
-	GameStatus getStatus() const;
-	int getCurrentPlayerIndex() const;
-	const std::vector<Player>& getPlayers() const;
-	const std::array<PlacingStack, 4>& getPlacingStacks() const;
-	int getMinimumNumberOfCardsToPlay() const;
-	void initializeGame(const std::vector<std::string>& playerNames);
-	void nextPlayer();
-	void updateGameStatus();
-	bool currentPlayerCanPlay() const;
+	bool PlayCard(int playerIndex, int cardValue, int stackIndex);
+	bool EndTurn(int playerIndex);
+	GameStatus GetStatus() const;
+	int GetCurrentPlayerIndex() const;
+	const std::vector<Player>& GetPlayers() const;
+	const std::array<PlacingStack, 4>& GetPlacingStacks() const;
+	int GetMinimumNumberOfCardsToPlay() const;
+	void InitializeGame(const std::vector<std::string>& playerNames);
+	void NextPlayer();
+	void UpdateGameStatus();
+	bool CurrentPlayerCanPlay() const;
 
 private:
-	DrawingDeck drawingDeck;
-	std::array<PlacingStack, 4> placingStacks;
-	std::vector<Player> players;
-	GameStatus status;
-	int minimumNumberOfCardsToPlay;
-	int cardsPlayedThisTurn;
-	int currentPlayerIndex;
+	DrawingDeck m_drawingDeck;
+	std::array<PlacingStack, 4> m_placingStacks;
+	std::vector<Player> m_players;
+	GameStatus m_status;
+	int m_minimumNumberOfCardsToPlay;
+	int m_cardsPlayedThisTurn;
+	int m_currentPlayerIndex;
 };
 
