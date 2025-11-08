@@ -20,7 +20,29 @@ bool Game::PlayCard(int playerIndex, int cardValue, int stackIndex)
 
 bool Game::EndTurn(int playerIndex)
 {
-	return false;
+	if (m_currentPlayerIndex != playerIndex)
+		return false;
+
+	if (m_cardsPlayedThisTurn < GetMinimumNumberOfCardsToPlay())
+		return false;
+
+	Player& currentPlayer = m_players[m_currentPlayerIndex];
+	int cardsToDraw = m_cardsPlayedThisTurn;
+
+	for (int i = 0; i < cardsToDraw; i++)
+	{
+		if (m_drawingDeck.isEmpty())
+			break;
+
+		Card newCard = m_drawingDeck.extractCard();
+		currentPlayer.addCardToHand(newCard);
+	}
+
+	NextPlayer();
+
+	UpdateGameStatus();
+
+	return true;
 }
 
 GameStatus Game::GetStatus() const
