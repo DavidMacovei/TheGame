@@ -1,62 +1,64 @@
 #include "Game.h"
+#include <algorithm>
 
-Game::Game(const std::vector<std::string>& playerNames) : 
-	drawingDeck(), 
-	placingStacks{
+Game::Game(const std::vector<std::string>& playerNames) :
+	m_drawingDeck(),
+	m_placingStacks{
 		PlacingStack(StackType::Ascending),
 		PlacingStack(StackType::Ascending),
 		PlacingStack(StackType::Descending),
-		PlacingStack(StackType::Descending) 
+		PlacingStack(StackType::Descending)
 	}
 {
-	initializeGame(playerNames);
+	InitializeGame(playerNames);
 }
 
-bool Game::playCard(int playerIndex, int cardValue, int stackIndex)
+bool Game::PlayCard(int playerIndex, int cardValue, int stackIndex)
 {
 	return false;
 }
 
-bool Game::endTurn(int playerIndex)
+bool Game::EndTurn(int playerIndex)
 {
 	return false;
 }
 
-GameStatus Game::getStatus() const
+GameStatus Game::GetStatus() const
 {
-	return GameStatus();
+	return m_status;
 }
 
-int Game::getCurrentPlayerIndex() const
+int Game::GetCurrentPlayerIndex() const
 {
-	return 0;
+	return m_currentPlayerIndex;
 }
 
-const std::vector<Player>& Game::getPlayers() const
+const std::vector<Player>& Game::GetPlayers() const
 {
-	// TODO: insert return statement here
+	return m_players;
 }
 
-const std::array<PlacingStack, 4>& Game::getPlacingStacks() const
+const std::array<PlacingStack, 4>& Game::GetPlacingStacks() const
 {
-	// TODO: insert return statement here
+	return m_placingStacks;
 }
 
-int Game::getMinimumNumberOfCardsToPlay() const
+int Game::GetMinimumNumberOfCardsToPlay() const
 {
-	return 0;
+	return m_minimumNumberOfCardsToPlay;
 }
 
-void Game::initializeGame(const std::vector<std::string>& playerNames)
+void Game::InitializeGame(const std::vector<std::string>& playerNames)
 {
-	players.clear();
+	m_players.clear();
+
 	for (const auto& name : playerNames)
 	{
-		players.emplace_back(name);
+		m_players.emplace_back(name);
 	}
 
-	int n = (int)players.size();
-	if(n<2 || n>5)
+	int n = (int)m_players.size();
+	if (n < 2 || n>5)
 	{
 		throw std::invalid_argument("Number of players must be between 2 and 5.");
 	}
@@ -75,29 +77,43 @@ void Game::initializeGame(const std::vector<std::string>& playerNames)
 		break;
 	}
 
-	for (auto& player : players)
+	for (auto& player : m_players)
 	{
 		for (int i = 0; i < cardsPerPlayer; ++i)
 		{
-			player.addCardToHand(drawingDeck.draw());
+			player.addCardToHand(m_drawingDeck.draw());
 		}
 	}
-	currentPlayerIndex = 0;
-	minimumNumberOfCardsToPlay = 2;
-	cardsPlayedThisTurn = 0;
-	status = GameStatus::Active;
+	m_currentPlayerIndex = 0;
+	m_minimumNumberOfCardsToPlay = 2;
+	m_cardsPlayedThisTurn = 0;
+	m_status = GameStatus::Active;
 }
 
-void Game::nextPlayer()
+void Game::NextPlayer()
 {
-
+	m_currentPlayerIndex = (m_currentPlayerIndex + 1) % m_players.size();
+	m_cardsPlayedThisTurn = 0;
 }
 
-void Game::updateGameStatus()
+void Game::UpdateGameStatus()
 {
+	bool allEmpty = std::all_of(m_players.begin(), m_players.end(),
+		[](const Player& p) { return p.getHand().empty(); });
+	if (allEmpty && m_drawingDeck.isEmpty())
+	{
+		m_status = GameStatus::Won;
+		return;
+	}
+
+	if (!CurrentPlayerCanPlay())
+	{
+		m_status = GameStatus::Lost;
+		return;
+	}
 }
 
-bool Game::currentPlayerCanPlay() const
+bool Game::CurrentPlayerCanPlay() const
 {
 	return false;
 }
