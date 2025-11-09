@@ -13,7 +13,12 @@ void Player::AddCardToHand(CardDemo c)
 CardDemo Player::ChooseCardToPlay(int handIndex)
 {
 	return m_hand[handIndex];
-	//m_hand.erase(m_hand.begin() + handIndex);
+	
+}
+
+void Player::RemoveCardFromHand(int handIndex)
+{
+	m_hand.erase(m_hand.begin() + handIndex);
 }
 
 int Player::GetCardsInHand() const

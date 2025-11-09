@@ -13,7 +13,7 @@ class Game
 {
 public:
 	Game(const std::vector<std::string>& playerNames);
-	bool PlayCard(int playerIndex, int cardValue, int stackIndex);
+	void PlayCard(int playerIndex, int handIndex, int stackIndex);
 	bool EndTurn(int playerIndex);
 	GameStatus GetStatus() const;
 	int GetCurrentPlayerIndex() const;

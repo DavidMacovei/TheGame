@@ -13,9 +13,13 @@ Game::Game(const std::vector<std::string>& playerNames) :
 	InitializeGame(playerNames);
 }
 
-bool Game::PlayCard(int playerIndex, int cardValue, int stackIndex)
+void Game::PlayCard(int playerIndex, int handIndex, int stackIndex)
 {
-	return false;
+	if (m_placingStacks[stackIndex].CanPlace(m_players[playerIndex].ChooseCardToPlay(handIndex)))
+	{
+		m_placingStacks[stackIndex].PlaceCard(m_players[playerIndex].ChooseCardToPlay(handIndex));
+		m_players[playerIndex].RemoveCardFromHand(handIndex);
+	}
 }
 
 bool Game::EndTurn(int playerIndex)
