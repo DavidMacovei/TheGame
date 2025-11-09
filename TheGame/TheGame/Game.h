@@ -13,8 +13,8 @@ class Game
 {
 public:
 	Game(const std::vector<std::string>& playerNames);
-	void PlayCard(int playerIndex, int handIndex, int stackIndex);
-	bool EndTurn(int playerIndex);
+	void PlayCard(uint8_t playerIndex, uint8_t handIndex, uint8_t stackIndex);
+	bool EndTurn(uint8_t playerIndex);
 	GameStatus GetStatus() const;
 	int GetCurrentPlayerIndex() const;
 	const std::vector<Player>& GetPlayers() const;

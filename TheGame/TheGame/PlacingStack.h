@@ -7,7 +7,7 @@ class PlacingStack
 public:
 	PlacingStack(StackType type);
 
-	int GetCurrentValue() const;
+	uint8_t GetCurrentValue() const;
 	StackType GetType() const;
 
 	bool CanPlace(const Card& card) const;
@@ -15,7 +15,7 @@ public:
 
 
 private:
-	int m_currentValue;
+	uint8_t m_currentValue;
 	StackType m_type;
 };
 

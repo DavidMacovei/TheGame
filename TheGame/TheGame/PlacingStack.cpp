@@ -10,7 +10,7 @@ PlacingStack::PlacingStack(StackType type) : m_type{type}
 	(type == StackType::Ascending) ? (m_currentValue = 1) : (m_currentValue = 100);
 }
 
-int PlacingStack::GetCurrentValue() const
+uint8_t PlacingStack::GetCurrentValue() const
 {
 	return m_currentValue;
 }
@@ -22,7 +22,7 @@ StackType PlacingStack::GetType() const
 
 bool PlacingStack::CanPlace(const Card& card) const
 {
-	int cardValue = card.getValue();
+	int cardValue = card.GetValue();
 
 	if (m_type == StackType::Ascending)
 	{
@@ -47,5 +47,5 @@ void PlacingStack::PlaceCard(const Card& card)
 {
 	assert(CanPlace(card) && "PRECONDITION FAILED: Cannot place this card!");
 
-	m_currentValue = card.getValue();
+	m_currentValue = card.GetValue();
 }
