@@ -1,9 +1,11 @@
 #include "DrawingDeck.h"
 
+const uint8_t nrOfCards = 98;
+
 DrawingDeck::DrawingDeck()
 {
-	m_cards.resize(98);
-	for (int i = 0; i < 98; i++)
+	m_cards.resize(nrOfCards);
+	for (int i = 0; i < nrOfCards; i++)
 		m_cards[i] = i + 2;
 }
 

@@ -7,7 +7,7 @@
 #include <vector>
 #include <array>
 
-
+const uint8_t numberOfStacks = 4;
 
 class Game
 {
@@ -18,7 +18,7 @@ public:
 	GameStatus GetStatus() const;
 	int GetCurrentPlayerIndex() const;
 	const std::vector<Player>& GetPlayers() const;
-	const std::array<PlacingStack, 4>& GetPlacingStacks() const;
+	const std::array<PlacingStack, numberOfStacks>& GetPlacingStacks() const;
 	int GetMinimumNumberOfCardsToPlay() const;
 	void InitializeGame(const std::vector<std::string>& playerNames);
 	void NextPlayer();
@@ -27,7 +27,7 @@ public:
 
 private:
 	DrawingDeck m_drawingDeck;
-	std::array<PlacingStack, 4> m_placingStacks;
+	std::array<PlacingStack, numberOfStacks> m_placingStacks;
 	std::vector<Player> m_players;
 	GameStatus m_status;
 	int m_minimumNumberOfCardsToPlay;

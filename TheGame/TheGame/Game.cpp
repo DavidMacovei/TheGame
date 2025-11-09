@@ -1,6 +1,7 @@
 #include "Game.h"
 #include <algorithm>
 
+
 Game::Game(const std::vector<std::string>& playerNames) :
 	m_drawingDeck(),
 	m_placingStacks{
@@ -64,7 +65,7 @@ const std::vector<Player>& Game::GetPlayers() const
 	return m_players;
 }
 
-const std::array<PlacingStack, 4>& Game::GetPlacingStacks() const
+const std::array<PlacingStack, numberOfStacks>& Game::GetPlacingStacks() const
 {
 	return m_placingStacks;
 }
@@ -141,5 +142,18 @@ void Game::UpdateGameStatus()
 
 bool Game::CurrentPlayerCanPlay() const
 {
+	for (int i = 0; i < m_players[m_currentPlayerIndex].GetCardsInHand(); i++) {
+		auto playerHand = m_players[m_currentPlayerIndex].GetHand();
+		for (int j = 0; j < numberOfStacks; i++) {
+			if (m_placingStacks[j].GetType() == StackType::Ascending)
+				if (playerHand[i].GetValue() > m_placingStacks[j].GetCurrentValue() ||
+					playerHand[i].GetValue() == m_placingStacks[j].GetCurrentValue() - 10)
+					return true;
+			if (m_placingStacks[j].GetType() == StackType::Descending)
+				if (playerHand[i].GetValue() < m_placingStacks[j].GetCurrentValue() ||
+					playerHand[i].GetValue() == m_placingStacks[j].GetCurrentValue() + 10)
+					return true;
+		}
+	}
 	return false;
 }
