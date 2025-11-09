@@ -10,11 +10,10 @@ void Player::AddCardToHand(CardDemo c)
 	m_hand.push_back(c);
 }
 
-CardDemo Player::PlayCard(int handIndex)
+CardDemo Player::ChooseCardToPlay(int handIndex)
 {
-	CardDemo copy = m_hand[handIndex];
-	m_hand.erase(m_hand.begin() + handIndex);
-	return copy;
+	return m_hand[handIndex];
+	//m_hand.erase(m_hand.begin() + handIndex);
 }
 
 int Player::GetCardsInHand() const

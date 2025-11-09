@@ -5,9 +5,10 @@
 class Player
 {
 public:
+	Player();
 	Player(std::string username);
 	void AddCardToHand(CardDemo c);
-	CardDemo PlayCard(int handIndex);
+	CardDemo ChooseCardToPlay(int handIndex);
 	int GetCardsInHand() const;
 	const std::vector<CardDemo>& GetHand() const;
 	const std::string& GetUsername() const;
