@@ -35,10 +35,10 @@ bool Game::EndTurn(int playerIndex)
 
 	for (int i = 0; i < cardsToDraw; i++)
 	{
-		if (m_drawingDeck.isEmpty())
+		if (m_drawingDeck.IsEmpty())
 			break;
 
-		Card newCard = m_drawingDeck.extractCard();
+		Card newCard = m_drawingDeck.ExtractCard();
 		currentPlayer.AddCardToHand(newCard);
 	}
 
@@ -126,7 +126,7 @@ void Game::UpdateGameStatus()
 {
 	bool allEmpty = std::all_of(m_players.begin(), m_players.end(),
 		[](const Player& p) { return p.GetHand().empty(); });
-	if (allEmpty && m_drawingDeck.isEmpty())
+	if (allEmpty && m_drawingDeck.IsEmpty())
 	{
 		m_status = GameStatus::Won;
 		return;
