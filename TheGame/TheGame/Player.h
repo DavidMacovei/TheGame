@@ -6,11 +6,11 @@ class Player
 {
 public:
 	Player(std::string username);
-	void addCardToHand(CardDemo c);
-	CardDemo playCard(int handIndex);
-	int getCardsInHand() const;
-	const std::vector<CardDemo>& getHand() const;
-	const std::string& getUsername() const;
+	void AddCardToHand(CardDemo c);
+	CardDemo PlayCard(int handIndex);
+	int GetCardsInHand() const;
+	const std::vector<CardDemo>& GetHand() const;
+	const std::string& GetUsername() const;
 
 private:
 	std::string m_username;

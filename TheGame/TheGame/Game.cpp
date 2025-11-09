@@ -35,7 +35,7 @@ bool Game::EndTurn(int playerIndex)
 			break;
 
 		Card newCard = m_drawingDeck.extractCard();
-		currentPlayer.addCardToHand(newCard);
+		currentPlayer.AddCardToHand(newCard);
 	}
 
 	NextPlayer();
@@ -103,7 +103,7 @@ void Game::InitializeGame(const std::vector<std::string>& playerNames)
 	{
 		for (int i = 0; i < cardsPerPlayer; ++i)
 		{
-			player.addCardToHand(m_drawingDeck.draw());
+			player.AddCardToHand(m_drawingDeck.draw());
 		}
 	}
 	m_currentPlayerIndex = 0;
@@ -121,7 +121,7 @@ void Game::NextPlayer()
 void Game::UpdateGameStatus()
 {
 	bool allEmpty = std::all_of(m_players.begin(), m_players.end(),
-		[](const Player& p) { return p.getHand().empty(); });
+		[](const Player& p) { return p.GetHand().empty(); });
 	if (allEmpty && m_drawingDeck.isEmpty())
 	{
 		m_status = GameStatus::Won;
