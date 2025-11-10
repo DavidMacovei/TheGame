@@ -11,7 +11,7 @@ private:
 public:
 	DrawingDeck();
 	void Shuffle();
-	Card Draw();
+	Card DrawCard();
 	bool IsEmpty() const;
 	int GetLeftoverCardNumber() const;
 };

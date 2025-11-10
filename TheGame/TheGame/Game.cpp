@@ -39,7 +39,7 @@ bool Game::EndTurn(uint8_t playerIndex)
 		if (m_drawingDeck.IsEmpty())
 			break;
 
-		Card newCard = m_drawingDeck.ExtractCard();
+		Card newCard = m_drawingDeck.DrawCard();
 		currentPlayer.AddCardToHand(newCard);
 	}
 
@@ -108,7 +108,7 @@ void Game::InitializeGame(const std::vector<std::string>& playerNames)
 	{
 		for (int i = 0; i < cardsPerPlayer; ++i)
 		{
-			player.AddCardToHand(m_drawingDeck.Draw());
+			player.AddCardToHand(m_drawingDeck.DrawCard());
 		}
 	}
 	m_currentPlayerIndex = 0;

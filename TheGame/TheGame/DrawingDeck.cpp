@@ -23,7 +23,7 @@ void DrawingDeck::Shuffle()
 	}
 }
 
-Card DrawingDeck::Draw()
+Card DrawingDeck::DrawCard()
 {
 	Card local_card(m_cards[m_cards.size() - 1]);
 	m_cards.pop_back();
