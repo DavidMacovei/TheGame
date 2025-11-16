@@ -14,13 +14,24 @@ Game::Game(const std::vector<std::string>& playerNames) :
 	InitializeGame(playerNames);
 }
 
-void Game::PlayCard(uint8_t playerIndex, uint8_t handIndex, uint8_t stackIndex)
+bool Game::PlayCard(uint8_t playerIndex, uint8_t handIndex, uint8_t stackIndex)
 {
+	if (playerIndex != m_currentPlayerIndex)
+	{
+		return false;
+	}
+
 	if (m_placingStacks[stackIndex].CanPlace(m_players[playerIndex].ChooseCardToPlay(handIndex)))
 	{
 		m_placingStacks[stackIndex].PlaceCard(m_players[playerIndex].ChooseCardToPlay(handIndex));
 		m_players[playerIndex].RemoveCardFromHand(handIndex);
+
+		m_cardsPlayedThisTurn++;
+
+		return true;
 	}
+
+	return false;
 }
 
 bool Game::EndTurn(uint8_t playerIndex)
@@ -158,8 +169,8 @@ crow::json::wvalue Game::GetGameStateAsJson(uint8_t playerIndex) const
 
 	for (size_t i = 0; i < 4; i++)
 	{
-		state["placing_stacks"][i] = m_placingStacks[i].GetCurrentValue();
-		state["stacks_type"][i] = (m_placingStacks[i].GetType() == StackType::Ascending) ?
+		state["placingStacks"][i] = m_placingStacks[i].GetCurrentValue();
+		state["stacksType"][i] = (m_placingStacks[i].GetType() == StackType::Ascending) ?
 			"ASC" : "DESC";
 	}
 
@@ -167,10 +178,11 @@ crow::json::wvalue Game::GetGameStateAsJson(uint8_t playerIndex) const
 	const auto& hand = player.GetHand();
 
 	for (size_t i = 0; i < hand.size(); i++)
-		state["my_hand"][i] = hand[i].GetValue();
+		state["myHand"][i] = hand[i].GetValue();
 
-	state["current_player"] = m_currentPlayerIndex;
-	state["game_status"] = ToString(GetStatus());
+	state["currentPlayer"] = m_currentPlayerIndex;
+	state["cardsPlayedThisTurn"] = m_cardsPlayedThisTurn;
+	state["gameStatus"] = ToString(GetStatus());
 
 	return state;
 }

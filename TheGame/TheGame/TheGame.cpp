@@ -23,6 +23,39 @@ int main()
 		return crow::response(gameStateJson);
 		});
 
+	CROW_ROUTE(app, "/playCard").methods("POST"_method)
+		([&game](const crow::request& request){
+		crow::json::rvalue cardData = crow::json::load(request.body);
+
+		if (!cardData.has("playerIndex") || !cardData.has("handIndex") || !cardData.has("stackIndex"))
+		{
+			crow::json::wvalue response;
+			response["status"] = "Error";
+			response["error"] = "Incomplete JSON: playerIndex, handIndex and stackIndex are required.";
+			return crow::response(400, response);
+		}
+
+		uint8_t playerIndex = cardData["playerIndex"].i();
+		uint8_t handIndex = cardData["handIndex"].i();
+		uint8_t stackIndex = cardData["stackIndex"].i();
+
+		bool success = game.PlayCard(playerIndex, handIndex, stackIndex);
+
+		if (success)
+		{
+			crow::json::wvalue response;
+			response["status"] = "Successfully played card";
+			response["newGameState"] = game.GetGameStateAsJson(playerIndex);
+			return crow::response(200, response);
+		}
+		else
+		{
+			crow::json::wvalue response;
+			response["status"] = "Invalid move";
+			response["error"] = "You cannot play this card (it's not your turn OR you broke the rule)";
+			return crow::response(400, response);
+		}
+		});
 
 	app.port(18080).multithreaded().run();
 
