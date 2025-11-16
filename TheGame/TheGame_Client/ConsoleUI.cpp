@@ -48,3 +48,31 @@ void ConsoleUI::showMainMenu() {
         break;
     }
 }
+
+void ConsoleUI::handleLogin() {
+    printHeader("Login");
+    std::string user;
+    std::cout << "Username: ";
+    std::cin >> user;
+
+    if (apiClient.login(user)) {
+        std::cout << "Login reusit! Intri in joc..." << std::endl;
+        clientState.isLoggedIn = true;
+        clientState.username = user;
+    }
+    else {
+        std::cout << "Login esuat. Serverul nu a putut autentifica utilizatorul." << std::endl;
+    }
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cin.get();
+}
+
+void ConsoleUI::handleRegister() {
+    printHeader("Register");
+    std::cout << "Functionalitatea de inregistrare nu este inca disponibila." << std::endl;
+    std::cout << "Asteptam implementarea de catre echipa de Backend." << std::endl;
+
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cin.get();
+}
+
