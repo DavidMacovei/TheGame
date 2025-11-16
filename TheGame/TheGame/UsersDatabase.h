@@ -1,0 +1,30 @@
+#pragma once
+
+#include <crow.h>
+#include <sqlite_orm/sqlite_orm.h>
+#include "User.h"
+
+namespace sql = sqlite_orm;
+
+namespace http
+{
+	inline auto CreateStorage(const std::string& filename)
+	{
+        return sql::make_storage(filename,
+            sql::make_table("Users",
+                sql::make_column("id", &User::SetId, &User::GetId, sql::primary_key().autoincrement()),
+                sql::make_column("username", &User::SetUsername, &User::GetUsername, sql::unique()),
+                sql::make_column("password_hash", &User::SetPasswordHash, &User::GetPasswordHash),
+                sql::make_column("score", &User::SetScore, &User::GetScore),
+                sql::make_column("hours_played", &User::SetHoursPlayed, &User::GetHoursPlayed)
+            )
+        );
+	}
+
+    using Storage = decltype(CreateStorage("users.sqlite"));
+
+    class UserStorage {
+    public:
+        bool Initialize();
+    };
+}

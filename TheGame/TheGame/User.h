@@ -13,8 +13,10 @@ public:
     int GetScore() const;
     int GetHoursPlayed() const;
 
+    void SetId(int id);
+    void SetUsername(const std::string& username);
     void SetScore(int s);
-    void SetHoursPlayed(int h);
+    void SetHoursPlayed(double h);
     void SetPasswordHash(const std::string& hash);
 
     // Manual JSON serialization
