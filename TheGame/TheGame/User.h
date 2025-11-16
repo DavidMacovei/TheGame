@@ -11,7 +11,7 @@ public:
     const std::string& GetUsername() const;
     const std::string& GetPasswordHash() const;
     int GetScore() const;
-    int GetHoursPlayed() const;
+    double GetHoursPlayed() const;
 
     void SetId(int id);
     void SetUsername(const std::string& username);
@@ -19,7 +19,6 @@ public:
     void SetHoursPlayed(double h);
     void SetPasswordHash(const std::string& hash);
 
-    // Manual JSON serialization
     std::string ToJson() const;
     static User FromJson(const std::string& jsonStr);
 
