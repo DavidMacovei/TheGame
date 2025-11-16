@@ -6,6 +6,7 @@
 #include "PlacingStack.h"
 #include <vector>
 #include <array>
+#include <crow.h>
 
 const uint8_t numberOfStacks = 4;
 
@@ -24,6 +25,7 @@ public:
 	void NextPlayer();
 	void UpdateGameStatus();
 	bool CurrentPlayerCanPlay() const;
+	crow::json::wvalue GetGameStateAsJson(uint8_t playerIndex) const;
 
 private:
 	DrawingDeck m_drawingDeck;

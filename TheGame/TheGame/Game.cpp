@@ -151,3 +151,26 @@ bool Game::CurrentPlayerCanPlay() const
 	}
 	return false;
 }
+
+crow::json::wvalue Game::GetGameStateAsJson(uint8_t playerIndex) const
+{
+	crow::json::wvalue state;
+
+	for (size_t i = 0; i < 4; i++)
+	{
+		state["placing_stacks"][i] = m_placingStacks[i].GetCurrentValue();
+		state["stacks_type"][i] = (m_placingStacks[i].GetType() == StackType::Ascending) ?
+			"ASC" : "DESC";
+	}
+
+	const Player& player = m_players[playerIndex];
+	const auto& hand = player.GetHand();
+
+	for (size_t i = 0; i < hand.size(); i++)
+		state["my_hand"][i] = hand[i].GetValue();
+
+	state["current_player"] = m_currentPlayerIndex;
+	state["game_status"] = ToString(GetStatus());
+
+	return state;
+}
