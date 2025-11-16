@@ -57,6 +57,42 @@ int main()
 		}
 		});
 
+
+	CROW_ROUTE(app, "/endTurn").methods("POST"_method)
+		([&game](const crow::request& request) {
+		crow::json::rvalue turnData = crow::json::load(request.body);
+
+		if (!turnData.has("playerIndex"))
+		{
+			crow::json::wvalue response;
+			response["status"] = "Error";
+			response["error"] = "Incomplete JSON: playerIndex is required.";
+			return crow::response(400, response);
+		}
+
+		uint8_t playerIndex = turnData["playerIndex"].i();
+
+		bool success = game.EndTurn(playerIndex);
+
+		if (success)
+		{
+			crow::json::wvalue response;
+			response["status"] = "Successfully ended turn";
+
+			int nextPlayerID = game.GetCurrentPlayerIndex();
+			response["newGameState"] = game.GetGameStateAsJson(nextPlayerID);
+
+			return crow::response(200, response);
+		}
+		else
+		{
+			crow::json::wvalue response;
+			response["status"] = "Ending turn error";
+			response["error"] = "It's not your turn OR you haven't played enough cards.";
+			return crow::response(400, response);
+		}
+		});
+
 	app.port(18080).multithreaded().run();
 
 	return 0;
