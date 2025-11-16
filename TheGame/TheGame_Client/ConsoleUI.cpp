@@ -76,3 +76,17 @@ void ConsoleUI::handleRegister() {
     std::cin.get();
 }
 
+void ConsoleUI::clearScreen() {
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+}
+
+void ConsoleUI::printHeader(const std::string& title) {
+    clearScreen();
+    std::cout << "=========================================" << std::endl;
+    std::cout << "  " << title << std::endl;
+    std::cout << "=========================================" << std::endl << std::endl;
+}
