@@ -21,10 +21,9 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{3DB37AF5-26C3-4D1F-8B90-7DDF884441A8}</ProjectGuid>
-    <RootNamespace>TheGame</RootNamespace>
+    <ProjectGuid>{fc40d0bd-3adc-42d5-beff-e315f1fbb874}</ProjectGuid>
+    <RootNamespace>TheGameClient</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>TheGame_Server</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -77,7 +76,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -92,7 +90,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -105,8 +102,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/D _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS /D _SILENCE_ALL_CXX20_DEPRECATION_WARNINGS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -121,7 +116,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -129,27 +123,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Card.cpp" />
-    <ClCompile Include="DrawingDeck.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GameStatus.cpp" />
-    <ClCompile Include="PlacingStack.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="StackType.cpp" />
-    <ClCompile Include="TheGame.cpp" />
-    <ClCompile Include="User.cpp" />
-    <ClCompile Include="UsersDatabase.cpp" />
+    <ClCompile Include="ApiClient.cpp" />
+    <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Card.h" />
-    <ClInclude Include="DrawingDeck.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="GameStatus.h" />
-    <ClInclude Include="PlacingStack.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="StackType.h" />
-    <ClInclude Include="User.h" />
-    <ClInclude Include="UsersDatabase.h" />
+    <ClInclude Include="ApiClient.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

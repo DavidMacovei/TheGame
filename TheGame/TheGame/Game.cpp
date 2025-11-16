@@ -30,7 +30,7 @@ bool Game::PlayCard(uint8_t playerIndex, uint8_t handIndex, uint8_t stackIndex)
 
 		return true;
 	}
-
+  
 	return false;
 }
 
