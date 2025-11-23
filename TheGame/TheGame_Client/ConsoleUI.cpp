@@ -12,7 +12,7 @@ void ConsoleUI::Run() {
             ShowMainMenu();
         }
         else {
-            //runGameLoop(); Functie neimplementata pentru moment
+            RunGameLoop();
         }
     }
 }
@@ -82,7 +82,7 @@ void ConsoleUI::RunGameLoop() {
         GameState gs = apiClient.getGameState();
 
         if (gs.players.empty() && gs.stacks.empty()) {
-            std::cout << "Nu s-a putut ob?ine starea jocului de la server. Apas? Enter pentru a reîncerca sau 'q' + Enter pentru a te deloga." << std::endl;
+            std::cout << "Nu s-a putut obtine starea jocului de la server. Apasa Enter pentru a reincerca sau 'q' + Enter pentru a te deloga." << std::endl;
             std::string line;
             std::getline(std::cin, line);
             if (!line.empty() && (line[0] == 'q' || line[0] == 'Q')) {
@@ -106,16 +106,16 @@ void ConsoleUI::RunGameLoop() {
         }
 
         if (!currentPlayerName.empty() && currentPlayerName == clientState.username) {
-            std::cout << "\nEste rândul t?u s? joci!" << std::endl;
+            std::cout << "\nEste randul tau si joci!" << std::endl;
             HandlePlayerTurn(gs);
         }
         else {
             if (!currentPlayerName.empty())
-                std::cout << "\nMomentan e rândul: " << currentPlayerName << std::endl;
+                std::cout << "\nMomentan e randul: " << currentPlayerName << std::endl;
             else
-                std::cout << "\nServerul nu a specificat juc?torul curent." << std::endl;
+                std::cout << "\nServerul nu a specificat jucatorul curent." << std::endl;
 
-            std::cout << "Apas? Enter pentru a reîmprosp?ta starea sau tasteaz? 'q' + Enter pentru a te deloga." << std::endl;
+            std::cout << "Apasa Enter pentru a reimprospata starea sau tasteaza 'q' + Enter pentru a te deloga." << std::endl;
             std::string line;
             std::getline(std::cin, line);
             if (!line.empty() && (line[0] == 'q' || line[0] == 'Q')) {
@@ -126,8 +126,52 @@ void ConsoleUI::RunGameLoop() {
     }
 }
 
-void ConsoleUI::DisplayGameState(const GameState& state)
-{
+void ConsoleUI::DisplayGameState(const GameState& state) {
+    ClearScreen();
+    PrintHeader("The Game - Starea curenta");
+
+    if (!state.status.empty()) {
+        std::cout << "Server status: " << state.status << std::endl;
+    }
+    std::cout << "Carti ramase in pachet: " << state.drawDeckCount << std::endl;
+    std::cout << "Min carti de jucat: " << state.minCardsToPlay << std::endl;
+    std::cout << std::endl;
+
+    std::cout << "--- Stive (stacks) ---" << std::endl;
+    for (size_t i = 0; i < state.stacks.size(); ++i) {
+        const auto& s = state.stacks[i];
+        std::cout << "Stiva [" << i + 1 << "] (size=" << s.size() << "): ";
+        if (s.empty()) {
+            std::cout << "(goala)";
+        }
+        else {
+            for (size_t j = 0; j < s.size(); ++j) {
+                if (j) std::cout << ", ";
+                std::cout << s[j];
+            }
+            std::cout << "  | top=" << s.back();
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+
+    std::cout << "--- Jucatori ---" << std::endl;
+    for (size_t i = 0; i < state.players.size(); ++i) {
+        const PlayerState& p = state.players[i];
+        bool isMe = (p.username == clientState.username);
+        std::cout << (isMe ? "-> " : "   ");
+        std::cout << p.username << " | carti in mana: " << p.hand.size();
+        if (isMe) {
+            std::cout << "  (detalii mana: ";
+            for (size_t k = 0; k < p.hand.size(); ++k) {
+                if (k) std::cout << ", ";
+                std::cout << "[" << k << "]=" << p.hand[k];
+            }
+            std::cout << ")";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
 }
 
 void ConsoleUI::HandlePlayerTurn(const GameState& state)
