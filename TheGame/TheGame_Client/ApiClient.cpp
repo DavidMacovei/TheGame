@@ -48,7 +48,26 @@ bool ApiClient::login(const std::string& user)
                                     cpr::Body{oss.str()},
                                     cpr::Header{{"Content-Type", "application/json"}});
 
-       
+        const std::string& body = r.text;
+
+        // If response contains JSON, try to interpret common fields.
+        bool bval = false;
+        if (parseBoolField(body, "success", bval)) return bval;
+
+        std::string sval;
+        if (parseStringField(body, "status", sval)) {
+            if (sval == "ok" || sval == "success") return true;
+            return false;
+        }
+        if (parseStringField(body, "result", sval)) {
+            if (sval == "ok" || sval == "success") return true;
+            return false;
+        }
+
+        // If error/message present, treat as failure
+        if (parseStringField(body, "error", sval) || parseStringField(body, "message", sval)) return false;
+
+        // fallback to HTTP status
 
         return r.status_code == 200;
     }
