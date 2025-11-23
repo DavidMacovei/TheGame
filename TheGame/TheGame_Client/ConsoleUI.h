@@ -10,21 +10,20 @@ struct ClientState {
 class ConsoleUI {
 public:
     ConsoleUI(ApiClient& client);
-    void run();
+    void Run();
 
 private:
     ApiClient& apiClient;
     ClientState clientState;
 
-    void showMainMenu();
-    void handleLogin();
-    void handleRegister();
+    void ShowMainMenu();
+    void HandleLogin();
+    void HandleRegister();
 
-    //Functiile acestea necesita GameState
-    //void runGameLoop();
-    //void displayGameState(const GameState& state);
-    //void handlePlayerTurn(const GameState& state);
+    void RunGameLoop();
+    void DisplayGameState(const GameState& state);
+    void HandlePlayerTurn(const GameState& state);
 
-    void clearScreen();
-    void printHeader(const std::string& title);
+    void ClearScreen();
+    void PrintHeader(const std::string& title);
 };
