@@ -147,7 +147,29 @@ int main()
 		response["state"] = "Waiting for players";
 		response["current_players"] = lobbyPlayers.size();
 		response["needed_players"] = PLAYERS_NEEDED;
-		return (200, response);
+		return crow::response(200, response);
+		});
+
+	CROW_ROUTE(app, "/lobbyStatus")
+		([&activeGame, &lobbyPlayers]() {
+		crow::json::wvalue response;
+
+		if (activeGame != nullptr)
+		{
+			response["status"] = "Game running";
+			auto players = activeGame->GetPlayers();
+			for (int i = 0; i < players.size(); i++)
+				response["players"][i] = players[i].GetUsername();
+		}
+		else
+		{
+			response["status"] = "Waiting";
+			response["current_players"] = lobbyPlayers.size();
+			for (int i = 0; i < lobbyPlayers.size(); i++)
+				response["waiting_list"][i] = lobbyPlayers[i];
+		}
+
+		return crow::response(200, response);
 		});
 
     http::UserStorage userStorage;
