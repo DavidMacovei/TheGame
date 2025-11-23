@@ -152,6 +152,42 @@ int main()
         return crow::response(200, "Login successful");
             });
 
+	CROW_ROUTE(app, "/sendMessage").methods("POST"_method)
+		([](const crow::request& req) {
+		auto body = crow::json::load(req.body);
+
+		if (!body || !body.has("sender") || !body.has("message"))
+		{
+			crow::json::wvalue res;
+			res["status"] = "Error";
+			res["error"] = "Missing sender or message";
+			return crow::response(400, res);
+		}
+
+		ChatMessage msg;
+		msg.sender = body["sender"].s();
+		msg.message = body["message"].s();
+		msg.timestamp = std::time(nullptr);
+
+		{
+			std::lock_guard<std::mutex> lock(g_chatMutex);
+
+			g_chatMessages.push_back(msg);
+
+			if (g_chatMessages.size() > MAX_CHAT_MESSAGES)
+			{
+				g_chatMessages.erase(
+					g_chatMessages.begin(),
+					g_chatMessages.begin() + (g_chatMessages.size() - MAX_CHAT_MESSAGES)
+				);
+			}
+		}
+
+		crow::json::wvalue res;
+		res["status"] = "ok";
+		return crow::response(200, res);
+			});
+
     app.port(18080).multithreaded().run();
 
 	return 0;
