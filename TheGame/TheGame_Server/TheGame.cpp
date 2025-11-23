@@ -91,9 +91,6 @@ int main()
 			crow::json::wvalue response;
 			response["status"] = "Successfully ended turn";
 
-			int nextPlayerID = activeGame->GetCurrentPlayerIndex();
-			response["newGameState"] = activeGame->GetGameStateAsJson(nextPlayerID);
-
 			return crow::response(200, response);
 		}
 		else
@@ -117,7 +114,14 @@ int main()
 
 		if (activeGame != nullptr)
 		{
-			return crow::response(400, "Game already in progress. Please wait!");
+			if (activeGame->GetStatus() == GameStatus::Won ||
+				activeGame->GetStatus() == GameStatus::Lost)
+			{
+				activeGame = nullptr;
+				lobbyPlayers.clear();
+			}
+			else
+				return crow::response(400, "Game already in progress. Please wait!");
 		}
 
 		bool alreadyPlaying = false;
