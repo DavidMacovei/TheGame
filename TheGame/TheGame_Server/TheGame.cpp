@@ -1,33 +1,37 @@
 #include <iostream>
 #include <crow.h>
-
+#include <memory>
 #include "Game.h"
-
-#include <crow.h>
 #include "UsersDatabase.h"
 
 int main()
 {
 	crow::SimpleApp app;
 
-	std::vector<std::string> playerNames = { "Jucator1", "Jucator2", "Jucator3" };
-	Game game(playerNames);
+	std::unique_ptr<Game> activeGame = nullptr;
+	std::vector<std::string> lobbyPlayers;
 
-	CROW_ROUTE(app, "/")([](){
-		return "Hello!";
-		});
+	CROW_ROUTE(app, "/gameState/<int>")([&activeGame](int playerIndex) {
+		if (activeGame == nullptr)
+		{
+			return crow::response(400, "Game has not started yet");
+		}
 
-	CROW_ROUTE(app, "/gameState/<int>")([&game](int playerIndex) {
-		if (playerIndex < 0 || playerIndex >= game.GetPlayers().size())
-			return crow::response("400", "Invalid player ID");
+		if (playerIndex < 0 || playerIndex >= activeGame->GetPlayers().size())
+			return crow::response(400, "Invalid player ID");
 
-		crow::json::wvalue gameStateJson = game.GetGameStateAsJson(playerIndex);
+		crow::json::wvalue gameStateJson = activeGame->GetGameStateAsJson(playerIndex);
 
 		return crow::response(gameStateJson);
 		});
 
 	CROW_ROUTE(app, "/playCard").methods("POST"_method)
-		([&game](const crow::request& request){
+		([&activeGame](const crow::request& request){
+		if (activeGame == nullptr)
+		{
+			return crow::response(400, "Game has not started yet");
+		}
+
 		crow::json::rvalue cardData = crow::json::load(request.body);
 
 		if (!cardData.has("playerIndex") || !cardData.has("handIndex") || !cardData.has("stackIndex"))
@@ -42,13 +46,13 @@ int main()
 		uint8_t handIndex = cardData["handIndex"].i();
 		uint8_t stackIndex = cardData["stackIndex"].i();
 
-		bool success = game.PlayCard(playerIndex, handIndex, stackIndex);
+		bool success = activeGame->PlayCard(playerIndex, handIndex, stackIndex);
 
 		if (success)
 		{
 			crow::json::wvalue response;
 			response["status"] = "Successfully played card";
-			response["newGameState"] = game.GetGameStateAsJson(playerIndex);
+			response["newGameState"] = activeGame->GetGameStateAsJson(playerIndex);
 			return crow::response(200, response);
 		}
 		else
@@ -62,7 +66,12 @@ int main()
 
 
 	CROW_ROUTE(app, "/endTurn").methods("POST"_method)
-		([&game](const crow::request& request) {
+		([&activeGame](const crow::request& request) {
+		if (activeGame == nullptr)
+		{
+			return crow::response(400, "Game has not started yet");
+		}
+
 		crow::json::rvalue turnData = crow::json::load(request.body);
 
 		if (!turnData.has("playerIndex"))
@@ -75,15 +84,15 @@ int main()
 
 		uint8_t playerIndex = turnData["playerIndex"].i();
 
-		bool success = game.EndTurn(playerIndex);
+		bool success = activeGame->EndTurn(playerIndex);
 
 		if (success)
 		{
 			crow::json::wvalue response;
 			response["status"] = "Successfully ended turn";
 
-			int nextPlayerID = game.GetCurrentPlayerIndex();
-			response["newGameState"] = game.GetGameStateAsJson(nextPlayerID);
+			int nextPlayerID = activeGame->GetCurrentPlayerIndex();
+			response["newGameState"] = activeGame->GetGameStateAsJson(nextPlayerID);
 
 			return crow::response(200, response);
 		}
@@ -94,6 +103,51 @@ int main()
 			response["error"] = "It's not your turn OR you haven't played enough cards.";
 			return crow::response(400, response);
 		}
+		});
+
+	CROW_ROUTE(app, "/joinLobby").methods("POST"_method)
+		([&activeGame, &lobbyPlayers](const crow::request& request) {
+		crow::json::rvalue body = crow::json::load(request.body);
+
+		if (!body.has("username"))
+		{
+			return crow::response(400, "Username required");
+		}
+		std::string username = body["username"].s();
+
+		if (activeGame != nullptr)
+		{
+			return crow::response(400, "Game already in progress. Please wait!");
+		}
+
+		bool alreadyPlaying = false;
+		for(const auto& name : lobbyPlayers)
+			if (name == username)
+			{
+				alreadyPlaying = true;
+				break;
+			}
+
+		if (!alreadyPlaying)
+			lobbyPlayers.push_back(username);
+
+		const int PLAYERS_NEEDED = 4;
+		if (lobbyPlayers.size() >= PLAYERS_NEEDED)
+		{
+			activeGame = std::make_unique<Game>(lobbyPlayers);
+			lobbyPlayers.clear();
+
+			crow::json::wvalue response;
+			response["status"] = "Game started";
+			response["players"] = activeGame->GetPlayers().size();
+			return crow::response(200, response);
+		}
+
+		crow::json::wvalue response;
+		response["state"] = "Waiting for players";
+		response["current_players"] = lobbyPlayers.size();
+		response["needed_players"] = PLAYERS_NEEDED;
+		return (200, response);
 		});
 
     http::UserStorage userStorage;
