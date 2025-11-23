@@ -188,6 +188,33 @@ int main()
 		return crow::response(200, res);
 			});
 
+	CROW_ROUTE(app, "/getMessages").methods("GET"_method)
+		([]() {
+		crow::json::wvalue res;
+
+		std::lock_guard<std::mutex> lock(g_chatMutex);
+
+		const std::size_t N = 20;
+		std::size_t count = g_chatMessages.size();
+		std::size_t start = (count > N ? count - N : 0);
+
+		crow::json::wvalue::list list;
+
+		for (std::size_t i = start; i < count; ++i)
+		{
+			crow::json::wvalue msg;
+			msg["sender"] = g_chatMessages[i].sender;
+			msg["message"] = g_chatMessages[i].message;
+			msg["timestamp"] = (long long)g_chatMessages[i].timestamp;
+
+			list.push_back(msg);
+		}
+
+		res["messages"] = std::move(list);
+
+		return crow::response(200, res);
+		});
+
     app.port(18080).multithreaded().run();
 
 	return 0;
