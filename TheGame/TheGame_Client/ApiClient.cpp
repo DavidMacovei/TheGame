@@ -17,6 +17,19 @@ static bool parseBoolField(const std::string& body, const std::string& fieldName
     return false;
 }
 
+static bool parseStringField(const std::string& body, const std::string& fieldName, std::string& outValue) {
+    std::string key = std::string("\"") + fieldName + "\"";
+    size_t pos = body.find(key);
+    if (pos == std::string::npos) return false;
+    size_t colon = body.find(':', pos + key.size());
+    if (colon == std::string::npos) return false;
+    size_t firstQuote = body.find('"', colon);
+    if (firstQuote == std::string::npos) return false;
+    size_t secondQuote = body.find('"', firstQuote + 1);
+    if (secondQuote == std::string::npos) return false;
+    outValue = body.substr(firstQuote + 1, secondQuote - firstQuote - 1);
+    return true;
+}
 
 
 ApiClient::ApiClient(const std::string& baseUrl)
