@@ -5,6 +5,9 @@
 
 #include <crow.h>
 #include "UsersDatabase.h"
+#include "Chat.h"
+
+
 
 int main()
 {
