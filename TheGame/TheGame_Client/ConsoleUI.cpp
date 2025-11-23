@@ -174,9 +174,101 @@ void ConsoleUI::DisplayGameState(const GameState& state) {
     std::cout << std::endl;
 }
 
-void ConsoleUI::HandlePlayerTurn(const GameState& state)
-{
+void ConsoleUI::HandlePlayerTurn(const GameState& state) {
+
+    const PlayerState* me = nullptr;
+    for (const auto& p : state.players) {
+        if (p.username == clientState.username) {
+            me = &p;
+            break;
+        }
+    }
+
+    if (!me) {
+        std::cout << "Nu te-am gasit in lista de jucatori primita de la server. Nu poti juca." << std::endl;
+        std::cout << "Apasa Enter pentru a intoarce la meniul principal." << std::endl;
+        std::cin.get();
+        clientState.isLoggedIn = false;
+        return;
+    }
+
+    if (me->hand.empty()) {
+        std::cout << "Mana ta este goala. Nu ai carti de jucat." << std::endl;
+        std::cout << "Apasa Enter pentru a continua..." << std::endl;
+        std::cin.get();
+        return;
+    }
+
+    std::cout << "\nMana ta:" << std::endl;
+    for (size_t i = 0; i < me->hand.size(); ++i) {
+        std::cout << "  [" << i << "] = " << me->hand[i] << std::endl;
+    }
+
+    int cardIndex = -1;
+    while (true) {
+        std::cout << "Introdu indexul cartii pe care vrei sa o joci (sau 'c' + Enter pentru cancel): ";
+        std::string line;
+        std::getline(std::cin, line);
+        if (line.empty()) continue;
+        if (line[0] == 'c' || line[0] == 'C') {
+            std::cout << "Mutare anulata." << std::endl;
+            return;
+        }
+        try {
+            cardIndex = std::stoi(line);
+        }
+        catch (...) {
+            std::cout << "Index invalid. Incearca din nou." << std::endl;
+            continue;
+        }
+        if (cardIndex < 0 || static_cast<size_t>(cardIndex) >= me->hand.size()) {
+            std::cout << "Index in afara intervalului. Incearca din nou." << std::endl;
+            continue;
+        }
+        break;
+    }
+
+    if (state.stacks.empty()) {
+        std::cout << "Serverul nu a trimis informatii despre stive. Nu poti plasa cartea." << std::endl;
+        std::cout << "Apasa Enter pentru a continua..." << std::endl;
+        std::cin.get();
+        return;
+    }
+
+    int stackId = -1;
+    while (true) {
+        std::cout << "Alege ID-ul stivei (1 - " << state.stacks.size() << ") pe care vrei sa plasezi: ";
+        std::string line;
+        std::getline(std::cin, line);
+        if (line.empty()) continue;
+        try {
+            stackId = std::stoi(line);
+        }
+        catch (...) {
+            std::cout << "ID invalid. Incearca din nou." << std::endl;
+            continue;
+        }
+        if (stackId < 1 || static_cast<size_t>(stackId) > state.stacks.size()) {
+            std::cout << "ID in afara intervalului. Incearca din nou." << std::endl;
+            continue;
+        }
+        break;
+    }
+
+    std::ostringstream oss;
+    oss << "{";
+    oss << "\"username\":\"" << clientState.username << "\",";
+    oss << "\"cardIndex\":" << cardIndex << ",";
+    oss << "\"stackId\":" << (stackId - 1);
+    oss << "}";
+
+    std::cout << "\nJSON care ar trebui trimis catre server pentru a face mutarea:\n" << oss.str() << std::endl;
+
+    std::cout << "Apasa Enter pentru a continua..." << std::endl;
+    std::cin.get();
+
 }
+
 
 void ConsoleUI::ClearScreen() {
 #ifdef _WIN32
