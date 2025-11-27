@@ -144,6 +144,39 @@ bool ApiClient::registerUser(const std::string& username, const std::string& pas
     }
 }
 
+bool ApiClient::joinLobby(const std::string& username)
+{
+    try {
+        std::ostringstream oss;
+        oss << "{\"username\":\"" << username << "\"}";
+        std::string url = baseUrl + "/joinLobby";
+
+        cpr::Response r = cpr::Post(cpr::Url{url},
+                                    cpr::Body{oss.str()},
+                                    cpr::Header{{"Content-Type", "application/json"}});
+
+        const std::string& body = r.text;
+
+        bool bval = false;
+        if (parseBoolField(body, "success", bval)) return bval;
+
+        std::string sval;
+        if (parseStringField(body, "status", sval)) {
+            if (sval == "ok" || sval == "success" || sval == "joined") return true;
+            return false;
+        }
+        if (parseStringField(body, "result", sval)) {
+            if (sval == "ok" || sval == "success" || sval == "joined") return true;
+            return false;
+        }
+        if (parseStringField(body, "error", sval) || parseStringField(body, "message", sval)) return false;
+        return r.status_code == 200 || r.status_code == 201;
+    }
+    catch (...) {
+        return false;
+    }
+}
+
 GameState ApiClient::getGameState()
 {
     GameState gs;
