@@ -250,3 +250,21 @@ GameState ApiClient::getGameState()
     }
 }
 
+LobbyStatus ApiClient::getLobbyStatus()
+{
+    LobbyStatus status;
+    try {
+        std::string url = baseUrl + "/lobbyStatus";
+        cpr::Response r = cpr::Get(cpr::Url{url});
+        if (r.status_code != 200) return status;
+        const std::string& body = r.text;
+        bool started = false;
+        if (parseBoolField(body, "gameStarted", started)) status.gameStarted = started;
+        int count = 0;
+        if (parseIntField(body, "playerCount", count)) status.playerCount = count;
+        return status;
+    } catch (...) {
+        return status;
+    }
+}
+

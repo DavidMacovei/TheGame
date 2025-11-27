@@ -16,6 +16,11 @@ struct GameState {
     int minCardsToPlay = 0;
 };
 
+struct LobbyStatus {
+    bool gameStarted = false;
+    int playerCount = 0;
+};
+
 class ApiClient
 {
 public:
@@ -32,6 +37,9 @@ public:
 
     // GETs the current game state from the server and returns a parsed GameState.
     GameState getGameState();
+
+    // GETs the lobby status from the server (has game started, how many players).
+    LobbyStatus getLobbyStatus();
 
 private:
     std::string baseUrl;
