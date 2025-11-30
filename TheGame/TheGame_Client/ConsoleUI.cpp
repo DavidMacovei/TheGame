@@ -358,9 +358,49 @@ void ConsoleUI::DisplayGameState(const GameState& state) {
     }
 }
 
-void ConsoleUI::DisplayStacks(const GameState& state){}
+void ConsoleUI::DisplayStacks(const GameState& state) {
+    std::cout << "--- STIVE (teancuri) ---\n" << std::endl;
 
-void ConsoleUI::DisplayPlayerHand(const PlayerState& player) {}
+    for (size_t i = 0; i < state.stacks.size(); ++i) {
+        const auto& stack = state.stacks[i];
+
+        bool isAscending = (i < 2);
+        std::string arrow = isAscending ? " [1 -> 99] ^" : " [100 -> 2] v";
+
+        std::cout << "  Stiva [" << (i + 1) << "]" << arrow << " : ";
+
+        if (stack.empty()) {
+            std::cout << (isAscending ? "1" : "100") << " (start)";
+        }
+        else {
+            std::cout << "TOP = " << stack.back();
+
+            if (stack.size() > 1) {
+                std::cout << "  (ultimele: ";
+                size_t start = (stack.size() > 3) ? stack.size() - 3 : 0;
+                for (size_t j = start; j < stack.size(); ++j) {
+                    if (j > start) std::cout << " <- ";
+                    std::cout << stack[j];
+                }
+                std::cout << ")";
+            }
+        }
+        std::cout << std::endl;
+    }
+}
+
+void ConsoleUI::DisplayPlayerHand(const PlayerState& player) {
+    if (player.hand.empty()) {
+        std::cout << "        Mana goala!\n";
+        return;
+    }
+
+    std::cout << "        Cartile tale: ";
+    for (size_t i = 0; i < player.hand.size(); ++i) {
+        std::cout << "[" << i << "]=" << player.hand[i] << "  ";
+    }
+    std::cout << std::endl;
+}
 
 void ConsoleUI::HandlePlayerTurn(const GameState& player) {}
 
