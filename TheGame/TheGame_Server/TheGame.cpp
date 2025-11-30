@@ -5,11 +5,11 @@
 #include "UsersDatabase.h"
 #include "Chat.h"
 
-
-
 int main()
 {
 	crow::SimpleApp app;
+
+	//TODO: mutex
 
 	std::unique_ptr<Game> activeGame = nullptr;
 	std::vector<std::string> lobbyPlayers;
