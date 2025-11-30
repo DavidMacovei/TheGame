@@ -10,6 +10,7 @@ int main()
 	crow::SimpleApp app;
 
 	//TODO: mutex
+	//TODO: config QT proj
 
 	std::unique_ptr<Game> activeGame = nullptr;
 	std::vector<std::string> lobbyPlayers;
