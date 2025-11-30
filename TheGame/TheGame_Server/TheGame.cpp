@@ -3,17 +3,18 @@
 #include <memory>
 #include "Game.h"
 #include "UsersDatabase.h"
-#include "Chat.h"
+#include "ChatService.h"
 
 int main()
 {
 	crow::SimpleApp app;
+	ChatService chat;
 
 	//TODO: mutex
 	//TODO: config QT proj
 	//TODO: add LoginWindow, GameWindow, CardWidget etc classes
 
-	std::unique_ptr<Game> activeGame = nullptr;
+	std::unique_ptr<game::Game> activeGame = nullptr;
 	std::vector<std::string> lobbyPlayers;
 
 	CROW_ROUTE(app, "/gameState/<int>")([&activeGame](int playerIndex) {
@@ -119,8 +120,8 @@ int main()
 
 		if (activeGame != nullptr)
 		{
-			if (activeGame->GetStatus() == GameStatus::Won ||
-				activeGame->GetStatus() == GameStatus::Lost)
+			if (activeGame->GetStatus() == game::GameStatus::Won ||
+				activeGame->GetStatus() == game::GameStatus::Lost)
 			{
 				activeGame = nullptr;
 				lobbyPlayers.clear();
@@ -143,7 +144,7 @@ int main()
 		const int PLAYERS_NEEDED = 4;
 		if (lobbyPlayers.size() >= PLAYERS_NEEDED)
 		{
-			activeGame = std::make_unique<Game>(lobbyPlayers);
+			activeGame = std::make_unique<game::Game>(lobbyPlayers);
 			lobbyPlayers.clear();
 
 			crow::json::wvalue response;
@@ -235,7 +236,7 @@ int main()
             });
 
 	CROW_ROUTE(app, "/sendMessage").methods("POST"_method)
-		([](const crow::request& req) {
+		([&chat](const crow::request& req) {
 		auto body = crow::json::load(req.body);
 
 		if (!body || !body.has("sender") || !body.has("message"))
@@ -246,24 +247,7 @@ int main()
 			return crow::response(400, res);
 		}
 
-		ChatMessage msg;
-		msg.sender = body["sender"].s();
-		msg.message = body["message"].s();
-		msg.timestamp = std::time(nullptr);
-
-		{
-			std::lock_guard<std::mutex> lock(g_chatMutex);
-
-			g_chatMessages.push_back(msg);
-
-			if (g_chatMessages.size() > MAX_CHAT_MESSAGES)
-			{
-				g_chatMessages.erase(
-					g_chatMessages.begin(),
-					g_chatMessages.begin() + (g_chatMessages.size() - MAX_CHAT_MESSAGES)
-				);
-			}
-		}
+		chat.addMessage(body["sender"].s(), body["message"].s());
 
 		crow::json::wvalue res;
 		res["status"] = "ok";
@@ -271,31 +255,26 @@ int main()
 			});
 
 	CROW_ROUTE(app, "/getMessages").methods("GET"_method)
-		([]() {
+		([&chat]() {
 		crow::json::wvalue res;
 
-		std::lock_guard<std::mutex> lock(g_chatMutex);
+		auto messages = chat.getMessages();
 
-		const std::size_t N = 20;
-		std::size_t count = g_chatMessages.size();
-		std::size_t start = (count > N ? count - N : 0);
+		crow::json::wvalue::list jsonList;
 
-		crow::json::wvalue::list list;
-
-		for (std::size_t i = start; i < count; ++i)
+		for (const auto& m : messages)
 		{
 			crow::json::wvalue msg;
-			msg["sender"] = g_chatMessages[i].sender;
-			msg["message"] = g_chatMessages[i].message;
-			msg["timestamp"] = (long long)g_chatMessages[i].timestamp;
+			msg["sender"] = m.sender;
+			msg["message"] = m.message;
+			msg["timestamp"] = (long long)m.timestamp;
 
-			list.push_back(msg);
+			jsonList.push_back(msg);
 		}
 
-		res["messages"] = std::move(list);
-
+		res["messages"] = std::move(jsonList);
 		return crow::response(200, res);
-		});
+			});
 
     app.port(18080).multithreaded().run();
 

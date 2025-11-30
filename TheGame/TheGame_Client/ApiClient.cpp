@@ -111,6 +111,72 @@ bool ApiClient::login(const std::string& user)
     }
 }
 
+bool ApiClient::registerUser(const std::string& username, const std::string& password)
+{
+    try {
+        std::ostringstream oss;
+        oss << "{\"username\":\"" << username << "\",\"password\":\"" << password << "\"}";
+        std::string url = baseUrl + "/register";
+
+        cpr::Response r = cpr::Post(cpr::Url{url},
+                                    cpr::Body{oss.str()},
+                                    cpr::Header{{"Content-Type", "application/json"}});
+
+        const std::string& body = r.text;
+
+        bool bval = false;
+        if (parseBoolField(body, "success", bval)) return bval;
+
+        std::string sval;
+        if (parseStringField(body, "status", sval)) {
+            if (sval == "ok" || sval == "success" || sval == "created") return true;
+            return false;
+        }
+        if (parseStringField(body, "result", sval)) {
+            if (sval == "ok" || sval == "success" || sval == "created") return true;
+            return false;
+        }
+        if (parseStringField(body, "error", sval) || parseStringField(body, "message", sval)) return false;
+        return r.status_code == 200 || r.status_code == 201;
+    }
+    catch (...) {
+        return false;
+    }
+}
+
+bool ApiClient::joinLobby(const std::string& username)
+{
+    try {
+        std::ostringstream oss;
+        oss << "{\"username\":\"" << username << "\"}";
+        std::string url = baseUrl + "/joinLobby";
+
+        cpr::Response r = cpr::Post(cpr::Url{url},
+                                    cpr::Body{oss.str()},
+                                    cpr::Header{{"Content-Type", "application/json"}});
+
+        const std::string& body = r.text;
+
+        bool bval = false;
+        if (parseBoolField(body, "success", bval)) return bval;
+
+        std::string sval;
+        if (parseStringField(body, "status", sval)) {
+            if (sval == "ok" || sval == "success" || sval == "joined") return true;
+            return false;
+        }
+        if (parseStringField(body, "result", sval)) {
+            if (sval == "ok" || sval == "success" || sval == "joined") return true;
+            return false;
+        }
+        if (parseStringField(body, "error", sval) || parseStringField(body, "message", sval)) return false;
+        return r.status_code == 200 || r.status_code == 201;
+    }
+    catch (...) {
+        return false;
+    }
+}
+
 GameState ApiClient::getGameState()
 {
     GameState gs;
@@ -183,3 +249,22 @@ GameState ApiClient::getGameState()
         return gs;
     }
 }
+
+LobbyStatus ApiClient::getLobbyStatus()
+{
+    LobbyStatus status;
+    try {
+        std::string url = baseUrl + "/lobbyStatus";
+        cpr::Response r = cpr::Get(cpr::Url{url});
+        if (r.status_code != 200) return status;
+        const std::string& body = r.text;
+        bool started = false;
+        if (parseBoolField(body, "gameStarted", started)) status.gameStarted = started;
+        int count = 0;
+        if (parseIntField(body, "playerCount", count)) status.playerCount = count;
+        return status;
+    } catch (...) {
+        return status;
+    }
+}
+

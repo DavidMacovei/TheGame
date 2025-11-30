@@ -1,9 +1,10 @@
 #include "GameStatus.h"
 #include <stdexcept>
+namespace game {
 
-GameStatus ToGameStatus(std::string_view str)
-{
-	using enum GameStatus;
+	GameStatus ToGameStatus(std::string_view str)
+	{
+		using enum GameStatus;
 		if (str == "Active")
 		{
 			return Active;
@@ -18,20 +19,21 @@ GameStatus ToGameStatus(std::string_view str)
 		}
 		else
 			throw std::invalid_argument("Invalid GameStatus string");
-}
+	}
 
-std::string ToString(GameStatus status)
-{
-	using enum GameStatus;
-	switch(status)
+	std::string ToString(GameStatus status)
 	{
-	case Active:
-		return "Active";
-	case Won:
-		return "Won";
-	case Lost:
-		return "Lost";
-	default:
-		throw std::invalid_argument("Invalid GameStatus enum value");
+		using enum GameStatus;
+		switch (status)
+		{
+		case Active:
+			return "Active";
+		case Won:
+			return "Won";
+		case Lost:
+			return "Lost";
+		default:
+			throw std::invalid_argument("Invalid GameStatus enum value");
+		}
 	}
 }
