@@ -1,8 +1,10 @@
-#include "ConsoleUI.h"
+﻿#include "ConsoleUI.h"
 #include <iostream>
 #include <limits>
 #include <thread>
 #include <chrono>
+#include <sstream>
+#include <iomanip>
 
 ConsoleUI::ConsoleUI(ApiClient& client) : apiClient(client) {}
 
@@ -10,6 +12,9 @@ void ConsoleUI::Run() {
     while (true) {
         if (!clientState.isLoggedIn) {
             ShowMainMenu();
+        }
+        else if (clientState.inLobby) {
+            RunLobbyLoop();
         }
         else {
             RunGameLoop();
@@ -21,8 +26,8 @@ void ConsoleUI::ShowMainMenu() {
     PrintHeader("Bun Venit la The Game!");
     std::cout << "1. Login" << std::endl;
     std::cout << "2. Register" << std::endl;
-    std::cout << "3. Exit" << std::endl;
-    std::cout << "Alege o optiune: ";
+    std::cout << "3.  Exit" << std::endl;
+    std::cout << "\nAlege o optiune: ";
 
     int choice;
     std::cin >> choice;
@@ -41,9 +46,11 @@ void ConsoleUI::ShowMainMenu() {
         HandleRegister();
         break;
     case 3:
+        std::cout << "La revedere!" << std::endl;
         exit(0);
     default:
-        std::cout << "Optiune invalida. Incearca din nou." << std::endl;
+        std::cout << "Optiune invalida.  Incearca din nou." << std::endl;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::cin.get();
         break;
     }
@@ -55,41 +62,143 @@ void ConsoleUI::HandleLogin() {
     std::cout << "Username: ";
     std::cin >> user;
 
+    std::cout << "\nSe conecteaza la server..." << std::endl;
+
     if (apiClient.login(user)) {
-        std::cout << "Login reusit! Intri in joc..." << std::endl;
-        clientState.isLoggedIn = true;
-        clientState.username = user;
+        std::cout << "\n[OK] Login reusit!" << std::endl;
+
+        std::cout << "Se intra in lobby..." << std::endl;
+        if (apiClient.joinLobby(user)) {
+            std::cout << "[OK] Ai intrat in lobby!" << std::endl;
+            clientState.isLoggedIn = true;
+            clientState.username = user;
+            clientState.inLobby = true;
+            clientState.cardsPlayedThisTurn = 0;
+        }
+        else {
+            std::cout << "[EROARE] Nu s-a putut intra in lobby." << std::endl;
+        }
     }
     else {
-        std::cout << "Login esuat. Serverul nu a putut autentifica utilizatorul." << std::endl;
+        std::cout << "\n[EROARE] Login esuat.  Serverul nu a putut autentifica utilizatorul." << std::endl;
     }
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    std::cin.get();
+    WaitForEnter();
 }
 
 void ConsoleUI::HandleRegister() {
     PrintHeader("Register");
-    std::cout << "Functionalitatea de inregistrare nu este inca disponibila." << std::endl;
-    std::cout << "Asteptam implementarea de catre echipa de Backend." << std::endl;
+    std::string user, pass1, pass2;
+
+    std::cout << "Alege un username: ";
+    std::cin >> user;
+
+    std::cout << "Alege o parola: ";
+    std::cin >> pass1;
+
+    std::cout << "Confirma parola: ";
+    std::cin >> pass2;
+
+    if (pass1 != pass2) {
+        std::cout << "\n[EROARE] Parolele nu se potrivesc!" << std::endl;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        WaitForEnter();
+        return;
+    }
+
+    std::cout << "\nSe inregistreaza..." << std::endl;
+
+    if (apiClient.registerUser(user, pass1)) {
+        std::cout << "\n[OK] Inregistrare reusita!  Acum te poti loga." << std::endl;
+    }
+    else {
+        std::cout << "\n[EROARE] Inregistrare esuata. Username-ul poate fi deja folosit." << std::endl;
+    }
 
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    std::cin.get();
+    WaitForEnter();
 }
 
-void ConsoleUI::RunGameLoop() {
+void ConsoleUI::RunLobbyLoop() {
+    const int POLL_INTERVAL_SEC = 3;
 
-    while (clientState.isLoggedIn) {
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    while (clientState.isLoggedIn && clientState.inLobby) {
+        LobbyStatus status = apiClient.getLobbyStatus();
+
+        DisplayLobbyState(status);
+
+        if (status.gameStarted) {
+            std::cout << "\n  >>> JOCUL A INCEPUT! <<<\n" << std::endl;
+            clientState.inLobby = false;
+            clientState.cardsPlayedThisTurn = 0;
+            std::this_thread::sleep_for(std::chrono::seconds(2));
+            break;
+        }
+
+        std::cout << "\n[R] Refresh   [Q] Delogare\n";
+        std::cout << "(Auto-refresh in " << POLL_INTERVAL_SEC << " secunde)\n";
+        std::cout << "Comanda: ";
+        std::cout.flush();
+
+        std::this_thread::sleep_for(std::chrono::seconds(POLL_INTERVAL_SEC));
+
+        if (std::cin.rdbuf()->in_avail() > 0) {
+            std::string line;
+            std::getline(std::cin, line);
+            if (!line.empty()) {
+                char cmd = std::toupper(line[0]);
+                if (cmd == 'Q') {
+                    std::cout << "Te deloghezi..." << std::endl;
+                    clientState.isLoggedIn = false;
+                    clientState.inLobby = false;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void ConsoleUI::DisplayLobbyState(const LobbyStatus& status) {}
+
+void ConsoleUI::RunGameLoop() {
+    if (std::cin.rdbuf()->in_avail() > 0) {
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+
+    while (clientState.isLoggedIn && !clientState.inLobby) {
         GameState gs = apiClient.getGameState();
 
         if (gs.players.empty() && gs.stacks.empty()) {
-            std::cout << "Nu s-a putut obtine starea jocului de la server. Apasa Enter pentru a reincerca sau 'q' + Enter pentru a te deloga." << std::endl;
+            ClearScreen();
+            PrintHeader("Eroare Conexiune");
+            std::cout << "[! ] Nu s-a putut obtine starea jocului de la server.\n" << std::endl;
+            std::cout << "[R] Reincearca   [Q] Delogare\n";
+            std::cout << "Comanda: ";
+
             std::string line;
             std::getline(std::cin, line);
-            if (!line.empty() && (line[0] == 'q' || line[0] == 'Q')) {
+            if (!line.empty() && std::toupper(line[0]) == 'Q') {
                 clientState.isLoggedIn = false;
                 break;
             }
             continue;
+        }
+
+        if (gs.status == "won" || gs.status == "lost" || gs.status == "finished") {
+            ClearScreen();
+            PrintHeader("JOC TERMINAT");
+            if (gs.status == "won") {
+                std::cout << "  *** FELICITARI! ATI CASTIGAT!  ***\n" << std::endl;
+            }
+            else {
+                std::cout << "  --- Din pacate, ati pierdut.  ---\n" << std::endl;
+            }
+            WaitForEnter("Apasa Enter pentru a reveni la meniu.. .");
+            clientState.isLoggedIn = false;
+            clientState.inLobby = true;
+            break;
         }
 
         DisplayGameState(gs);
@@ -98,177 +207,124 @@ void ConsoleUI::RunGameLoop() {
         if (gs.currentPlayer >= 0 && gs.currentPlayer < static_cast<int>(gs.players.size())) {
             currentPlayerName = gs.players[gs.currentPlayer].username;
         }
-        else if (!gs.players.empty()) {
-            currentPlayerName = gs.players[0].username;
+
+        PrintSeparator();
+
+        bool isMyTurn = (!currentPlayerName.empty() && currentPlayerName == clientState.username);
+
+        if (isMyTurn) {
+            std::cout << ">>> ESTE RANDUL TAU!  <<<" << std::endl;
+            std::cout << "Carti jucate in aceasta tura: " << clientState.cardsPlayedThisTurn;
+            std::cout << " (minim " << gs.minCardsToPlay << ")\n" << std::endl;
+            std::cout << "[J] Joaca o carte   [E] End Turn   [C] Chat   [R] Refresh   [Q] Delogare\n";
         }
         else {
-            currentPlayerName = "";
-        }
-
-        if (!currentPlayerName.empty() && currentPlayerName == clientState.username) {
-            std::cout << "\nEste randul tau si joci!" << std::endl;
-            HandlePlayerTurn(gs);
-        }
-        else {
-            if (!currentPlayerName.empty())
-                std::cout << "\nMomentan e randul: " << currentPlayerName << std::endl;
-            else
-                std::cout << "\nServerul nu a specificat jucatorul curent." << std::endl;
-
-            std::cout << "Apasa Enter pentru a reimprospata starea sau tasteaza 'q' + Enter pentru a te deloga." << std::endl;
-            std::string line;
-            std::getline(std::cin, line);
-            if (!line.empty() && (line[0] == 'q' || line[0] == 'Q')) {
-                clientState.isLoggedIn = false;
-                break;
+            if (!currentPlayerName.empty()) {
+                std::cout << "Randul lui: " << currentPlayerName << "\n" << std::endl;
             }
+            std::cout << "[C] Chat   [R] Refresh   [Q] Delogare\n";
+        }
+
+        std::cout << "Comanda: ";
+
+        std::string line;
+        std::getline(std::cin, line);
+
+        if (line.empty()) {
+            continue;
+        }
+
+        char cmd = std::toupper(line[0]);
+
+        switch (cmd) {
+        case 'J':
+            if (isMyTurn) {
+                HandlePlayerTurn(gs);
+            }
+            else {
+                std::cout << "\n[!] Nu este randul tau!" << std::endl;
+                WaitForEnter();
+            }
+            break;
+
+        case 'E':
+            if (isMyTurn) {
+                HandleEndTurn();
+            }
+            else {
+                std::cout << "\n[!] Nu este randul tau!" << std::endl;
+                WaitForEnter();
+            }
+            break;
+
+        case 'R':
+            break;
+
+        case 'Q':
+            std::cout << "\nTe deloghezi..." << std::endl;
+            clientState.isLoggedIn = false;
+            clientState.inLobby = true;
+            break;
+
+        default:
+            std::cout << "\n[!] Comanda necunoscuta: " << cmd << std::endl;
+            WaitForEnter();
+            break;
         }
     }
 }
 
 void ConsoleUI::DisplayGameState(const GameState& state) {
     ClearScreen();
-    PrintHeader("The Game - Starea curenta");
+    PrintHeader("THE GAME - Tabla de Joc");
 
-    if (!state.status.empty()) {
-        std::cout << "Server status: " << state.status << std::endl;
+    std::cout << "Carti in pachet: " << state.drawDeckCount;
+    std::cout << "  |  Min carti de jucat: " << state.minCardsToPlay;
+    if (!state.status.empty() && state.status != "playing") {
+        std::cout << "  |  Status: " << state.status;
     }
-    std::cout << "Carti ramase in pachet: " << state.drawDeckCount << std::endl;
-    std::cout << "Min carti de jucat: " << state.minCardsToPlay << std::endl;
-    std::cout << std::endl;
+    std::cout << "\n" << std::endl;
 
-    std::cout << "--- Stive (stacks) ---" << std::endl;
-    for (size_t i = 0; i < state.stacks.size(); ++i) {
-        const auto& s = state.stacks[i];
-        std::cout << "Stiva [" << i + 1 << "] (size=" << s.size() << "): ";
-        if (s.empty()) {
-            std::cout << "(goala)";
-        }
-        else {
-            for (size_t j = 0; j < s.size(); ++j) {
-                if (j) std::cout << ", ";
-                std::cout << s[j];
-            }
-            std::cout << "  | top=" << s.back();
-        }
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
+    DisplayStacks(state);
 
-    std::cout << "--- Jucatori ---" << std::endl;
+    std::cout << "\n--- JUCATORI ---\n" << std::endl;
+
     for (size_t i = 0; i < state.players.size(); ++i) {
         const PlayerState& p = state.players[i];
         bool isMe = (p.username == clientState.username);
-        std::cout << (isMe ? "-> " : "   ");
-        std::cout << p.username << " | carti in mana: " << p.hand.size();
+        bool isCurrentPlayer = (static_cast<int>(i) == state.currentPlayer);
+
+        if (isCurrentPlayer) {
+            std::cout << " >> ";
+        }
+        else {
+            std::cout << "    ";
+        }
+
         if (isMe) {
-            std::cout << "  (detalii mana: ";
-            for (size_t k = 0; k < p.hand.size(); ++k) {
-                if (k) std::cout << ", ";
-                std::cout << "[" << k << "]=" << p.hand[k];
-            }
-            std::cout << ")";
+            std::cout << "[TU] ";
+        }
+        std::cout << p.username;
+        std::cout << " - " << p.hand.size() << " carti";
+
+        if (isCurrentPlayer) {
+            std::cout << "  [JOACA ACUM]";
         }
         std::cout << std::endl;
+
+        if (isMe) {
+            DisplayPlayerHand(p);
+        }
     }
-    std::cout << std::endl;
 }
 
-void ConsoleUI::HandlePlayerTurn(const GameState& state) {
+void ConsoleUI::DisplayStacks(const GameState& state){}
 
-    const PlayerState* me = nullptr;
-    for (const auto& p : state.players) {
-        if (p.username == clientState.username) {
-            me = &p;
-            break;
-        }
-    }
+void ConsoleUI::DisplayPlayerHand(const PlayerState& player) {}
 
-    if (!me) {
-        std::cout << "Nu te-am gasit in lista de jucatori primita de la server. Nu poti juca." << std::endl;
-        std::cout << "Apasa Enter pentru a intoarce la meniul principal." << std::endl;
-        std::cin.get();
-        clientState.isLoggedIn = false;
-        return;
-    }
+void ConsoleUI::HandlePlayerTurn(const GameState& player) {}
 
-    if (me->hand.empty()) {
-        std::cout << "Mana ta este goala. Nu ai carti de jucat." << std::endl;
-        std::cout << "Apasa Enter pentru a continua..." << std::endl;
-        std::cin.get();
-        return;
-    }
-
-    std::cout << "\nMana ta:" << std::endl;
-    for (size_t i = 0; i < me->hand.size(); ++i) {
-        std::cout << "  [" << i << "] = " << me->hand[i] << std::endl;
-    }
-
-    int cardIndex = -1;
-    while (true) {
-        std::cout << "Introdu indexul cartii pe care vrei sa o joci (sau 'c' + Enter pentru cancel): ";
-        std::string line;
-        std::getline(std::cin, line);
-        if (line.empty()) continue;
-        if (line[0] == 'c' || line[0] == 'C') {
-            std::cout << "Mutare anulata." << std::endl;
-            return;
-        }
-        try {
-            cardIndex = std::stoi(line);
-        }
-        catch (...) {
-            std::cout << "Index invalid. Incearca din nou." << std::endl;
-            continue;
-        }
-        if (cardIndex < 0 || static_cast<size_t>(cardIndex) >= me->hand.size()) {
-            std::cout << "Index in afara intervalului. Incearca din nou." << std::endl;
-            continue;
-        }
-        break;
-    }
-
-    if (state.stacks.empty()) {
-        std::cout << "Serverul nu a trimis informatii despre stive. Nu poti plasa cartea." << std::endl;
-        std::cout << "Apasa Enter pentru a continua..." << std::endl;
-        std::cin.get();
-        return;
-    }
-
-    int stackId = -1;
-    while (true) {
-        std::cout << "Alege ID-ul stivei (1 - " << state.stacks.size() << ") pe care vrei sa plasezi: ";
-        std::string line;
-        std::getline(std::cin, line);
-        if (line.empty()) continue;
-        try {
-            stackId = std::stoi(line);
-        }
-        catch (...) {
-            std::cout << "ID invalid. Incearca din nou." << std::endl;
-            continue;
-        }
-        if (stackId < 1 || static_cast<size_t>(stackId) > state.stacks.size()) {
-            std::cout << "ID in afara intervalului. Incearca din nou." << std::endl;
-            continue;
-        }
-        break;
-    }
-
-    std::ostringstream oss;
-    oss << "{";
-    oss << "\"username\":\"" << clientState.username << "\",";
-    oss << "\"cardIndex\":" << cardIndex << ",";
-    oss << "\"stackId\":" << (stackId - 1);
-    oss << "}";
-
-    std::cout << "\nJSON care ar trebui trimis catre server pentru a face mutarea:\n" << oss.str() << std::endl;
-
-    std::cout << "Apasa Enter pentru a continua..." << std::endl;
-    std::cin.get();
-
-}
-
+void ConsoleUI::HandleEndTurn() {}
 
 void ConsoleUI::ClearScreen() {
 #ifdef _WIN32
@@ -280,7 +336,16 @@ void ConsoleUI::ClearScreen() {
 
 void ConsoleUI::PrintHeader(const std::string& title) {
     ClearScreen();
-    std::cout << "=========================================" << std::endl;
+    std::cout << "==========================================" << std::endl;
     std::cout << "  " << title << std::endl;
-    std::cout << "=========================================" << std::endl << std::endl;
+    std::cout << "==========================================" << std::endl << std::endl;
+}
+
+void ConsoleUI::PrintSeparator() {
+    std::cout << "\n------------------------------------------\n" << std::endl;
+}
+
+void ConsoleUI::WaitForEnter(const std::string& message) {
+    std::cout << "\n" << message;
+    std::cin.get();
 }
