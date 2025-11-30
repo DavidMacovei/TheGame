@@ -11,6 +11,7 @@ int main()
 
 	//TODO: mutex
 	//TODO: config QT proj
+	//TODO: add LoginWindow, GameWindow, CardWidget etc classes
 
 	std::unique_ptr<Game> activeGame = nullptr;
 	std::vector<std::string> lobbyPlayers;
