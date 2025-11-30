@@ -160,7 +160,47 @@ void ConsoleUI::RunLobbyLoop() {
     }
 }
 
-void ConsoleUI::DisplayLobbyState(const LobbyStatus& status) {}
+void ConsoleUI::DisplayLobbyState(const LobbyStatus& status) {
+    ClearScreen();
+    PrintHeader("LOBBY - Asteptam Jucatori");
+
+    int currentPlayers = status.playerCount;
+    int maxPlayers = (status.maxPlayers > 0) ? status.maxPlayers : 4;
+
+    std::cout << "  +--------------------------------------+" << std::endl;
+    std::cout << "  |                                      |" << std::endl;
+    std::cout << "  |   Jucatori conectati: " << currentPlayers << " / " << maxPlayers << "            |" << std::endl;
+    std::cout << "  |                                      |" << std::endl;
+
+    for (size_t i = 0; i < status.playerNames.size(); ++i) {
+        const std::string& name = status.playerNames[i];
+        bool isMe = (name == clientState.username);
+
+        std::cout << "  |   ";
+        if (isMe) {
+            std::cout << "[TU] ";
+        }
+        else {
+            std::cout << "     ";
+        }
+        std::cout << std::left << std::setw(25) << name;
+        std::cout << "   |" << std::endl;
+    }
+
+    for (int i = static_cast<int>(status.playerNames.size()); i < maxPlayers; ++i) {
+        std::cout << "  |      " << std::left << std::setw(25) << "(slot liber)" << "   |" << std::endl;
+    }
+
+    std::cout << "  |                                      |" << std::endl;
+    std::cout << "  +--------------------------------------+" << std::endl;
+
+    if (status.gameStarted) {
+        std::cout << "\n  Status: JOCUL INCEPE!" << std::endl;
+    }
+    else {
+        std::cout << "\n  Asteptam ca toti jucatorii sa se conecteze..." << std::endl;
+    }
+}
 
 void ConsoleUI::RunGameLoop() {
     if (std::cin.rdbuf()->in_avail() > 0) {
@@ -324,7 +364,31 @@ void ConsoleUI::DisplayPlayerHand(const PlayerState& player) {}
 
 void ConsoleUI::HandlePlayerTurn(const GameState& player) {}
 
-void ConsoleUI::HandleEndTurn() {}
+void ConsoleUI::HandleEndTurn() {
+    GameState gs = apiClient.getGameState();
+
+    if (clientState.cardsPlayedThisTurn < gs.minCardsToPlay) {
+        std::cout << "\n[! ] Nu poti termina tura! Trebuie sa joci cel putin "
+            << gs.minCardsToPlay << " carti." << std::endl;
+        std::cout << "    Ai jucat: " << clientState.cardsPlayedThisTurn << " carti." << std::endl;
+        WaitForEnter();
+        return;
+    }
+
+    std::cout << "\nSe trimite End Turn la server..." << std::endl;
+
+    /*bool success = apiClient.endTurn(clientState.username);  //endTurn needed
+
+    if (success) {
+        std::cout << "[OK] Tura terminata!" << std::endl;
+        clientState.cardsPlayedThisTurn = 0;
+    }
+    else {
+        std::cout << "[EROARE] Serverul a respins cererea de End Turn." << std::endl;
+    }*/
+
+    WaitForEnter();
+}
 
 void ConsoleUI::ClearScreen() {
 #ifdef _WIN32
