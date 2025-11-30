@@ -59,6 +59,38 @@ int main()
 		return crow::response(200, result);
 			});
 
+	CROW_ROUTE(app, "/debug/inspectRequest").methods("POST"_method, "GET"_method)
+		([](const crow::request& req) {
+		std::ostringstream oss;
+
+		oss << "=== INCOMING REQUEST INSPECTION ===\n";
+		oss << "Method: " << crow::method_name(req.method) << "\n";
+		oss << "URL: " << req.url << "\n";
+
+		oss << "\n[HEADERS]\n";
+
+		if (req.get_header_value("User-Agent") != "") {
+			oss << "User-Agent: " << req.get_header_value("User-Agent") << "\n";
+		}
+		if (req.get_header_value("Content-Type") != "") {
+			oss << "Content-Type: " << req.get_header_value("Content-Type") << "\n";
+		}
+		if (req.get_header_value("Host") != "") {
+			oss << "Host: " << req.get_header_value("Host") << "\n";
+		}
+
+		oss << "\n[QUERY PARAMS]\n";
+		char* param = req.url_params.get("test");
+		if (param) {
+			oss << "Param 'test': " << param << "\n";
+		}
+
+		oss << "\n[BODY SIZE]\n";
+		oss << req.body.size() << " bytes\n";
+
+		return crow::response(200, oss.str());
+			});
+
 	//TODO: mutex
 
 	std::unique_ptr<game::Game> activeGame = nullptr;
