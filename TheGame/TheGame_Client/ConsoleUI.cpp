@@ -402,7 +402,117 @@ void ConsoleUI::DisplayPlayerHand(const PlayerState& player) {
     std::cout << std::endl;
 }
 
-void ConsoleUI::HandlePlayerTurn(const GameState& player) {}
+void ConsoleUI::HandlePlayerTurn(const GameState& state) {
+    const PlayerState* me = nullptr;
+    for (const auto& p : state.players) {
+        if (p.username == clientState.username) {
+            me = &p;
+            break;
+        }
+    }
+
+    if (!me) {
+        std::cout << "\n[EROARE] Nu te-am gasit in lista de jucatori!" << std::endl;
+        WaitForEnter();
+        return;
+    }
+
+    if (me->hand.empty()) {
+        std::cout << "\n[INFO] Mana ta este goala.  Nu ai carti de jucat." << std::endl;
+        WaitForEnter();
+        return;
+    }
+
+    std::cout << "\n--- SELECTEAZA MUTAREA ---\n" << std::endl;
+    std::cout << "Cartile tale:" << std::endl;
+    for (size_t i = 0; i < me->hand.size(); ++i) {
+        std::cout << "  [" << i << "] = " << me->hand[i] << std::endl;
+    }
+
+    int cardIndex = -1;
+    while (true) {
+        std::cout << "\nIntrodu indexul cartii (sau 'c' pentru cancel): ";
+        std::string line;
+        std::getline(std::cin, line);
+
+        if (line.empty()) continue;
+        if (std::toupper(line[0]) == 'C') {
+            std::cout << "Mutare anulata." << std::endl;
+            return;
+        }
+
+        try {
+            cardIndex = std::stoi(line);
+        }
+        catch (...) {
+            std::cout << "[! ] Index invalid." << std::endl;
+            continue;
+        }
+
+        if (cardIndex < 0 || static_cast<size_t>(cardIndex) >= me->hand.size()) {
+            std::cout << "[!] Index in afara intervalului (0-" << me->hand.size() - 1 << ")." << std::endl;
+            continue;
+        }
+        break;
+    }
+
+    std::cout << "\nAi selectat cartea: " << me->hand[cardIndex] << std::endl;
+
+    if (state.stacks.empty()) {
+        std::cout << "[EROARE] Nu exista stive disponibile!" << std::endl;
+        WaitForEnter();
+        return;
+    }
+
+    std::cout << "\nStive disponibile:" << std::endl;
+    for (size_t i = 0; i < state.stacks.size(); ++i) {
+        bool isAsc = (i < 2);
+        int topVal = state.stacks[i].empty() ? (isAsc ? 1 : 100) : state.stacks[i].back();
+        std::cout << "  [" << (i + 1) << "] " << (isAsc ? "ASC ^" : "DESC v")
+            << " - Top: " << topVal << std::endl;
+    }
+
+    int stackId = -1;
+    while (true) {
+        std::cout << "\nAlege stiva (1-" << state.stacks.size() << ") sau 'c' pentru cancel: ";
+        std::string line;
+        std::getline(std::cin, line);
+
+        if (line.empty()) continue;
+        if (std::toupper(line[0]) == 'C') {
+            std::cout << "Mutare anulata." << std::endl;
+            return;
+        }
+
+        try {
+            stackId = std::stoi(line);
+        }
+        catch (...) {
+            std::cout << "[!] ID invalid." << std::endl;
+            continue;
+        }
+
+        if (stackId < 1 || static_cast<size_t>(stackId) > state.stacks.size()) {
+            std::cout << "[!] ID in afara intervalului." << std::endl;
+            continue;
+        }
+        break;
+    }
+
+    std::cout << "\nSe trimite mutarea la server..." << std::endl;
+
+    //bool success = apiClient.makeMove(clientState.username, cardIndex, stackId - 1); //makeMove needed
+
+    /*if (success) {
+        std::cout << "[OK] Mutare efectuata cu succes!" << std::endl;
+        clientState.cardsPlayedThisTurn++;
+    }
+    else {
+        std::cout << "[EROARE] Mutare respinsa de server.  Verifica regulile jocului." << std::endl;
+    }*/
+
+    WaitForEnter();
+}
 
 void ConsoleUI::HandleEndTurn() {
     GameState gs = apiClient.getGameState();
