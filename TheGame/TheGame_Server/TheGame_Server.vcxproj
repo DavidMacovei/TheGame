@@ -129,28 +129,37 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AuthRoutes.cpp" />
     <ClCompile Include="Card.cpp" />
-    <ClCompile Include="Chat.cpp" />
+    <ClCompile Include="ChatRoutes.cpp" />
     <ClCompile Include="ChatService.cpp" />
     <ClCompile Include="DrawingDeck.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameRoutes.cpp" />
     <ClCompile Include="GameStatus.cpp" />
+    <ClCompile Include="LobbyRoutes.cpp" />
     <ClCompile Include="PlacingStack.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="ServerApp.cpp" />
     <ClCompile Include="StackType.cpp" />
     <ClCompile Include="TheGame.cpp" />
     <ClCompile Include="User.cpp" />
     <ClCompile Include="UsersDatabase.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AuthRoutes.h" />
     <ClInclude Include="Card.h" />
     <ClInclude Include="ChatMessage.h" />
+    <ClInclude Include="ChatRoutes.h" />
     <ClInclude Include="ChatService.h" />
     <ClInclude Include="DrawingDeck.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameRoutes.h" />
     <ClInclude Include="GameStatus.h" />
+    <ClInclude Include="LobbyRoutes.h" />
     <ClInclude Include="PlacingStack.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="ServerApp.h" />
     <ClInclude Include="StackType.h" />
     <ClInclude Include="User.h" />
     <ClInclude Include="UsersDatabase.h" />
