@@ -131,6 +131,7 @@
   <ItemGroup>
     <ClCompile Include="Card.cpp" />
     <ClCompile Include="Chat.cpp" />
+    <ClCompile Include="ChatService.cpp" />
     <ClCompile Include="DrawingDeck.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameStatus.cpp" />
@@ -143,7 +144,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Card.h" />
-    <ClInclude Include="Chat.h" />
+    <ClInclude Include="ChatMessage.h" />
+    <ClInclude Include="ChatService.h" />
     <ClInclude Include="DrawingDeck.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameStatus.h" />
