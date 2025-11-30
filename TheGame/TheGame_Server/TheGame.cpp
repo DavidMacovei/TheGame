@@ -12,7 +12,7 @@ int main()
 	crow::SimpleApp app;
 	ChatService chat;
 
-	std::unique_ptr<Game> activeGame = nullptr;
+	std::unique_ptr<game::Game> activeGame = nullptr;
 	std::vector<std::string> lobbyPlayers;
 
 	CROW_ROUTE(app, "/gameState/<int>")([&activeGame](int playerIndex) {
@@ -118,8 +118,8 @@ int main()
 
 		if (activeGame != nullptr)
 		{
-			if (activeGame->GetStatus() == GameStatus::Won ||
-				activeGame->GetStatus() == GameStatus::Lost)
+			if (activeGame->GetStatus() == game::GameStatus::Won ||
+				activeGame->GetStatus() == game::GameStatus::Lost)
 			{
 				activeGame = nullptr;
 				lobbyPlayers.clear();
@@ -142,7 +142,7 @@ int main()
 		const int PLAYERS_NEEDED = 4;
 		if (lobbyPlayers.size() >= PLAYERS_NEEDED)
 		{
-			activeGame = std::make_unique<Game>(lobbyPlayers);
+			activeGame = std::make_unique<game::Game>(lobbyPlayers);
 			lobbyPlayers.clear();
 
 			crow::json::wvalue response;
