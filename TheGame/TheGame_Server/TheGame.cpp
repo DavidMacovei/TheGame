@@ -10,9 +10,56 @@ int main()
 	crow::SimpleApp app;
 	ChatService chat;
 
+	CROW_ROUTE(app, "/ping")
+		([]() {
+		return "pong";
+			});
+
+	CROW_ROUTE(app, "/")
+		([]() {
+		return "Test route";
+			});
+
+	CROW_ROUTE(app, "/test/cpuBenchmark/<int>")
+		([](int limit) {
+		if (limit > 100000) return crow::response(400, "Limit too high, use < 100000");
+
+		std::vector<int> primes;
+		auto start = std::chrono::high_resolution_clock::now();
+
+		std::vector<bool> is_prime(limit + 1, true);
+		is_prime[0] = is_prime[1] = false;
+
+		for (int p = 2; p * p <= limit; p++) {
+			if (is_prime[p]) {
+				for (int i = p * p; i <= limit; i += p)
+					is_prime[i] = false;
+			}
+		}
+
+		for (int p = 2; p <= limit; p++) {
+			if (is_prime[p]) {
+				primes.push_back(p);
+			}
+		}
+
+		auto end = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double, std::milli> duration = end - start;
+
+		crow::json::wvalue result;
+		result["test_name"] = "Prime Number Benchmark";
+		result["limit"] = limit;
+		result["primes_found"] = (int)primes.size();
+		result["execution_time_ms"] = duration.count();
+
+		for (int i = 0; i < 5 && !primes.empty(); i++) {
+			result["sample_primes"][i] = primes[primes.size() - 1 - i];
+		}
+
+		return crow::response(200, result);
+			});
+
 	//TODO: mutex
-	//TODO: config QT proj
-	//TODO: add LoginWindow, GameWindow, CardWidget etc classes
 
 	std::unique_ptr<game::Game> activeGame = nullptr;
 	std::vector<std::string> lobbyPlayers;
