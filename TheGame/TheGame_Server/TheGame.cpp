@@ -5,12 +5,14 @@
 #include "UsersDatabase.h"
 #include "ChatService.h"
 
-
-
 int main()
 {
 	crow::SimpleApp app;
 	ChatService chat;
+
+	//TODO: mutex
+	//TODO: config QT proj
+	//TODO: add LoginWindow, GameWindow, CardWidget etc classes
 
 	std::unique_ptr<game::Game> activeGame = nullptr;
 	std::vector<std::string> lobbyPlayers;
