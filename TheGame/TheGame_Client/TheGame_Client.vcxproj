@@ -37,7 +37,7 @@
   </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
     <QtInstall>6.9.3_msvc2022_64</QtInstall>
-    <QtModules>core;gui;widgets</QtModules>
+    <QtModules>core;gui;network;widgets</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
@@ -99,33 +99,32 @@
   <ItemGroup>
     <ClCompile Include="ClientApi.cpp" />
     <QtRcc Include="TheGame_Client.qrc" />
+    <QtUic Include="LobbyWidget.ui" />
+    <QtUic Include="LoginWidget.ui" />
+    <QtUic Include="ProfileWidget.ui" />
+    <QtUic Include="RegisterWidget.ui" />
     <QtUic Include="TheGame_Client.ui" />
     <QtMoc Include="TheGame_Client.h" />
+    <ClCompile Include="LobbyWidget.cpp" />
+    <ClCompile Include="LoginWidget.cpp" />
+    <ClCompile Include="PreGameNetworkManager.cpp" />
+    <ClCompile Include="ProfileWidget.cpp" />
+    <ClCompile Include="RegisterWidget.cpp" />
     <ClCompile Include="TheGame_Client.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientApi.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\TheGame_Common\TheGame_Common.vcxproj">
-      <Project>{40ceb318-18ce-41b6-9ae8-e2c3dd446fe8}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <QtMoc Include="PreGameNetworkManager.h" />
+    <QtMoc Include="ProfileWidget.h" />
+    <QtMoc Include="LobbyWidget.h" />
+    <QtMoc Include="RegisterWidget.h" />
+    <QtMoc Include="LoginWidget.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
     <Import Project="$(QtMsBuild)\qt.targets" />
   </ImportGroup>
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\nlohmann.json.3.12.0\build\native\nlohmann.json.targets" Condition="Exists('..\packages\nlohmann.json.3.12.0\build\native\nlohmann.json.targets')" />
   </ImportGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\nlohmann.json.3.12.0\build\native\nlohmann.json.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\nlohmann.json.3.12.0\build\native\nlohmann.json.targets'))" />
-  </Target>
 </Project>
