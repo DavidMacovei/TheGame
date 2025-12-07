@@ -1,6 +1,8 @@
 #pragma once
 #include<iostream>
 #include<vector>
+#include<cpr/cpr.h>
+#include<crow/json.h>
 
 struct PlayerState {
     std::string username;
@@ -26,6 +28,7 @@ struct LobbyStatus {
 
 class ClientApi
 {
+public:
     // Posts to /login with the provided username. Returns true on success (HTTP 200), false otherwise.
     bool login(const std::string& user);
 
@@ -40,5 +43,7 @@ class ClientApi
 
     // GETs the lobby status from the server (has game started, how many players).
     LobbyStatus getLobbyStatus();
+private:
+    std::string baseUrl;
 };
 
