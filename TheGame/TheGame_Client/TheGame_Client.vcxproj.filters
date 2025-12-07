@@ -61,9 +61,18 @@
     <ClCompile Include="PreGameNetworkManager.cpp">
       <Filter>Network</Filter>
     </ClCompile>
+    <ClCompile Include="GameNetworkManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameBoardWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientApi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameBoardWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -83,6 +92,9 @@
     <QtMoc Include="PreGameNetworkManager.h">
       <Filter>Network</Filter>
     </QtMoc>
+    <QtMoc Include="GameNetworkManager.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="LoginWidget.ui">
@@ -95,6 +107,9 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="ProfileWidget.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="GameBoardWidget.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

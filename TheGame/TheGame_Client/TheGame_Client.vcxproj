@@ -99,12 +99,15 @@
   <ItemGroup>
     <ClCompile Include="ClientApi.cpp" />
     <QtRcc Include="TheGame_Client.qrc" />
+    <QtUic Include="GameBoardWidget.ui" />
     <QtUic Include="LobbyWidget.ui" />
     <QtUic Include="LoginWidget.ui" />
     <QtUic Include="ProfileWidget.ui" />
     <QtUic Include="RegisterWidget.ui" />
     <QtUic Include="TheGame_Client.ui" />
     <QtMoc Include="TheGame_Client.h" />
+    <ClCompile Include="GameBoardWidget.cpp" />
+    <ClCompile Include="GameNetworkManager.cpp" />
     <ClCompile Include="LobbyWidget.cpp" />
     <ClCompile Include="LoginWidget.cpp" />
     <ClCompile Include="PreGameNetworkManager.cpp" />
@@ -115,6 +118,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientApi.h" />
+    <ClInclude Include="GameBoardWidget.h" />
+    <QtMoc Include="GameNetworkManager.h" />
     <QtMoc Include="PreGameNetworkManager.h" />
     <QtMoc Include="ProfileWidget.h" />
     <QtMoc Include="LobbyWidget.h" />
