@@ -16,6 +16,13 @@ struct GameState {
     int minCardsToPlay = 0;
 };
 
+struct LobbyStatus {
+    bool gameStarted = false;
+    int playerCount = 0;
+    int maxPlayers = 4;
+    std::vector<std::string> playerNames;
+};
+
 
 class ClientApi
 {
