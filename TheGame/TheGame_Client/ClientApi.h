@@ -2,7 +2,19 @@
 #include<iostream>
 #include<vector>
 
+struct PlayerState {
+    std::string username;
+    std::vector<int> hand; // card values
+};
 
+struct GameState {
+    std::string status;
+    int currentPlayer = -1;
+    std::vector<PlayerState> players;
+    std::vector<std::vector<int>> stacks;
+    int drawDeckCount = 0;
+    int minCardsToPlay = 0;
+};
 
 
 class ClientApi
