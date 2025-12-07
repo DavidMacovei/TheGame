@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui version="4.0">
+	<class>GameBoardWidget</class>
+	<widget class="QWidget" name="GameBoardWidget">
+		<property name="geometry">
+			<rect>
+				<x>0</x>
+				<y>0</y>
+				<width>850</width>
+				<height>600</height>
+			</rect>
+		</property>
+		<property name="windowTitle">
+			<string>The Game - Playing</string>
+		</property>
+		<layout class="QHBoxLayout" name="horizontalLayout">
+			<item>
+				<layout class="QVBoxLayout" name="leftLayout">
+					<item>
+						<widget class="QLabel" name="lblStatus">
+							<property name="font">
+								<font>
+									<pointsize>12</pointsize>
+									<weight>75</weight>
+									<bold>true</bold>
+								</font>
+							</property>
+							<property name="text">
+								<string>Waiting for game state...</string>
+							</property>
+							<property name="alignment">
+								<set>Qt::AlignCenter</set>
+							</property>
+						</widget>
+					</item>
+					<item>
+						<layout class="QGridLayout" name="stacksLayout">
+							<item row="0" column="0">
+								<widget class="QPushButton" name="btnStack1">
+									<property name="minimumSize">
+										<size>
+											<width>120</width>
+											<height>160</height>
+										</size>
+									</property>
+									<property name="text">
+										<string>Stack 1</string>
+									</property>
+									<property name="styleSheet">
+										<string>background-color: #ffcccc; font-size: 14px;</string>
+									</property>
+								</widget>
+							</item>
+							<item row="0" column="1">
+								<widget class="QPushButton" name="btnStack2">
+									<property name="minimumSize">
+										<size>
+											<width>120</width>
+											<height>160</height>
+										</size>
+									</property>
+									<property name="text">
+										<string>Stack 2</string>
+									</property>
+									<property name="styleSheet">
+										<string>background-color: #ffcccc; font-size: 14px;</string>
+									</property>
+								</widget>
+							</item>
+							<item row="1" column="0">
+								<widget class="QPushButton" name="btnStack3">
+									<property name="minimumSize">
+										<size>
+											<width>120</width>
+											<height>160</height>
+										</size>
+									</property>
+									<property name="text">
+										<string>Stack 3</string>
+									</property>
+									<property name="styleSheet">
+										<string>background-color: #ccffcc; font-size: 14px;</string>
+									</property>
+								</widget>
+							</item>
+							<item row="1" column="1">
+								<widget class="QPushButton" name="btnStack4">
+									<property name="minimumSize">
+										<size>
+											<width>120</width>
+											<height>160</height>
+										</size>
+									</property>
+									<property name="text">
+										<string>Stack 4</string>
+									</property>
+									<property name="styleSheet">
+										<string>background-color: #ccffcc; font-size: 14px;</string>
+									</property>
+								</widget>
+							</item>
+						</layout>
+					</item>
+					<item>
+						<widget class="QLabel" name="label_2">
+							<property name="text">
+								<string>Your Hand (Select a card):</string>
+							</property>
+						</widget>
+					</item>
+					<item>
+						<widget class="QListWidget" name="listHand">
+							<property name="maximumHeight">
+								<number>120</number>
+							</property>
+							<property name="flow">
+								<enum>QListView::LeftToRight</enum>
+							</property>
+							<property name="spacing">
+								<number>5</number>
+							</property>
+						</widget>
+					</item>
+					<item>
+						<widget class="QPushButton" name="btnEndTurn">
+							<property name="minimumSize">
+								<size>
+									<width>0</width>
+									<height>40</height>
+								</size>
+							</property>
+							<property name="text">
+								<string>END TURN</string>
+							</property>
+						</widget>
+					</item>
+				</layout>
+			</item>
+			<item>
+				<layout class="QVBoxLayout" name="rightLayout">
+					<item>
+						<widget class="QLabel" name="label_3">
+							<property name="font">
+								<font>
+									<weight>75</weight>
+									<bold>true</bold>
+								</font>
+							</property>
+							<property name="text">
+								<string>Chat</string>
+							</property>
+						</widget>
+					</item>
+					<item>
+						<widget class="QListWidget" name="listChat"/>
+					</item>
+					<item>
+						<layout class="QHBoxLayout" name="chatInputLayout">
+							<item>
+								<widget class="QLineEdit" name="lineChatMsg"/>
+							</item>
+							<item>
+								<widget class="QPushButton" name="btnSendChat">
+									<property name="text">
+										<string>Send</string>
+									</property>
+								</widget>
+							</item>
+						</layout>
+					</item>
+				</layout>
+			</item>
+		</layout>
+	</widget>
+	<resources/>
+	<connections/>
+</ui>
