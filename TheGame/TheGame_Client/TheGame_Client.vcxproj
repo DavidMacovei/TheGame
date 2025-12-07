@@ -118,7 +118,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientApi.h" />
-    <ClInclude Include="GameBoardWidget.h" />
+    <QtMoc Include="GameBoardWidget.h" />
     <QtMoc Include="GameNetworkManager.h" />
     <QtMoc Include="PreGameNetworkManager.h" />
     <QtMoc Include="ProfileWidget.h" />
