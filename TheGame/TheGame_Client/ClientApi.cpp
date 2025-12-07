@@ -1,6 +1,56 @@
 #include "ClientApi.h"
 
 
+GameState ClientApi::getGameState() {
+    GameState gs;
+    try {
+        std::string url = baseUrl + "/gameState";
+        cpr::Response r = cpr::Get(cpr::Url{url});
+        if (r.status_code != 200) return gs;
+        auto obj = crow::json::load(r.text);
+        if (!obj) return gs;
+
+        // Parse basic fields
+        if (obj.has("status")) gs.status = obj["status"].s();
+        if (obj.has("currentPlayer")) gs.currentPlayer = obj["currentPlayer"].i();
+        if (obj.has("drawDeckCount")) gs.drawDeckCount = obj["drawDeckCount"].i();
+        if (obj.has("minCardsToPlay")) gs.minCardsToPlay = obj["minCardsToPlay"].i();
+
+        // Parse players
+        if (obj.has("players")) {
+            auto arr = obj["players"];
+            for (size_t i = 0; i < arr.size(); ++i) {
+                PlayerState ps;
+                auto pobj = arr[i];
+                if (pobj.has("username")) ps.username = pobj["username"].s();
+                if (pobj.has("hand")) {
+                    auto handArr = pobj["hand"];
+                    for (size_t j = 0; j < handArr.size(); ++j) {
+                        ps.hand.push_back(handArr[j].i());
+                    }
+                }
+                gs.players.push_back(ps);
+            }
+        }
+
+        // Parse stacks
+        if (obj.has("stacks")) {
+            auto stacksArr = obj["stacks"];
+            for (size_t i = 0; i < stacksArr.size(); ++i) {
+                std::vector<int> stack;
+                auto stackArr = stacksArr[i];
+                for (size_t j = 0; j < stackArr.size(); ++j) {
+                    stack.push_back(stackArr[j].i());
+                }
+                gs.stacks.push_back(stack);
+            }
+        }
+    } catch (...) {
+        // return default gs
+    }
+    return gs;
+}
+
 // Parse bool field from JSON string
 bool parseBoolFieldJson(const std::string& jsonStr, const std::string& fieldName, bool& outValue) {
     try {
