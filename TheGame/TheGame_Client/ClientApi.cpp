@@ -1,5 +1,30 @@
 #include "ClientApi.h"
 
+LobbyStatus ClientApi::getLobbyStatus() {
+    LobbyStatus status;
+    try {
+        std::string url = baseUrl + "/lobbyStatus";
+        cpr::Response r = cpr::Get(cpr::Url{url});
+        if (r.status_code != 200) return status;
+        auto obj = crow::json::load(r.text);
+        if (!obj) return status;
+
+        if (obj.has("gameStarted")) status.gameStarted = obj["gameStarted"].b();
+        if (obj.has("playerCount")) status.playerCount = obj["playerCount"].i();
+        if (obj.has("maxPlayers")) status.maxPlayers = obj["maxPlayers"].i();
+        if (obj.has("playerNames")) {
+            auto arr = obj["playerNames"];
+            for (size_t i = 0; i < arr.size(); ++i) {
+                status.playerNames.push_back(arr[i].s());
+            }
+        }
+    } catch (...) {
+        // return default status
+    }
+    return status;
+}
+
+
 
 GameState ClientApi::getGameState() {
     GameState gs;
