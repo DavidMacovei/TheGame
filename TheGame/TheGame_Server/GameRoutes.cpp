@@ -1,24 +1,15 @@
 #include "GameRoutes.h"
 #include "../TheGame_Common/GameModels.h"
+#include "ResponseUtils.h"
 
 void registerGameRoutes(crow::SimpleApp& app, std::unique_ptr<game::Game>& activeGame)
 {
 	CROW_ROUTE(app, "/gameState/<int>")([&activeGame](int playerIndex) {
 		if (activeGame == nullptr)
-		{
-			BasicResponse response;
-			response.status = "error";
-			response.message = "Game has not started yet";
-			return crow::response(400, json(response).dump());
-		}
+			return utils::Error(400, "Game has not started yet");
 
 		if (playerIndex < 0 || playerIndex >= activeGame->GetPlayers().size())
-		{
-			BasicResponse response;
-			response.status = "error";
-			response.message = "Invalid player ID";
-			return crow::response(400, json(response).dump());
-		}
+			return utils::Error(400, "Invalid player ID");
 
 		std::string gameStateJson = activeGame->GetGameStateAsJson(playerIndex);
 
@@ -28,37 +19,20 @@ void registerGameRoutes(crow::SimpleApp& app, std::unique_ptr<game::Game>& activ
 	CROW_ROUTE(app, "/playCard").methods("POST"_method)
 		([&activeGame](const crow::request& request) {
 		if (activeGame == nullptr)
-		{
-			BasicResponse response;
-			response.status = "error";
-			response.message = "Game has not started yet";
-			return crow::response(400, json(response).dump());
-		}
+			return utils::Error(400, "Game has not started yet");
 
 		try {
 			auto action = json::parse(request.body).get<PlayCardAction>();
 
 			bool success = activeGame->PlayCard(action.playerIndex, action.handIndex, action.stackIndex);
 
-			BasicResponse response;
 			if (success) 
-			{
-				response.status = "success";
-				response.message = "Successfully played card";
-				return crow::response(200, json(response).dump());
-			}
+				return utils::Success("Successfully played card");
 			else 
-			{
-				response.status = "error";
-				response.message = "Rules broken or not your turn";
-				return crow::response(400, json(response).dump());
-			}
+				return utils::Error(400, "Rules broken or not your turn");
 		}
 		catch (...) {
-			BasicResponse response;
-			response.status = "error";
-			response.message = "Invalid JSON format";
-			return crow::response(400, json(response).dump());
+			return utils::Error(400, "Invalid JSON format");
 		}
 			});
 
@@ -66,37 +40,20 @@ void registerGameRoutes(crow::SimpleApp& app, std::unique_ptr<game::Game>& activ
 	CROW_ROUTE(app, "/endTurn").methods("POST"_method)
 		([&activeGame](const crow::request& request) {
 		if (activeGame == nullptr)
-		{
-			BasicResponse response;
-			response.status = "error";
-			response.message = "Game has not started yet";
-			return crow::response(400, json(response).dump());
-		}
+			return utils::Error(400, "Game has not started yet");
 
 		try {
 			auto action = json::parse(request.body).get<EndTurnAction>();
 
 			bool success = activeGame->EndTurn(action.playerIndex);
 
-			BasicResponse response;
-			if (success) 
-			{
-				response.status = "success";
-				response.message = "Successfully ended turn";
-				return crow::response(200, json(response).dump());
-			}
+			if (success)
+				return utils::Success("Successfully ended turn");
 			else 
-			{
-				response.status = "error";
-				response.message = "Cannot end turn";
-				return crow::response(400, json(response).dump());
-			}
+				return utils::Error(400, "Cannot end turn");
 		}
 		catch (...) {
-			BasicResponse response;
-			response.status = "error";
-			response.message = "Invalid JSON format";
-			return crow::response(400, json(response).dump());
+			return utils::Error(400, "Invalid JSON format");
 		}
 			});
 }
