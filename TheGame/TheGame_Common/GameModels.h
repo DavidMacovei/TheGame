@@ -18,9 +18,9 @@ const uint8_t numberOfStacks = 4;
 
 struct COMMON_API BasicResponse {
 	std::string status;
-	std::string error;
+	std::string message;
 
-	NLOHMANN_DEFINE_TYPE_INTRUSIVE(BasicResponse, status, error)
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(BasicResponse, status, message)
 };
 
 struct COMMON_API AuthRequest {
