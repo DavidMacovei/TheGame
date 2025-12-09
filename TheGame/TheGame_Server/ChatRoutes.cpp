@@ -1,46 +1,34 @@
 #include "ChatRoutes.h"
+#include "ResponseUtils.h"
+#include "../TheGame_Common/GameModels.h"
 
 void registerChatRoutes(crow::SimpleApp& app, ChatService& chat)
 {
 	CROW_ROUTE(app, "/sendMessage").methods("POST"_method)
 		([&chat](const crow::request& req) {
-		auto body = crow::json::load(req.body);
+		try {
+			auto msgReq = json::parse(req.body).get<ChatMessageRequest>();
 
-		if (!body || !body.has("sender") || !body.has("message"))
-		{
-			crow::json::wvalue res;
-			res["status"] = "Error";
-			res["error"] = "Missing sender or message";
-			return crow::response(400, res);
+			if (msgReq.sender.empty() || msgReq.message.empty())
+				return utils::Error(400, "Missing sender or message");
+
+			chat.addMessage(msgReq.sender, msgReq.message);
+
+			return utils::Success("Message sent");
 		}
-
-		chat.addMessage(body["sender"].s(), body["message"].s());
-
-		crow::json::wvalue res;
-		res["status"] = "ok";
-		return crow::response(200, res);
+		catch (...) {
+			return utils::Error(400, "Invalid JSON format");
+		}
 			});
 
 	CROW_ROUTE(app, "/getMessages").methods("GET"_method)
 		([&chat]() {
-		crow::json::wvalue res;
+		ChatHistory history;
 
 		auto messages = chat.getMessages();
+		history.messages.assign(messages.begin(), messages.end());
 
-		crow::json::wvalue::list jsonList;
-
-		for (const auto& m : messages)
-		{
-			crow::json::wvalue msg;
-			msg["sender"] = m.sender;
-			msg["message"] = m.message;
-			msg["timestamp"] = (long long)m.timestamp;
-
-			jsonList.push_back(msg);
-		}
-
-		res["messages"] = std::move(jsonList);
-		return crow::response(200, res);
+		return crow::response(200, json(history).dump());
 			});
 
 }
