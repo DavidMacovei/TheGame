@@ -4,9 +4,9 @@
 #include "Player.h"
 #include "DrawingDeck.h"
 #include "PlacingStack.h"
+#include "../TheGame_Common/GameModels.h"
 #include <vector>
 #include <array>
-#include <crow.h>
 
 const uint8_t numberOfStacks = 4;
 namespace game {
@@ -25,7 +25,7 @@ namespace game {
 		void NextPlayer();
 		void UpdateGameStatus();
 		bool CurrentPlayerCanPlay() const;
-		crow::json::wvalue GetGameStateAsJson(uint8_t playerIndex) const;
+		std::string GetGameStateAsJson(uint8_t requestingPlayerIndex) const;
 
 	private:
 		DrawingDeck m_drawingDeck;

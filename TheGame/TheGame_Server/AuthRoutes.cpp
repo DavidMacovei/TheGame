@@ -1,55 +1,64 @@
 #include "AuthRoutes.h"
 #include "UsersDatabase.h"
 #include "User.h"
+#include "../TheGame_Common/GameModels.h"
+#include "ResponseUtils.h"
 #include <functional>
 
 void registerAuthRoutes(crow::SimpleApp& app)
 {
-    CROW_ROUTE(app, "/register").methods("POST"_method)
-        ([](const crow::request& req) {
-        auto body = crow::json::load(req.body);
-        if (!body) return crow::response(400, "Invalid JSON");
+	CROW_ROUTE(app, "/register").methods("POST"_method)
+		([](const crow::request& req) {
+		try {
+			auto authReq = json::parse(req.body).get<AuthRequest>();
 
-        std::string username = body["username"].s();
-        std::string password = body["password"].s();
+			if (authReq.username.empty() || authReq.password.empty())
+				return utils::Error(400, "Username and password cannot be empty");
 
-        std::hash<std::string> hasher;
+			std::hash<std::string> hasher;
+			std::string password_hash = std::to_string(hasher(authReq.password));
 
-        std::string password_hash = std::to_string(hasher(password));
+			auto storage = http::CreateStorage("users.sqlite");
 
-        auto storage = http::CreateStorage("users.sqlite");
+			auto existing = storage.get_all<User>(sql::where(sql::c(&User::GetUsername) == authReq.username));
+			if (!existing.empty())
+				return utils::Error(409, "Username already exists");
 
-        auto existing = storage.get_all<User>(sql::where(sql::c(&User::GetUsername) == username));
-        if (!existing.empty()) {
-            return crow::response(409, "Username already exists");
-        }
+			User newUser(authReq.username, password_hash);
+			storage.insert(newUser);
 
-        User newUser(username, password_hash);
-        storage.insert(newUser);
-        return crow::response(200, "Registration successful");
-            });
+			return utils::Success("Registration successful");
+		}
+		catch (...) {
+			return utils::Error(400, "Invalid JSON format");
+		}
+			});
 
 
-    CROW_ROUTE(app, "/login").methods("POST"_method)
-        ([](const crow::request& req) {
-        auto body = crow::json::load(req.body);
-        if (!body) return crow::response(400, "Invalid JSON");
+	CROW_ROUTE(app, "/login").methods("POST"_method)
+		([](const crow::request& req) {
+		try {
+			auto authReq = json::parse(req.body).get<AuthRequest>();
 
-        std::string username = body["username"].s();
-        std::string password = body["password"].s();
+			if (authReq.username.empty() || authReq.password.empty())
+				return utils::Error(400, "Username and password cannot be empty");
 
-        std::hash<std::string> hasher;
-        std::string password_hash = std::to_string(hasher(password));
+			std::hash<std::string> hasher;
+			std::string password_hash = std::to_string(hasher(authReq.password));
 
-        auto storage = http::CreateStorage("users.sqlite");
-        auto users = storage.get_all<User>(sql::where(sql::c(&User::GetUsername) == username));
-        if (users.empty()) {
-            return crow::response(401, "Invalid username or password");
-        }
-        if (users[0].GetPasswordHash() != password_hash) {
-            return crow::response(401, "Invalid username or password");
-        }
+			auto storage = http::CreateStorage("users.sqlite");
 
-        return crow::response(200, "Login successful");
-            });
+			auto users = storage.get_all<User>(sql::where(sql::c(&User::GetUsername) == authReq.username));
+			if (users.empty()) 
+				return utils::Error(401, "Invalid username or password");
+
+			if (users[0].GetPasswordHash() != password_hash)
+				return utils::Error(401, "Invalid username or password");
+
+			return utils::Success("Login successful");
+		}
+		catch (...) {
+			return utils::Error(400, "Invalid JSON format");
+		}
+			});
 }

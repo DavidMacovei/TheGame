@@ -164,27 +164,52 @@ namespace game {
 		return false;
 	}
 
-	crow::json::wvalue Game::GetGameStateAsJson(uint8_t playerIndex) const
+	std::string Game::GetGameStateAsJson(uint8_t requestingPlayerIndex) const
 	{
-		crow::json::wvalue state;
+		GameState gameState;
+
+		gameState.status = ToString(GetStatus());
+		gameState.currentPlayer = m_currentPlayerIndex;
+		gameState.drawDeckCount = m_drawingDeck.GetLeftoverCardNumber();
+		gameState.minCardsToPlay = m_minimumNumberOfCardsToPlay;
 
 		for (size_t i = 0; i < 4; i++)
 		{
-			state["placingStacks"][i] = m_placingStacks[i].GetCurrentValue();
-			state["stacksType"][i] = (m_placingStacks[i].GetType() == StackType::Ascending) ?
-				"ASC" : "DESC";
+			StackState stackState;
+
+			stackState.topCardValue = m_placingStacks[i].GetCurrentValue();
+			if (m_placingStacks[i].GetType() == StackType::Ascending)
+				stackState.isAscending = true;
+			else
+				stackState.isAscending = false;
+
+			gameState.placingStacks[i] = stackState;
 		}
 
-		const Player& player = m_players[playerIndex];
-		const auto& hand = player.GetHand();
+		for (size_t i = 0; i < m_players.size(); i++)
+		{
+			const auto& serverPlayer = m_players[i];
 
-		for (size_t i = 0; i < hand.size(); i++)
-			state["myHand"][i] = hand[i].GetValue();
+			PlayerState playerState;
+			playerState.cardCount = serverPlayer.GetCardsInHand();
+			playerState.username = serverPlayer.GetUsername();
 
-		state["currentPlayer"] = m_currentPlayerIndex;
-		state["cardsPlayedThisTurn"] = m_cardsPlayedThisTurn;
-		state["gameStatus"] = ToString(GetStatus());
+			if (i == requestingPlayerIndex)
+			{
+				const auto& hand = serverPlayer.GetHand();
+				for (const auto& card : hand)
+				{
+					playerState.hand.push_back(card.GetValue());
+				}
+			}
+			else
+			{
 
-		return state;
+			}
+			gameState.players.push_back(playerState);
+		}
+		
+		json j = gameState;
+		return j.dump();
 	}
 }
