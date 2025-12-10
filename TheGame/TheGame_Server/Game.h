@@ -8,8 +8,9 @@
 #include <vector>
 #include <array>
 
-const uint8_t numberOfStacks = 4;
 namespace game {
+	const uint8_t numberOfStacks = 4;
+
 	class Game
 	{
 	public:
