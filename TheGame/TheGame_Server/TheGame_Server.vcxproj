@@ -78,6 +78,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)Core;$(ProjectDir)Database;$(ProjectDir)GameLogic;$(ProjectDir)Routes;$(ProjectDir)Services;$(SolutionDir)TheGame_Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -93,6 +94,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)Core;$(ProjectDir)Database;$(ProjectDir)GameLogic;$(ProjectDir)Routes;$(ProjectDir)Services;$(SolutionDir)TheGame_Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -107,6 +109,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/D _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS /D _SILENCE_ALL_CXX20_DEPRECATION_WARNINGS %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(ProjectDir)Core;$(ProjectDir)Database;$(ProjectDir)GameLogic;$(ProjectDir)Routes;$(ProjectDir)Services;$(SolutionDir)TheGame_Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -122,6 +125,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)Core;$(ProjectDir)Database;$(ProjectDir)GameLogic;$(ProjectDir)Routes;$(ProjectDir)Services;$(SolutionDir)TheGame_Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -129,40 +133,40 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AuthRoutes.cpp" />
-    <ClCompile Include="Card.cpp" />
-    <ClCompile Include="ChatRoutes.cpp" />
-    <ClCompile Include="ChatService.cpp" />
-    <ClCompile Include="DrawingDeck.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GameRoutes.cpp" />
-    <ClCompile Include="GameStatus.cpp" />
-    <ClCompile Include="LobbyRoutes.cpp" />
-    <ClCompile Include="PlacingStack.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="ServerApp.cpp" />
-    <ClCompile Include="StackType.cpp" />
+    <ClCompile Include="Core\ServerApp.cpp" />
+    <ClCompile Include="Database\User.cpp" />
+    <ClCompile Include="Database\UsersDatabase.cpp" />
+    <ClCompile Include="GameLogic\Card.cpp" />
+    <ClCompile Include="GameLogic\DrawingDeck.cpp" />
+    <ClCompile Include="GameLogic\Game.cpp" />
+    <ClCompile Include="GameLogic\GameStatus.cpp" />
+    <ClCompile Include="GameLogic\PlacingStack.cpp" />
+    <ClCompile Include="GameLogic\Player.cpp" />
+    <ClCompile Include="GameLogic\StackType.cpp" />
+    <ClCompile Include="Routes\AuthRoutes.cpp" />
+    <ClCompile Include="Routes\ChatRoutes.cpp" />
+    <ClCompile Include="Routes\GameRoutes.cpp" />
+    <ClCompile Include="Routes\LobbyRoutes.cpp" />
+    <ClCompile Include="Services\ChatService.cpp" />
     <ClCompile Include="TheGame.cpp" />
-    <ClCompile Include="User.cpp" />
-    <ClCompile Include="UsersDatabase.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AuthRoutes.h" />
-    <ClInclude Include="Card.h" />
-    <ClInclude Include="ChatRoutes.h" />
-    <ClInclude Include="ChatService.h" />
-    <ClInclude Include="DrawingDeck.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="GameRoutes.h" />
-    <ClInclude Include="GameStatus.h" />
-    <ClInclude Include="LobbyRoutes.h" />
-    <ClInclude Include="PlacingStack.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="ResponseUtils.h" />
-    <ClInclude Include="ServerApp.h" />
-    <ClInclude Include="StackType.h" />
-    <ClInclude Include="User.h" />
-    <ClInclude Include="UsersDatabase.h" />
+    <ClInclude Include="Core\ServerApp.h" />
+    <ClInclude Include="Database\User.h" />
+    <ClInclude Include="Database\UsersDatabase.h" />
+    <ClInclude Include="GameLogic\Card.h" />
+    <ClInclude Include="GameLogic\DrawingDeck.h" />
+    <ClInclude Include="GameLogic\Game.h" />
+    <ClInclude Include="GameLogic\GameStatus.h" />
+    <ClInclude Include="GameLogic\PlacingStack.h" />
+    <ClInclude Include="GameLogic\Player.h" />
+    <ClInclude Include="GameLogic\StackType.h" />
+    <ClInclude Include="Routes\AuthRoutes.h" />
+    <ClInclude Include="Routes\ChatRoutes.h" />
+    <ClInclude Include="Routes\GameRoutes.h" />
+    <ClInclude Include="Routes\LobbyRoutes.h" />
+    <ClInclude Include="Routes\ResponseUtils.h" />
+    <ClInclude Include="Services\ChatService.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TheGame_Common\TheGame_Common.vcxproj">

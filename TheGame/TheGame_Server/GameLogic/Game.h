@@ -4,7 +4,7 @@
 #include "Player.h"
 #include "DrawingDeck.h"
 #include "PlacingStack.h"
-#include "../TheGame_Common/GameModels.h"
+#include "GameModels.h"
 #include <vector>
 #include <array>
 

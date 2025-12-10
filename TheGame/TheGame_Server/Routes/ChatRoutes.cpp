@@ -1,6 +1,6 @@
 #include "ChatRoutes.h"
 #include "ResponseUtils.h"
-#include "../TheGame_Common/GameModels.h"
+#include "GameModels.h"
 
 void registerChatRoutes(crow::SimpleApp& app, ChatService& chat)
 {

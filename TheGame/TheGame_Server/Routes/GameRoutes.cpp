@@ -1,5 +1,5 @@
 #include "GameRoutes.h"
-#include "../TheGame_Common/GameModels.h"
+#include "GameModels.h"
 #include "ResponseUtils.h"
 
 void registerGameRoutes(crow::SimpleApp& app, std::unique_ptr<game::Game>& activeGame)

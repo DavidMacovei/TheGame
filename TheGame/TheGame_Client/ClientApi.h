@@ -1,5 +1,5 @@
 #pragma once
-#include "../TheGame_Common/GameModels.h"
+#include "GameModels.h"
 
 
 class ClientApi

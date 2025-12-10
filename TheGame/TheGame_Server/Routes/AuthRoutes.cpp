@@ -1,7 +1,7 @@
 #include "AuthRoutes.h"
 #include "UsersDatabase.h"
 #include "User.h"
-#include "../TheGame_Common/GameModels.h"
+#include "GameModels.h"
 #include "ResponseUtils.h"
 #include <functional>
 
