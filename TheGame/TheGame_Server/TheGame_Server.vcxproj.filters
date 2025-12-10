@@ -94,9 +94,6 @@
     <ClInclude Include="UsersDatabase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ChatMessage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ChatService.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -113,6 +110,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ServerApp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResponseUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
