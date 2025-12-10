@@ -1,164 +1,190 @@
 #include "ClientApi.h"
+#include <cpr/cpr.h>
+#include <iostream>
 
-LobbyStatus ClientApi::getLobbyStatus() {
-    LobbyStatus status;
+ClientApi::ClientApi(const std::string& baseUrl) : baseUrl(baseUrl) {}
+
+BasicResponse ClientApi::login(const std::string& username, const std::string& password)
+{
     try {
-        std::string url = baseUrl + "/lobbyStatus";
-        cpr::Response r = cpr::Get(cpr::Url{url});
-        if (r.status_code != 200) return status;
-        auto obj = crow::json::load(r.text);
-        if (!obj) return status;
+        AuthRequest req;
+        req.username = username;
+        req.password = password;
 
-        if (obj.has("gameStarted")) status.gameStarted = obj["gameStarted"].b();
-        if (obj.has("playerCount")) status.playerCount = obj["playerCount"].i();
-        if (obj.has("maxPlayers")) status.maxPlayers = obj["maxPlayers"].i();
-        if (obj.has("playerNames")) {
-            auto arr = obj["playerNames"];
-            for (size_t i = 0; i < arr.size(); ++i) {
-                status.playerNames.push_back(arr[i].s());
-            }
-        }
-    } catch (...) {
-        // return default status
+        auto r = cpr::Post(
+            cpr::Url{ baseUrl + "/login" },
+            cpr::Body{ json(req).dump() },
+            cpr::Header{ {"Content-Type", "application/json"} }
+        );
+
+        if (r.text.empty()) 
+            return { "error", "Server not responding" };
+
+        return json::parse(r.text).get<BasicResponse>();
     }
-    return status;
+    catch (const std::exception& e) {
+        return { "error", "Exception in login: " + std::string(e.what()) };
+    }
+}
+
+BasicResponse ClientApi::registerUser(const std::string& username, const std::string& password)
+{
+    try {
+        AuthRequest req;
+        req.username = username;
+        req.password = password;
+
+        auto r = cpr::Post(
+            cpr::Url{ baseUrl + "/register" },
+            cpr::Body{ json(req).dump() },
+            cpr::Header{ {"Content-Type", "application/json"} }
+        );
+
+        if (r.text.empty())
+            return { "error", "Server not responding" };
+
+        return json::parse(r.text).get<BasicResponse>();
+    }
+    catch (const std::exception& e) {
+        return { "error", "Exception in registerUser: " + std::string(e.what()) };
+    }
+}
+
+BasicResponse ClientApi::joinLobby(const std::string& username)
+{
+    try {
+        JoinLobbyRequest req;
+        req.username = username;
+
+        auto r = cpr::Post(
+            cpr::Url{ baseUrl + "/joinLobby" },
+            cpr::Body{ json(req).dump() },
+            cpr::Header{ {"Content-Type", "application/json"} }
+        );
+
+        if (r.text.empty())
+            return { "error", "Server not responding" };
+
+        return json::parse(r.text).get<BasicResponse>();
+    }
+    catch (const std::exception& e) {
+        return { "error", "Exception in joinLobby: " + std::string(e.what()) };
+    }
+}
+
+LobbyState ClientApi::getLobbyState()
+{
+    try {
+        auto r = cpr::Get(cpr::Url{ baseUrl + "/lobbyState" });
+
+        if (r.status_code == 200)
+            return json::parse(r.text).get<LobbyState>();
+    }
+    catch (...) {}
+
+    LobbyState errState;
+    errState.status = "Connection Error";
+    return errState;
+}
+
+GameState ClientApi::getGameState(int myPlayerIndex)
+{
+    try {
+        auto r = cpr::Get(cpr::Url{ baseUrl + "/gameState/" + std::to_string(myPlayerIndex)});
+
+        if (r.status_code == 200)
+            return json::parse(r.text).get<GameState>();
+    }
+    catch (...) {}
+
+    GameState errState;
+    errState.status = "Connection Error";
+    return errState;
+}
+
+BasicResponse ClientApi::playCard(int playerIndex, int handIndex, int stackIndex)
+{
+    try {
+        PlayCardAction action;
+        action.playerIndex = playerIndex;
+        action.handIndex = handIndex;
+        action.stackIndex = stackIndex;
+
+        auto r = cpr::Post(
+            cpr::Url{ baseUrl + "/playCard" },
+            cpr::Body{ json(action).dump() },
+            cpr::Header{ {"Content-Type", "application/json"} }
+        );
+
+        if (r.text.empty())
+            return { "error", "Server not responding" };
+
+        return json::parse(r.text).get<BasicResponse>();
+    }
+    catch (const std::exception& e) {
+        return { "error", "Exception in playCard: " + std::string(e.what()) };
+    }
+}
+
+BasicResponse ClientApi::endTurn(int playerIndex)
+{
+    try {
+        EndTurnAction action;
+        action.playerIndex = playerIndex;
+
+        auto r = cpr::Post(
+            cpr::Url{ baseUrl + "/endTurn" },
+            cpr::Body{ json(action).dump() },
+            cpr::Header{ {"Content-Type", "application/json"} }
+        );
+
+        if (r.text.empty())
+            return { "error", "Server not responding" };
+
+        return json::parse(r.text).get<BasicResponse>();
+    }
+    catch (const std::exception& e) {
+        return { "error", "Exception in endTurn: " + std::string(e.what()) };
+    }
+}
+
+BasicResponse ClientApi::sendMessage(const std::string& sender, const std::string& message)
+{
+    try {
+        ChatMessageRequest req;
+        req.sender = sender;
+        req.message = message;
+
+        auto r = cpr::Post(
+            cpr::Url{ baseUrl + "/sendMessage" },
+            cpr::Body{ json(req).dump() },
+            cpr::Header{ {"Content-Type", "application/json"} }
+        );
+
+        if (r.text.empty())
+            return { "error", "Server not responding" };
+
+        return json::parse(r.text).get<BasicResponse>();
+    }
+    catch (const std::exception& e) {
+        return { "error", "Exception in sendMessage: " + std::string(e.what()) };
+    }
+}
+
+ChatHistory ClientApi::getChatHistory()
+{
+    try {
+        auto r = cpr::Get(cpr::Url{ baseUrl + "/getMessages" });
+
+        if (r.status_code == 200)
+            return json::parse(r.text).get<ChatHistory>();
+    }
+    catch (...) {}
+
+    return ChatHistory();
 }
 
 
 
-GameState ClientApi::getGameState() {
-    GameState gs;
-    try {
-        std::string url = baseUrl + "/gameState";
-        cpr::Response r = cpr::Get(cpr::Url{url});
-        if (r.status_code != 200) return gs;
-        auto obj = crow::json::load(r.text);
-        if (!obj) return gs;
 
-        // Parse basic fields
-        if (obj.has("status")) gs.status = obj["status"].s();
-        if (obj.has("currentPlayer")) gs.currentPlayer = obj["currentPlayer"].i();
-        if (obj.has("drawDeckCount")) gs.drawDeckCount = obj["drawDeckCount"].i();
-        if (obj.has("minCardsToPlay")) gs.minCardsToPlay = obj["minCardsToPlay"].i();
-
-        // Parse players
-        if (obj.has("players")) {
-            auto arr = obj["players"];
-            for (size_t i = 0; i < arr.size(); ++i) {
-                PlayerState ps;
-                auto pobj = arr[i];
-                if (pobj.has("username")) ps.username = pobj["username"].s();
-                if (pobj.has("hand")) {
-                    auto handArr = pobj["hand"];
-                    for (size_t j = 0; j < handArr.size(); ++j) {
-                        ps.hand.push_back(handArr[j].i());
-                    }
-                }
-                gs.players.push_back(ps);
-            }
-        }
-
-        // Parse stacks
-        if (obj.has("stacks")) {
-            auto stacksArr = obj["stacks"];
-            for (size_t i = 0; i < stacksArr.size(); ++i) {
-                std::vector<int> stack;
-                auto stackArr = stacksArr[i];
-                for (size_t j = 0; j < stackArr.size(); ++j) {
-                    stack.push_back(stackArr[j].i());
-                }
-                gs.stacks.push_back(stack);
-            }
-        }
-    } catch (...) {
-        // return default gs
-    }
-    return gs;
-}
-
-// Parse bool field from JSON string
-bool parseBoolFieldJson(const std::string& jsonStr, const std::string& fieldName, bool& outValue) {
-    try {
-        auto obj = crow::json::load(jsonStr);
-        if (!obj) return false;
-        if (!obj.has(fieldName)) return false;
-        outValue = obj[fieldName].b();
-        return true;
-    } catch (...) {
-        return false;
-    }
-}
-
-// Parse string field from JSON string
-bool parseStringFieldJson(const std::string& jsonStr, const std::string& fieldName, std::string& outValue) {
-    try {
-        auto obj = crow::json::load(jsonStr);
-        if (!obj) return false;
-        if (!obj.has(fieldName)) return false;
-        outValue = obj[fieldName].s();
-        return true;
-    } catch (...) {
-        return false;
-    }
-}
-
-// Parse int field from JSON string
-bool parseIntFieldJson(const std::string& jsonStr, const std::string& fieldName, int& outValue) {
-    try {
-        auto obj = crow::json::load(jsonStr);
-        if (!obj) return false;
-        if (!obj.has(fieldName)) return false;
-        outValue = obj[fieldName].i();
-        return true;
-    } catch (...) {
-        return false;
-    }
-}
-
-// Parse int array field from JSON string
-bool parseIntArrayFieldJson(const std::string& jsonStr, const std::string& fieldName, std::vector<int>& outArray) {
-    try {
-        auto obj = crow::json::load(jsonStr);
-        if (!obj) return false;
-        if (!obj.has(fieldName)) return false;
-        auto arr = obj[fieldName];
-        if (!arr) return false;
-        for (size_t i = 0; i < arr.size(); ++i) {
-            outArray.push_back(arr[i].i());
-        }
-        return true;
-    } catch (...) {
-        return false;
-    }
-}
-
-// Posts to /login with the provided username. Returns true on success (HTTP 200), false otherwise.
-bool login(const std::string& user) {
-    const std::string baseUrl = "http://localhost:18080"; // Change if needed
-    try {
-        std::string url = baseUrl + "/login";
-        std::string body = "{\"username\":\"" + user + "\"}";
-        cpr::Response r = cpr::Post(cpr::Url{url},
-                                    cpr::Body{body},
-                                    cpr::Header{{"Content-Type", "application/json"}});
-        return r.status_code == 200;
-    } catch (...) {
-        return false;
-    }
-}
-
-// POSTs to /register with username and password. Returns true on success (HTTP 200/201), false otherwise.
-bool registerUser(const std::string& username, const std::string& password) {
-    const std::string baseUrl = "http://localhost:18080"; // Change if needed
-    try {
-        std::string url = baseUrl + "/register";
-        std::string body = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
-        cpr::Response r = cpr::Post(cpr::Url{url},
-                                    cpr::Body{body},
-                                    cpr::Header{{"Content-Type", "application/json"}});
-        return r.status_code == 200 || r.status_code == 201;
-    } catch (...) {
-        return false;
-    }
-}
 

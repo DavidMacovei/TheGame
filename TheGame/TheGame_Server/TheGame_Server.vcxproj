@@ -149,7 +149,6 @@
   <ItemGroup>
     <ClInclude Include="AuthRoutes.h" />
     <ClInclude Include="Card.h" />
-    <ClInclude Include="ChatMessage.h" />
     <ClInclude Include="ChatRoutes.h" />
     <ClInclude Include="ChatService.h" />
     <ClInclude Include="DrawingDeck.h" />
@@ -159,6 +158,7 @@
     <ClInclude Include="LobbyRoutes.h" />
     <ClInclude Include="PlacingStack.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="ResponseUtils.h" />
     <ClInclude Include="ServerApp.h" />
     <ClInclude Include="StackType.h" />
     <ClInclude Include="User.h" />
