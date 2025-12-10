@@ -13,12 +13,12 @@ public:
     BasicResponse joinLobby(const std::string& username);
     LobbyState getLobbyState();
 
-    GameState getGameState();
+    GameState getGameState(int myPlayerIndex);
     BasicResponse playCard(int playerIndex, int handIndex, int stackIndex);
     BasicResponse endTurn(int playerIndex);
 
-    BasicResponse sendMessage(const std::string& sender, const std::string& msg);
-    ChatHistory getMessages(); //schimb nume
+    BasicResponse sendMessage(const std::string& sender, const std::string& message);
+    ChatHistory getChatHistory();
     
 private:
     std::string baseUrl;
