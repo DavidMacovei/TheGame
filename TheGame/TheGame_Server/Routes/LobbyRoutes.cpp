@@ -1,6 +1,6 @@
 #include "LobbyRoutes.h"
 #include "ResponseUtils.h"
-#include "../TheGame_Common/GameModels.h"
+#include "GameModels.h"
 
 const int PLAYERS_NEEDED = 2;
 

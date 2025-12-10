@@ -1,6 +1,6 @@
 #pragma once
 #include <crow.h>
-#include "../TheGame_Common/GameModels.h"
+#include "GameModels.h"
 
 namespace utils
 {

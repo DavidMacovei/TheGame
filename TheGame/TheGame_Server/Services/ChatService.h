@@ -2,7 +2,7 @@
 
 #include <deque>
 #include <mutex>
-#include "../TheGame_Common/GameModels.h"
+#include "GameModels.h"
 
 class ChatService
 {

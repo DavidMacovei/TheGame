@@ -4,12 +4,13 @@
 #include "Player.h"
 #include "DrawingDeck.h"
 #include "PlacingStack.h"
-#include "../TheGame_Common/GameModels.h"
+#include "GameModels.h"
 #include <vector>
 #include <array>
 
-const uint8_t numberOfStacks = 4;
 namespace game {
+	const uint8_t numberOfStacks = 4;
+
 	class Game
 	{
 	public:

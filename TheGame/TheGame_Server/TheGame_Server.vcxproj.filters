@@ -18,101 +18,99 @@
     <ClCompile Include="TheGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PlacingStack.cpp">
+    <ClCompile Include="Core\ServerApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StackType.cpp">
+    <ClCompile Include="Database\User.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Card.cpp">
+    <ClCompile Include="Database\UsersDatabase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DrawingDeck.cpp">
+    <ClCompile Include="GameLogic\Card.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp">
+    <ClCompile Include="GameLogic\DrawingDeck.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameStatus.cpp">
+    <ClCompile Include="GameLogic\Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="User.cpp">
+    <ClCompile Include="GameLogic\GameStatus.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UsersDatabase.cpp">
+    <ClCompile Include="GameLogic\PlacingStack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ChatService.cpp">
+    <ClCompile Include="GameLogic\Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AuthRoutes.cpp">
+    <ClCompile Include="GameLogic\StackType.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ChatRoutes.cpp">
+    <ClCompile Include="Routes\AuthRoutes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameRoutes.cpp">
+    <ClCompile Include="Routes\ChatRoutes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LobbyRoutes.cpp">
+    <ClCompile Include="Routes\GameRoutes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ServerApp.cpp">
+    <ClCompile Include="Routes\LobbyRoutes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Services\ChatService.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Player.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="PlacingStack.h">
+    <ClInclude Include="Core\ServerApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StackType.h">
+    <ClInclude Include="Database\User.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Card.h">
+    <ClInclude Include="Database\UsersDatabase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
+    <ClInclude Include="GameLogic\Card.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DrawingDeck.h">
+    <ClInclude Include="GameLogic\DrawingDeck.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Game.h">
+    <ClInclude Include="GameLogic\Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameStatus.h">
+    <ClInclude Include="GameLogic\GameStatus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="User.h">
+    <ClInclude Include="GameLogic\PlacingStack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UsersDatabase.h">
+    <ClInclude Include="GameLogic\Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ChatService.h">
+    <ClInclude Include="GameLogic\StackType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AuthRoutes.h">
+    <ClInclude Include="Routes\AuthRoutes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ChatRoutes.h">
+    <ClInclude Include="Routes\ChatRoutes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameRoutes.h">
+    <ClInclude Include="Routes\GameRoutes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LobbyRoutes.h">
+    <ClInclude Include="Routes\LobbyRoutes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ServerApp.h">
+    <ClInclude Include="Routes\ResponseUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ResponseUtils.h">
+    <ClInclude Include="Services\ChatService.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
