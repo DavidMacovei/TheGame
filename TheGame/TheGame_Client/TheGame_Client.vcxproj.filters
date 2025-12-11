@@ -67,9 +67,15 @@
     <ClCompile Include="GameBoardWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DeckWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientApi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DeckWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
