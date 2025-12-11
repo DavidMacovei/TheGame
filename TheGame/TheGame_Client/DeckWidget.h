@@ -1,5 +1,6 @@
 #pragma once
 #include <QWidget>
+#include <stack>
 
 class DeckWidget : public QWidget
 {
@@ -10,6 +11,7 @@ public:
 protected:
     void paintEvent(QPaintEvent* event) override;
 private:
+    std::stack<int> m_cards;
     int m_cardCount = 0;
 };
 
