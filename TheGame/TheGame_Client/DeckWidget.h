@@ -3,6 +3,7 @@
 
 class DeckWidget : public QWidget
 {
+    Q_OBJECT
 public:
     explicit DeckWidget(QWidget* parent = nullptr);
     void setCardCount(int count);

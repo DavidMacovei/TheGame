@@ -2,6 +2,7 @@
 
 #include <QWidget>
 #include <QListWidgetItem>
+#include "DeckWidget.h"
 #include "GameNetworkManager.h"
 
 namespace Ui { class GameBoardWidget; }
@@ -31,6 +32,7 @@ private:
     Ui::GameBoardWidget* ui;
     GameNetworkManager* m_net;
     QString m_username;
+    DeckWidget deck;
 
     int m_selectedCardIndex = -1;
 

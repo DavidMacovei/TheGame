@@ -75,9 +75,6 @@
     <ClInclude Include="ClientApi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DeckWidget.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="LoginWidget.h">
@@ -99,6 +96,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="GameBoardWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="DeckWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
