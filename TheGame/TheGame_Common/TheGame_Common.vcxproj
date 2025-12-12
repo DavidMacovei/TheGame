@@ -22,9 +22,6 @@
     <ClInclude Include="GameModels.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GameModels.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

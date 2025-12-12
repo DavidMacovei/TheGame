@@ -107,5 +107,3 @@ struct COMMON_API ChatHistory {
 	NLOHMANN_DEFINE_TYPE_INTRUSIVE(ChatHistory, messages)
 };
 
-void COMMON_API InitGameModels();
-
