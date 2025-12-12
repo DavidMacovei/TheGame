@@ -8,6 +8,7 @@ GameBoardWidget::GameBoardWidget(const QString& username, QWidget* parent)
     , ui(new Ui::GameBoardWidget)
     , m_net(new GameNetworkManager(this))
     , m_username(username)
+    , deck(new DeckWidget(this))
 {
     ui->setupUi(this);
 
