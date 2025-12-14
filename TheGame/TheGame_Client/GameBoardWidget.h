@@ -2,6 +2,7 @@
 
 #include <QWidget>
 #include <QListWidgetItem>
+#include <QLabel>
 #include "DeckWidget.h"
 #include "GameNetworkManager.h"
 
@@ -32,14 +33,16 @@ private:
     Ui::GameBoardWidget* ui;
     GameNetworkManager* m_net;
     QString m_username;
-    DeckWidget deck;
 
     int m_selectedCardIndex = -1;
 
     void updateStacks(const QJsonArray& stacks);
     void updateHand(const QJsonArray& players);
+    void updateOpponentHands(const QJsonArray& players);
     void updateChat(const QJsonArray& messages);
     void updateTurnInfo(const QJsonObject& state);
 
     void handleStackClick(int stackId);
+    void clearLayout(QLayout* layout);
+    QWidget* createCardBack();
 };

@@ -2,13 +2,13 @@
 #include "ui_GameBoardWidget.h"
 #include <QMessageBox>
 #include <QDebug>
+#include <QVBoxLayout>
 
 GameBoardWidget::GameBoardWidget(const QString& username, QWidget* parent)
     : QWidget(parent)
     , ui(new Ui::GameBoardWidget)
     , m_net(new GameNetworkManager(this))
     , m_username(username)
-    , deck(new DeckWidget(this))
 {
     ui->setupUi(this);
 
@@ -43,7 +43,10 @@ void GameBoardWidget::start()
 void GameBoardWidget::onGameStateReceived(const QJsonObject& state)
 {
     if (state.contains("stacks")) updateStacks(state["stacks"].toArray());
-    if (state.contains("players")) updateHand(state["players"].toArray());
+    if (state.contains("players")) {
+        updateHand(state["players"].toArray());
+        updateOpponentHands(state["players"].toArray());
+    }
     if (state.contains("chatMessages")) updateChat(state["chatMessages"].toArray());
 
     updateTurnInfo(state);
@@ -58,10 +61,10 @@ void GameBoardWidget::updateStacks(const QJsonArray& stacks)
             return QString::number(arr.last().toInt());
             };
 
-        ui->btnStack1->setText("ASC (1 -> 99)\nTOP: " + getTop(stacks[0], true));
-        ui->btnStack2->setText("ASC (1 -> 99)\nTOP: " + getTop(stacks[1], true));
-        ui->btnStack3->setText("DESC (100 -> 2)\nTOP: " + getTop(stacks[2], false));
-        ui->btnStack4->setText("DESC (100 -> 2)\nTOP: " + getTop(stacks[3], false));
+        ui->btnStack1->setText("ASC ?\n1 ? 99\nTOP: " + getTop(stacks[0], true));
+        ui->btnStack2->setText("ASC ?\n1 ? 99\nTOP: " + getTop(stacks[1], true));
+        ui->btnStack3->setText("DESC ?\n100 ? 2\nTOP: " + getTop(stacks[2], false));
+        ui->btnStack4->setText("DESC ?\n100 ? 2\nTOP: " + getTop(stacks[3], false));
     }
 }
 
@@ -85,6 +88,8 @@ void GameBoardWidget::updateHand(const QJsonArray& players)
     }
 }
 
+
+
 void GameBoardWidget::updateChat(const QJsonArray& messages)
 {
     if (ui->listChat->count() != messages.size()) {
@@ -107,8 +112,8 @@ void GameBoardWidget::updateTurnInfo(const QJsonObject& state)
         QString currentPlayer = players[currentIdx].toObject()["username"].toString();
 
         if (currentPlayer == m_username) {
-            ui->lblStatus->setText("ESTE RANDUL TAU!");
-            ui->lblStatus->setStyleSheet("font-size: 14pt; font-weight: bold; color: green;");
+            ui->lblStatus->setText("?? ESTE RANDUL TAU!");
+            ui->lblStatus->setStyleSheet("font-size: 16pt; font-weight: bold; color: #ffd700; background-color: transparent;");
 
             ui->btnStack1->setEnabled(true);
             ui->btnStack2->setEnabled(true);
@@ -117,8 +122,8 @@ void GameBoardWidget::updateTurnInfo(const QJsonObject& state)
             ui->btnEndTurn->setEnabled(true);
         }
         else {
-            ui->lblStatus->setText("Asteptam jucatorul: " + currentPlayer);
-            ui->lblStatus->setStyleSheet("font-size: 12pt; color: black;");
+            ui->lblStatus->setText("? Asteptam jucatorul: " + currentPlayer);
+            ui->lblStatus->setStyleSheet("font-size: 14pt; color: white; background-color: transparent;");
 
             ui->btnStack1->setEnabled(false);
             ui->btnStack2->setEnabled(false);
@@ -142,7 +147,6 @@ void GameBoardWidget::handleStackClick(int stackId)
     }
 
     m_net->sendMove(m_username, m_selectedCardIndex, stackId);
-
 }
 
 void GameBoardWidget::onStack1Clicked() { handleStackClick(0); }
