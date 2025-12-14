@@ -88,6 +88,57 @@ void GameBoardWidget::updateHand(const QJsonArray& players)
     }
 }
 
+void GameBoardWidget::updateOpponentHands(const QJsonArray& players)
+{
+    // Find opponents (players other than current user)
+    QVector<QPair<QString, int>> opponents;
+    for (const auto& p : players) {
+        QJsonObject pObj = p.toObject();
+        QString name = pObj["username"].toString();
+        if (name != m_username) {
+            int cardCount = pObj["hand"].toArray().size();
+            opponents.append({ name, cardCount });
+        }
+    }
+
+    // Update player labels and hands based on position
+    // Player 1 = Left, Player 2 = Top, Player 3 = Right
+    QList<QLayout*> handLayouts = {
+        ui->player1Hand->layout(),
+        ui->player2Hand->layout(),
+        ui->player3Hand->layout()
+    };
+    QList<QLabel*> nameLabels = {
+        ui->lblPlayer1Name,
+        ui->lblPlayer2Name,
+        ui->lblPlayer3Name
+    };
+
+    for (int i = 0; i < 3; i++) {
+        clearLayout(handLayouts[i]);
+
+        if (i < opponents.size()) {
+            nameLabels[i]->setText(opponents[i].first + " (" + QString::number(opponents[i].second) + " cards)");
+            nameLabels[i]->setVisible(true);
+
+            // Add card backs for each card in opponent's hand
+            int cardCount = qMin(opponents[i].second, 8); // Limit visual cards to prevent overflow
+            for (int j = 0; j < cardCount; j++) {
+                handLayouts[i]->addWidget(createCardBack());
+            }
+
+            // Add stretch to center the cards
+            if (QBoxLayout* boxLayout = qobject_cast<QBoxLayout*>(handLayouts[i])) {
+                boxLayout->addStretch();
+            }
+        }
+        else {
+            nameLabels[i]->setText("Waiting...");
+            nameLabels[i]->setStyleSheet("color: gray; font-style: italic; background-color: transparent;");
+        }
+    }
+}
+
 void GameBoardWidget::updateChat(const QJsonArray& messages)
 {
     if (ui->listChat->count() != messages.size()) {
