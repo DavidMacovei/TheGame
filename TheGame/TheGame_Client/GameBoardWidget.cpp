@@ -88,7 +88,23 @@ void GameBoardWidget::updateHand(const QJsonArray& players)
     }
 }
 
+QWidget* GameBoardWidget::createCardBack()
+{
+    QWidget* card = new QWidget();
+    card->setFixedSize(50, 70);
+    card->setStyleSheet(
+        "background-color: #1a237e;"
+        "border: 2px solid #fff;"
+        "border-radius: 5px;"
+    );
 
+    QLabel* pattern = new QLabel("??", card);
+    pattern->setAlignment(Qt::AlignCenter);
+    pattern->setStyleSheet("color: #5c6bc0; font-size: 24px; border: none; background: transparent;");
+    pattern->setGeometry(0, 0, 50, 70);
+
+    return card;
+}
 
 void GameBoardWidget::updateChat(const QJsonArray& messages)
 {
