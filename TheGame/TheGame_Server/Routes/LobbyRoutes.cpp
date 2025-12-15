@@ -4,10 +4,12 @@
 
 const int PLAYERS_NEEDED = 2;
 
-void registerLobbyRoutes(crow::SimpleApp& app, std::unique_ptr<game::Game>& activeGame, std::vector<std::string>& lobbyPlayers)
+void registerLobbyRoutes(crow::SimpleApp& app, std::unique_ptr<game::Game>& activeGame, std::vector<std::string>& lobbyPlayers, std::mutex& gameMutex)
 {
 	CROW_ROUTE(app, "/joinLobby").methods("POST"_method)
-		([&activeGame, &lobbyPlayers](const crow::request& request) {
+		([&activeGame, &lobbyPlayers, &gameMutex](const crow::request& request) {
+        std::lock_guard<std::mutex> lock(gameMutex);
+
         try {
             auto req = json::parse(request.body).get<JoinLobbyRequest>();
 
@@ -56,7 +58,9 @@ void registerLobbyRoutes(crow::SimpleApp& app, std::unique_ptr<game::Game>& acti
 			});
 
 	CROW_ROUTE(app, "/lobbyState")
-		([&activeGame, &lobbyPlayers]() {
+		([&activeGame, &lobbyPlayers, &gameMutex]() {
+        std::lock_guard<std::mutex> lock(gameMutex);
+
         LobbyState lobbyState;
 
         if (activeGame != nullptr)
