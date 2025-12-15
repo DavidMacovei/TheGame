@@ -22,13 +22,15 @@ namespace game {
 			return false;
 		}
 
-		if (m_placingStacks[stackIndex].CanPlace(m_players[playerIndex].ChooseCardToPlay(handIndex)))
+		Player& currentPlayer = m_players[playerIndex];
+		const Card& candidateCard = currentPlayer.ChooseCardToPlay(handIndex);
+
+		if (m_placingStacks[stackIndex].CanPlace(candidateCard))
 		{
-			m_placingStacks[stackIndex].PlaceCard(m_players[playerIndex].ChooseCardToPlay(handIndex));
-			m_players[playerIndex].RemoveCardFromHand(handIndex);
+			Card cardToPlay = currentPlayer.ExtractCard(handIndex);
+			m_placingStacks[stackIndex].PlaceCard(std::move(cardToPlay));
 
 			m_cardsPlayedThisTurn++;
-
 			return true;
 		}
 
@@ -52,7 +54,7 @@ namespace game {
 				break;
 
 			Card newCard = m_drawingDeck.DrawCard();
-			currentPlayer.AddCardToHand(newCard);
+			currentPlayer.AddCardToHand(std::move(newCard));
 		}
 
 		NextPlayer();
@@ -120,7 +122,8 @@ namespace game {
 		{
 			for (int i = 0; i < cardsPerPlayer; ++i)
 			{
-				player.AddCardToHand(m_drawingDeck.DrawCard());
+				Card newCard = m_drawingDeck.DrawCard();
+				player.AddCardToHand(std::move(newCard));
 			}
 		}
 		m_currentPlayerIndex = 0;
@@ -154,9 +157,12 @@ namespace game {
 
 	bool Game::CurrentPlayerCanPlay() const
 	{
-		for (int i = 0; i < m_players[m_currentPlayerIndex].GetCardsInHand(); i++) {
-			auto playerHand = m_players[m_currentPlayerIndex].GetHand();
-			for (int j = 0; j < numberOfStacks; i++) {
+		const auto& playerHand = m_players[m_currentPlayerIndex].GetHand();
+
+		for (int i = 0; i < playerHand.size(); i++) 
+		{
+			for (int j = 0; j < numberOfStacks; j++) 
+			{
 				if (m_placingStacks[j].CanPlace(playerHand[i]))
 					return true;
 			}

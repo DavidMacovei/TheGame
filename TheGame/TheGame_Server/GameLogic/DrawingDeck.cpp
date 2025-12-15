@@ -25,9 +25,9 @@ void DrawingDeck::Shuffle()
 
 Card DrawingDeck::DrawCard()
 {
-	Card local_card(m_cards[m_cards.size() - 1]);
+	Card card = std::move(m_cards.back());
 	m_cards.pop_back();
-	return local_card;
+	return card;
 }
 
 bool DrawingDeck::IsEmpty() const

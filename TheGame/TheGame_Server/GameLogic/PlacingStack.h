@@ -11,7 +11,7 @@ public:
 	StackType GetType() const;
 
 	bool CanPlace(const Card& card) const;
-	void PlaceCard(const Card& card);
+	void PlaceCard(Card&& card);
 
 
 private:

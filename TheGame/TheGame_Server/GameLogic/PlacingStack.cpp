@@ -43,7 +43,7 @@ bool PlacingStack::CanPlace(const Card& card) const
 	return false;
 }
 
-void PlacingStack::PlaceCard(const Card& card)
+void PlacingStack::PlaceCard(Card&& card)
 {
 	assert(CanPlace(card) && "PRECONDITION FAILED: Cannot place this card!");
 
