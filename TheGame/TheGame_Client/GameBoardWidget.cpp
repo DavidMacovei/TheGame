@@ -42,7 +42,10 @@ void GameBoardWidget::start()
 
 void GameBoardWidget::onGameStateReceived(const QJsonObject& state)
 {
-    if (state.contains("stacks")) updateStacks(state["stacks"].toArray());
+    // TODO: Verificare status joc (Won/Lost) - va fi implementat de echipa GameBoard
+    // Când jocul se termină, emit gameEnded(bool victory, int cardsLeft)
+    
+    if (state.contains("placingStacks")) updateStacks(state["placingStacks"].toArray());
     if (state.contains("players")) {
         updateHand(state["players"].toArray());
         updateOpponentHands(state["players"].toArray());

@@ -18,6 +18,9 @@ public:
 
     void start();
 
+signals:
+    void gameEnded(bool victory, int cardsLeft);
+
 private slots:
     void onGameStateReceived(const QJsonObject& state);
 
