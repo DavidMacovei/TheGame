@@ -67,6 +67,9 @@
     <ClCompile Include="GameBoardWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GameOverWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="DeckWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -96,6 +99,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="GameBoardWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="GameOverWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="DeckWidget.h">
