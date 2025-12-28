@@ -20,12 +20,10 @@ public:
     TheGame_Client(QWidget *parent = nullptr);
     ~TheGame_Client();
 
-    // Session data (state management)
     QString getCurrentUsername() const { return m_currentUsername; }
     void setCurrentUsername(const QString& username) { m_currentUsername = username; }
 
 private slots:
-    // Navigation handlers
     void onLoginSuccess(QString username);
     void onGoToRegister();
     void onRegisterSuccess(QString username);
@@ -35,16 +33,13 @@ private slots:
     void onGameEnded(bool victory, int cardsLeft);
     void onBackToLobby();
 
-    // Connection error overlay
     void onNetworkError(QString message);
 
 private:
     Ui::TheGame_ClientClass ui;
     
-    // Navigation
     QStackedWidget* m_stackedWidget;
     
-    // Pages
     LoginWidget* m_loginPage;
     RegisterWidget* m_registerPage;
     LobbyWidget* m_lobbyPage;
@@ -52,14 +47,11 @@ private:
     GameBoardWidget* m_gamePage;
     GameOverWidget* m_gameOverPage;
     
-    // Network manager
     PreGameNetworkManager* m_preGameNet;
     
-    // Session state
     QString m_currentUsername;
     QStringList m_currentPlayers;
     
-    // Helper methods
     void setupUI();
     void createPages();
     void connectSignals();
