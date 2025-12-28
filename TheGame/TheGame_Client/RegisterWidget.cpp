@@ -16,13 +16,13 @@ RegisterWidget::RegisterWidget(PreGameNetworkManager* net, QWidget* parent)
     connect(ui->cancelButton, &QPushButton::clicked,
         this, &RegisterWidget::onCancelClicked);
 
-    connect(net, &PreGameNetworkManager::registerSuccess, this, [&]() {
+    connect(net, &PreGameNetworkManager::registerSuccess, this, [=](QString username) {
         QMessageBox::information(this, "Registration Complete",
             "Your account has been created successfully!");
-        emit goToLogin();
+        emit registerSuccess(username);
         });
 
-    connect(net, &PreGameNetworkManager::registerFailed, this, [&](QString msg) {
+    connect(net, &PreGameNetworkManager::registerFailed, this, [=](QString msg) {
         QMessageBox::warning(this, "Registration Failed", msg);
         });
 }
@@ -60,5 +60,5 @@ void RegisterWidget::onRegisterClicked()
 
 void RegisterWidget::onCancelClicked()
 {
-    emit goToLogin();
+    emit backToLogin();
 }

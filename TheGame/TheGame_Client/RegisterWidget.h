@@ -16,7 +16,8 @@ public:
     ~RegisterWidget();
 
 signals:
-    void goToLogin();
+    void registerSuccess(QString username);
+    void backToLogin();
 
 private slots:
     void onRegisterClicked();
