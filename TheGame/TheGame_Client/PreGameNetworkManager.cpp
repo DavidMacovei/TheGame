@@ -2,6 +2,7 @@
 
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
 #include <QUrl>
 #include <QNetworkRequest>
 
@@ -156,7 +157,7 @@ void PreGameNetworkManager::stopLobbyPolling()
 
 void PreGameNetworkManager::onLobbyPollTimeout()
 {
-    QUrl url(m_baseUrl + "/lobbyStatus");
+    QUrl url(m_baseUrl + "/lobbyState");
     QNetworkRequest req(url);
 
     QNetworkReply* reply = m_manager.get(req);
