@@ -5,11 +5,11 @@
 class Player
 {
 public:
-	Player();
+	Player() = default;
 	Player(std::string username);
-	void AddCardToHand(Card c);
-	Card ChooseCardToPlay(int handIndex);
-	void RemoveCardFromHand(int handIndex);
+	void AddCardToHand(Card&& c);
+	const Card& ChooseCardToPlay(int handIndex);
+	Card ExtractCard(int handIndex);
 	int GetCardsInHand() const;
 	const std::vector<Card>& GetHand() const;
 	const std::string& GetUsername() const;

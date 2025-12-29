@@ -5,13 +5,14 @@
 class PlacingStack
 {
 public:
+	PlacingStack() = default;
 	PlacingStack(StackType type);
 
 	uint8_t GetCurrentValue() const;
 	StackType GetType() const;
 
 	bool CanPlace(const Card& card) const;
-	void PlaceCard(const Card& card);
+	void PlaceCard(Card&& card);
 
 
 private:

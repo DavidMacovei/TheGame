@@ -3,14 +3,7 @@
 
 namespace game {
 
-	Game::Game(const std::vector<std::string>& playerNames) :
-		m_drawingDeck(),
-		m_placingStacks{
-			PlacingStack(StackType::Ascending),
-			PlacingStack(StackType::Ascending),
-			PlacingStack(StackType::Descending),
-			PlacingStack(StackType::Descending)
-		}
+	Game::Game(const std::vector<std::string>& playerNames)
 	{
 		InitializeGame(playerNames);
 	}
@@ -18,20 +11,21 @@ namespace game {
 	bool Game::PlayCard(uint8_t playerIndex, uint8_t handIndex, uint8_t stackIndex)
 	{
 		if (playerIndex != m_currentPlayerIndex)
-		{
 			return false;
-		}
 
-		if (m_placingStacks[stackIndex].CanPlace(m_players[playerIndex].ChooseCardToPlay(handIndex)))
+		Player& currentPlayer = m_players[playerIndex];
+		const Card& candidateCard = currentPlayer.ChooseCardToPlay(handIndex);
+
+		if (m_board.CanPlaceCard(stackIndex, candidateCard))
 		{
-			m_placingStacks[stackIndex].PlaceCard(m_players[playerIndex].ChooseCardToPlay(handIndex));
-			m_players[playerIndex].RemoveCardFromHand(handIndex);
+			Card cardToPlay = currentPlayer.ExtractCard(handIndex);
+			m_board.PlaceCard(stackIndex, std::move(cardToPlay));
 
 			m_cardsPlayedThisTurn++;
-
+			UpdateGameStatus();
 			return true;
 		}
-
+		
 		return false;
 	}
 
@@ -40,7 +34,7 @@ namespace game {
 		if (m_currentPlayerIndex != playerIndex)
 			return false;
 
-		if (m_cardsPlayedThisTurn < GetMinimumNumberOfCardsToPlay())
+		if (m_cardsPlayedThisTurn < m_minimumNumberOfCardsToPlay)
 			return false;
 
 		Player& currentPlayer = m_players[m_currentPlayerIndex];
@@ -48,15 +42,14 @@ namespace game {
 
 		for (int i = 0; i < cardsToDraw; i++)
 		{
-			if (m_drawingDeck.IsEmpty())
+			if (m_board.IsDeckEmpty())
 				break;
 
-			Card newCard = m_drawingDeck.DrawCard();
-			currentPlayer.AddCardToHand(newCard);
+			Card newCard = m_board.DrawCard();
+			currentPlayer.AddCardToHand(std::move(newCard));
 		}
 
 		NextPlayer();
-
 		UpdateGameStatus();
 
 		return true;
@@ -72,14 +65,14 @@ namespace game {
 		return m_currentPlayerIndex;
 	}
 
+	const Board& Game::GetBoard() const
+	{
+		return m_board;
+	}
+
 	const std::vector<Player>& Game::GetPlayers() const
 	{
 		return m_players;
-	}
-
-	const std::array<PlacingStack, numberOfStacks>& Game::GetPlacingStacks() const
-	{
-		return m_placingStacks;
 	}
 
 	int Game::GetMinimumNumberOfCardsToPlay() const
@@ -89,6 +82,7 @@ namespace game {
 
 	void Game::InitializeGame(const std::vector<std::string>& playerNames)
 	{
+		m_board.Reset();
 		m_players.clear();
 
 		for (const auto& name : playerNames)
@@ -120,7 +114,8 @@ namespace game {
 		{
 			for (int i = 0; i < cardsPerPlayer; ++i)
 			{
-				player.AddCardToHand(m_drawingDeck.DrawCard());
+				Card newCard = m_board.DrawCard();
+				player.AddCardToHand(std::move(newCard));
 			}
 		}
 		m_currentPlayerIndex = 0;
@@ -133,13 +128,18 @@ namespace game {
 	{
 		m_currentPlayerIndex = (m_currentPlayerIndex + 1) % m_players.size();
 		m_cardsPlayedThisTurn = 0;
+
+		if (m_board.IsDeckEmpty())
+			m_minimumNumberOfCardsToPlay = 1;
+		else
+			m_minimumNumberOfCardsToPlay = 2;
 	}
 
 	void Game::UpdateGameStatus()
 	{
 		bool allEmpty = std::all_of(m_players.begin(), m_players.end(),
 			[](const Player& p) { return p.GetHand().empty(); });
-		if (allEmpty && m_drawingDeck.IsEmpty())
+		if (allEmpty && m_board.IsDeckEmpty())
 		{
 			m_status = GameStatus::Won;
 			return;
@@ -154,62 +154,12 @@ namespace game {
 
 	bool Game::CurrentPlayerCanPlay() const
 	{
-		for (int i = 0; i < m_players[m_currentPlayerIndex].GetCardsInHand(); i++) {
-			auto playerHand = m_players[m_currentPlayerIndex].GetHand();
-			for (int j = 0; j < numberOfStacks; i++) {
-				if (m_placingStacks[j].CanPlace(playerHand[i]))
-					return true;
-			}
-		}
+		const auto& playerHand = m_players[m_currentPlayerIndex].GetHand();
+
+		for (const auto& card : playerHand)
+			if (m_board.CanPlaceCardAnywhere(card))
+				return true;
+
 		return false;
-	}
-
-	std::string Game::GetGameStateAsJson(uint8_t requestingPlayerIndex) const
-	{
-		GameState gameState;
-
-		gameState.status = ToString(GetStatus());
-		gameState.currentPlayer = m_currentPlayerIndex;
-		gameState.drawDeckCount = m_drawingDeck.GetLeftoverCardNumber();
-		gameState.minCardsToPlay = m_minimumNumberOfCardsToPlay;
-
-		for (size_t i = 0; i < 4; i++)
-		{
-			StackState stackState;
-
-			stackState.topCardValue = m_placingStacks[i].GetCurrentValue();
-			if (m_placingStacks[i].GetType() == StackType::Ascending)
-				stackState.isAscending = true;
-			else
-				stackState.isAscending = false;
-
-			gameState.placingStacks[i] = stackState;
-		}
-
-		for (size_t i = 0; i < m_players.size(); i++)
-		{
-			const auto& serverPlayer = m_players[i];
-
-			PlayerState playerState;
-			playerState.cardCount = serverPlayer.GetCardsInHand();
-			playerState.username = serverPlayer.GetUsername();
-
-			if (i == requestingPlayerIndex)
-			{
-				const auto& hand = serverPlayer.GetHand();
-				for (const auto& card : hand)
-				{
-					playerState.hand.push_back(card.GetValue());
-				}
-			}
-			else
-			{
-
-			}
-			gameState.players.push_back(playerState);
-		}
-		
-		json j = gameState;
-		return j.dump();
 	}
 }

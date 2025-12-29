@@ -5,20 +5,22 @@ Player::Player(std::string username)
 	this->m_username = username;
 }
 
-void Player::AddCardToHand(Card c)
+void Player::AddCardToHand(Card&& c)
 {
-	m_hand.push_back(c);
+	m_hand.push_back(std::move(c));
 }
 
-Card Player::ChooseCardToPlay(int handIndex)
+const Card& Player::ChooseCardToPlay(int handIndex)
 {
 	return m_hand[handIndex];
 	
 }
 
-void Player::RemoveCardFromHand(int handIndex)
+Card Player::ExtractCard(int handIndex)
 {
+	Card c = std::move(m_hand[handIndex]);
 	m_hand.erase(m_hand.begin() + handIndex);
+	return c;
 }
 
 int Player::GetCardsInHand() const

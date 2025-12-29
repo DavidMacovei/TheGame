@@ -1,23 +1,28 @@
 #include "GameRoutes.h"
 #include "GameModels.h"
 #include "ResponseUtils.h"
+#include "GameSerializer.h"
 
-void registerGameRoutes(crow::SimpleApp& app, std::unique_ptr<game::Game>& activeGame)
+void registerGameRoutes(crow::SimpleApp& app, std::unique_ptr<game::Game>& activeGame, std::mutex& gameMutex)
 {
-	CROW_ROUTE(app, "/gameState/<int>")([&activeGame](int playerIndex) {
+	CROW_ROUTE(app, "/gameState/<int>")([&activeGame, &gameMutex](int playerIndex) {
+		std::lock_guard<std::mutex> lock(gameMutex);
+
 		if (activeGame == nullptr)
 			return utils::Error(400, "Game has not started yet");
 
 		if (playerIndex < 0 || playerIndex >= activeGame->GetPlayers().size())
 			return utils::Error(400, "Invalid player ID");
 
-		std::string gameStateJson = activeGame->GetGameStateAsJson(playerIndex);
+		std::string gameStateJson = game::SerializeGameState(*activeGame, playerIndex);
 
 		return crow::response(gameStateJson);
 		});
 
 	CROW_ROUTE(app, "/playCard").methods("POST"_method)
-		([&activeGame](const crow::request& request) {
+		([&activeGame, &gameMutex](const crow::request& request) {
+		std::lock_guard<std::mutex> lock(gameMutex);
+
 		if (activeGame == nullptr)
 			return utils::Error(400, "Game has not started yet");
 
@@ -38,7 +43,9 @@ void registerGameRoutes(crow::SimpleApp& app, std::unique_ptr<game::Game>& activ
 
 
 	CROW_ROUTE(app, "/endTurn").methods("POST"_method)
-		([&activeGame](const crow::request& request) {
+		([&activeGame, &gameMutex](const crow::request& request) {
+		std::lock_guard<std::mutex> lock(gameMutex);
+
 		if (activeGame == nullptr)
 			return utils::Error(400, "Game has not started yet");
 

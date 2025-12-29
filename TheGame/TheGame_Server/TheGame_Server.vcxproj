@@ -136,13 +136,14 @@
     <ClCompile Include="Core\ServerApp.cpp" />
     <ClCompile Include="Database\User.cpp" />
     <ClCompile Include="Database\UsersDatabase.cpp" />
+    <ClCompile Include="GameLogic\Board.cpp" />
     <ClCompile Include="GameLogic\Card.cpp" />
     <ClCompile Include="GameLogic\DrawingDeck.cpp" />
     <ClCompile Include="GameLogic\Game.cpp" />
+    <ClCompile Include="GameLogic\GameSerializer.cpp" />
     <ClCompile Include="GameLogic\GameStatus.cpp" />
     <ClCompile Include="GameLogic\PlacingStack.cpp" />
     <ClCompile Include="GameLogic\Player.cpp" />
-    <ClCompile Include="GameLogic\StackType.cpp" />
     <ClCompile Include="Routes\AuthRoutes.cpp" />
     <ClCompile Include="Routes\ChatRoutes.cpp" />
     <ClCompile Include="Routes\GameRoutes.cpp" />
@@ -154,9 +155,11 @@
     <ClInclude Include="Core\ServerApp.h" />
     <ClInclude Include="Database\User.h" />
     <ClInclude Include="Database\UsersDatabase.h" />
+    <ClInclude Include="GameLogic\Board.h" />
     <ClInclude Include="GameLogic\Card.h" />
     <ClInclude Include="GameLogic\DrawingDeck.h" />
     <ClInclude Include="GameLogic\Game.h" />
+    <ClInclude Include="GameLogic\GameSerializer.h" />
     <ClInclude Include="GameLogic\GameStatus.h" />
     <ClInclude Include="GameLogic\PlacingStack.h" />
     <ClInclude Include="GameLogic\Player.h" />
@@ -175,6 +178,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="users.sqlite" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
