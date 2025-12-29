@@ -1,6 +1,7 @@
 #include "GameRoutes.h"
 #include "GameModels.h"
 #include "ResponseUtils.h"
+#include "GameSerializer.h"
 
 void registerGameRoutes(crow::SimpleApp& app, std::unique_ptr<game::Game>& activeGame, std::mutex& gameMutex)
 {
@@ -13,7 +14,7 @@ void registerGameRoutes(crow::SimpleApp& app, std::unique_ptr<game::Game>& activ
 		if (playerIndex < 0 || playerIndex >= activeGame->GetPlayers().size())
 			return utils::Error(400, "Invalid player ID");
 
-		std::string gameStateJson = activeGame->GetGameStateAsJson(playerIndex);
+		std::string gameStateJson = game::SerializeGameState(*activeGame, playerIndex);
 
 		return crow::response(gameStateJson);
 		});

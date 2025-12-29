@@ -5,6 +5,7 @@
 class PlacingStack
 {
 public:
+	PlacingStack() = default;
 	PlacingStack(StackType type);
 
 	uint8_t GetCurrentValue() const;
