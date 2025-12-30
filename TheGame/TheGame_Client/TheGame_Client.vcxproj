@@ -103,6 +103,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CardHandWidget.cpp" />
+    <ClCompile Include="CardWidget.cpp" />
     <ClCompile Include="ClientApi.cpp" />
     <QtRcc Include="TheGame_Client.qrc" />
     <QtUic Include="GameBoardWidget.ui" />
@@ -121,11 +123,15 @@
     <ClCompile Include="PreGameNetworkManager.cpp" />
     <ClCompile Include="ProfileWidget.cpp" />
     <ClCompile Include="RegisterWidget.cpp" />
+    <ClCompile Include="StackWidget.cpp" />
     <ClCompile Include="TheGame_Client.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CardHandWidget.h" />
+    <ClInclude Include="CardWidget.h" />
     <ClInclude Include="ClientApi.h" />
+    <ClInclude Include="StackWidget.h" />
     <QtMoc Include="DeckWidget.h" />
     <QtMoc Include="GameBoardWidget.h" />
     <QtMoc Include="GameNetworkManager.h" />
