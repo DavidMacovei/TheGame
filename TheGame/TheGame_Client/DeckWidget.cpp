@@ -1,30 +1,45 @@
 #include "DeckWidget.h"
-#include <QPainter>
 
 DeckWidget::DeckWidget(QWidget* parent)
     : QWidget(parent)
 {
-    setFixedSize(80, 120); // Set your desired size
+    setFixedSize(80, 120); // Or adjust as needed
 }
 
-void DeckWidget::setCardCount(int count)
+void DeckWidget::setCards(const std::vector<uint8_t>& cards)
 {
-    m_cardCount = count;
-    update(); // triggers repaint
+    m_cards = cards;
+    updateStack();
 }
 
-void DeckWidget::paintEvent(QPaintEvent*)
+int DeckWidget::cardCount() const
 {
-    QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
+    return static_cast<int>(m_cards.size());
+}
 
-    // Draw deck rectangle
-    painter.setBrush(QColor("#eeeeee"));
-    painter.setPen(Qt::black);
-    painter.drawRect(rect().adjusted(2, 2, -2, -2));
+void DeckWidget::updateStack()
+{
+    // Remove old CardWidgets
+    for (auto* w : m_cardWidgets) {
+        w->setParent(nullptr);
+        w->deleteLater();
+    }
+    m_cardWidgets.clear();
 
-    // Draw card count
-    painter.setPen(Qt::black);
-    painter.setFont(QFont("Arial", 14, QFont::Bold));
-    painter.drawText(rect(), Qt::AlignCenter, QString::number(m_cardCount));
+    // Add new CardWidgets, stacked visually
+    int overlap = 15; // pixels to overlap
+    int y = 0;
+    for (size_t i = 0; i < m_cards.size(); ++i) {
+        CardWidget* card = new CardWidget(m_cards[i], this);
+        card->move(5, y);
+        card->show();
+        m_cardWidgets.push_back(card);
+        y += overlap;
+        if (y + card->height() > height()) break; // Don't overflow
+    }
+}
+
+void DeckWidget::resizeEvent(QResizeEvent*)
+{
+    updateStack();
 }

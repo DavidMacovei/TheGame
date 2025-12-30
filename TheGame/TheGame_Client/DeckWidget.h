@@ -1,19 +1,22 @@
 #pragma once
-#include"CardWidget.h"
 #include <QWidget>
-#include <stack>
+#include <vector>
+#include "CardWidget.h"
 
 class DeckWidget : public QWidget
 {
     Q_OBJECT
 public:
     explicit DeckWidget(QWidget* parent = nullptr);
-    void setCardCount(int count);
+
+    void setCards(const std::vector<uint8_t>& cards);
+    int cardCount() const;
+
 protected:
-    void paintEvent(QPaintEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
+
 private:
-    std::stack<CardWidget> m_cards;
-    int m_cardCount = 0;
+    std::vector<CardWidget*> m_cardWidgets;
+    std::vector<uint8_t> m_cards;
+    void updateStack();
 };
-
-
