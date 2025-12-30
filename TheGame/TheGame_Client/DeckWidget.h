@@ -1,4 +1,5 @@
 #pragma once
+#include"CardWidget.h"
 #include <QWidget>
 #include <stack>
 
@@ -11,7 +12,7 @@ public:
 protected:
     void paintEvent(QPaintEvent* event) override;
 private:
-    std::stack<int> m_cards;
+    std::stack<CardWidget> m_cards;
     int m_cardCount = 0;
 };
 
