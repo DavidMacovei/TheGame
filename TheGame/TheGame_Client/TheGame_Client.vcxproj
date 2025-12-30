@@ -129,7 +129,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CardHandWidget.h" />
-    <ClInclude Include="CardWidget.h" />
+    <QtMoc Include="CardWidget.h" />
     <ClInclude Include="ClientApi.h" />
     <ClInclude Include="StackWidget.h" />
     <QtMoc Include="DeckWidget.h" />
