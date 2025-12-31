@@ -123,7 +123,12 @@
     <ClCompile Include="PreGameNetworkManager.cpp" />
     <ClCompile Include="ProfileWidget.cpp" />
     <ClCompile Include="RegisterWidget.cpp" />
-    <ClCompile Include="StackWidget.cpp" />
+    <ClCompile Include="StackWidget.cpp">
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Filename).moc</QtMocFileName>
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Release|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Filename).moc</QtMocFileName>
+    </ClCompile>
     <ClCompile Include="TheGame_Client.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -131,7 +136,7 @@
     <ClInclude Include="CardHandWidget.h" />
     <QtMoc Include="CardWidget.h" />
     <ClInclude Include="ClientApi.h" />
-    <ClInclude Include="StackWidget.h" />
+    <QtMoc Include="StackWidget.h" />
     <QtMoc Include="DeckWidget.h" />
     <QtMoc Include="GameBoardWidget.h" />
     <QtMoc Include="GameNetworkManager.h" />

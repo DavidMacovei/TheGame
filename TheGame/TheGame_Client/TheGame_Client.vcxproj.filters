@@ -76,18 +76,15 @@
     <ClCompile Include="CardWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StackWidget.cpp">
+    <ClCompile Include="CardHandWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CardHandWidget.cpp">
+    <ClCompile Include="StackWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientApi.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StackWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CardHandWidget.h">
@@ -123,6 +120,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="CardWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="StackWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
