@@ -7,18 +7,18 @@ class ClientApi
 public:
     explicit ClientApi(const std::string& baseUrl = "http://127.0.0.1:18080");
 
-    BasicResponse login(const std::string& username, const std::string& password);
-    BasicResponse registerUser(const std::string& username, const std::string& password);
+    BasicResponse Login(const std::string& username, const std::string& password);
+    BasicResponse RegisterUser(const std::string& username, const std::string& password);
 
-    BasicResponse joinLobby(const std::string& username);
-    LobbyState getLobbyState();
+    JoinGameResponse JoinLobby(const std::string& username);
+    LobbyState GetLobbyState();
 
-    GameState getGameState(int myPlayerIndex);
-    BasicResponse playCard(int playerIndex, int handIndex, int stackIndex);
-    BasicResponse endTurn(int playerIndex);
+    GameState GetGameState(int myPlayerIndex);
+    BasicResponse PlayCard(int playerIndex, int handIndex, int stackIndex);
+    BasicResponse EndTurn(int playerIndex);
 
-    BasicResponse sendMessage(const std::string& sender, const std::string& message);
-    ChatHistory getChatHistory();
+    BasicResponse sendMessage(const std::string& sender, const std::string& message);//SendMessage existenta?
+    ChatHistory GetChatHistory();
     
 private:
     std::string baseUrl;

@@ -3,7 +3,7 @@
 #include "ResponseUtils.h"
 #include "GameSerializer.h"
 
-void registerGameRoutes(crow::SimpleApp& app, std::unique_ptr<game::Game>& activeGame, std::mutex& gameMutex)
+void registerGameRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 {
 	CROW_ROUTE(app, "/gameState/<int>")([&activeGame, &gameMutex](int playerIndex) {
 		std::lock_guard<std::mutex> lock(gameMutex);

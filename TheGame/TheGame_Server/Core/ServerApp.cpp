@@ -13,8 +13,8 @@ ServerApp::ServerApp()
 void ServerApp::setupRoutes()
 {
     registerChatRoutes(app, chat);
-    registerGameRoutes(app, activeGame, gameMutex);
-    registerLobbyRoutes(app, activeGame, lobbyPlayers, gameMutex);
+    registerGameRoutes(app, gameManager);
+    registerLobbyRoutes(app, gameManager);
     registerAuthRoutes(app);
 }
 
