@@ -9,12 +9,14 @@ class ChatService
 public:
     ChatService() = default;
 
-    void addMessage(const std::string& sender, const std::string& message);
-    std::deque<ChatMessage> getMessages();
+    void AddMessage(int gameId, const std::string& sender, const std::string& message);
+    std::deque<ChatMessage> GetMessages(int gameId);
+
+    void RemoveChat(int gameId);
 
 private:
-    std::deque<ChatMessage> messages;
-    std::mutex mutex;
+    std::map<int, std::deque<ChatMessage>> m_gameChats;
+    std::mutex m_mutex;
 
     static constexpr std::size_t MAX_CHAT_MESSAGES = 20;
 };

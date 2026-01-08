@@ -12,7 +12,7 @@ ServerApp::ServerApp()
 
 void ServerApp::setupRoutes()
 {
-    registerChatRoutes(app, chat);
+    registerChatRoutes(app, chat, gameManager);
     registerGameRoutes(app, gameManager);
     registerLobbyRoutes(app, gameManager);
     registerAuthRoutes(app);
