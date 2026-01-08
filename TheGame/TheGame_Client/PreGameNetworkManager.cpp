@@ -8,6 +8,7 @@
 
 PreGameNetworkManager::PreGameNetworkManager(QObject* parent)
     : QObject(parent)
+    , m_api(m_baseUrl.toStdString())
 {
     m_lobbyTimer.setInterval(1000); // 1s
     connect(&m_lobbyTimer, &QTimer::timeout,
@@ -19,71 +20,42 @@ PreGameNetworkManager::PreGameNetworkManager(QObject* parent)
 void PreGameNetworkManager::login(const QString& username,
     const QString& password)
 {
-    QUrl url(m_baseUrl + "/login");
-    QNetworkRequest req(url);
-    req.setHeader(QNetworkRequest::ContentTypeHeader,
-        "application/json");
+    QtConcurrent::run([this, username, password]() {
 
-    QJsonObject obj;
-    obj["username"] = username;
-    obj["password"] = password;
-    QJsonDocument doc(obj);
+        BasicResponse resp = m_api.Login(
+            username.toStdString(),
+            password.toStdString());
 
-    QNetworkReply* reply = m_manager.post(req, doc.toJson());
+        QMetaObject::invokeMethod(this, [=]() {
 
-    connect(reply, &QNetworkReply::finished, this, [=]() {
-        reply->deleteLater();
-        int status = reply->attribute(
-            QNetworkRequest::HttpStatusCodeAttribute).toInt();
+            if (resp.status == "success") {
+                emit loginSuccess(username);
+            }
+            else {
+                emit loginFailed(
+                    QString::fromStdString(resp.message));
+            }
 
-        if (reply->error() != QNetworkReply::NoError) {
-            emit loginFailed("Network error: " + reply->errorString());
-            return;
-        }
-
-        if (status == 200) {
-            emit loginSuccess(username);
-        }
-        else {
-            emit loginFailed("Invalid username or password.");
-        }
+            }, Qt::QueuedConnection);
         });
 }
 
 void PreGameNetworkManager::registerUser(const QString& username,
     const QString& password)
 {
-    QUrl url(m_baseUrl + "/register");
-    QNetworkRequest req(url);
-    req.setHeader(QNetworkRequest::ContentTypeHeader,
-        "application/json");
+    QtConcurrent::run([this, username, password]() {
+        BasicResponse resp = m_api.RegisterUser(
+            username.toStdString(),
+            password.toStdString());
 
-    QJsonObject obj;
-    obj["username"] = username;
-    obj["password"] = password;
-    QJsonDocument doc(obj);
-
-    QNetworkReply* reply = m_manager.post(req, doc.toJson());
-
-    connect(reply, &QNetworkReply::finished, this, [=]() {
-        reply->deleteLater();
-        int status = reply->attribute(
-            QNetworkRequest::HttpStatusCodeAttribute).toInt();
-
-        if (reply->error() != QNetworkReply::NoError) {
-            emit registerFailed("Network error: " + reply->errorString());
-            return;
-        }
-
-        if (status == 200 || status == 201) {
-            emit registerSuccess(username);
-        }
-        else if (status == 409) {
-            emit registerFailed("Username already exists.");
-        }
-        else {
-            emit registerFailed("Registration failed.");
-        }
+        QMetaObject::invokeMethod(this, [=]() {
+            if (resp.status == "success") {
+                emit registerSuccess(username);
+            }
+            else {
+                emit registerFailed(QString::fromStdString(resp.message));
+            }
+            }, Qt::QueuedConnection);
         });
 }
 

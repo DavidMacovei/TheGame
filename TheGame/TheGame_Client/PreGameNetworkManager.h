@@ -5,6 +5,8 @@
 #include <QNetworkReply>
 #include <QTimer>
 #include <QStringList>
+#include <QtConcurrent>
+#include "ClientApi.h"
 
 class PreGameNetworkManager : public QObject
 {
@@ -53,4 +55,6 @@ private:
     QNetworkAccessManager m_manager;
     QTimer m_lobbyTimer;
     QString m_baseUrl = "http://localhost:18080";
+
+    ClientApi m_api;
 };
