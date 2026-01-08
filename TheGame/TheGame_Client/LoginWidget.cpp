@@ -33,7 +33,7 @@ LoginWidget::~LoginWidget()
 void LoginWidget::onLoginClicked()
 {
     QString username = ui->usernameText->text().trimmed();
-    QString password = ui->registerText->text().trimmed();  
+    QString password = ui->passwordText->text().trimmed();  
 
     if (username.isEmpty() || password.isEmpty()) {
         QMessageBox::warning(this, "Missing Fields", "Please enter both username and password.");
