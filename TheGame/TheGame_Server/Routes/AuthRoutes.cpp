@@ -7,7 +7,7 @@
 
 void registerAuthRoutes(crow::SimpleApp& app)
 {
-	CROW_ROUTE(app, "/register").methods("POST"_method)
+	CROW_ROUTE(app, "/auth/register").methods("POST"_method)
 		([](const crow::request& req) {
 		try {
 			auto authReq = json::parse(req.body).get<AuthRequest>();
@@ -35,7 +35,7 @@ void registerAuthRoutes(crow::SimpleApp& app)
 			});
 
 
-	CROW_ROUTE(app, "/login").methods("POST"_method)
+	CROW_ROUTE(app, "/auth/login").methods("POST"_method)
 		([](const crow::request& req) {
 		try {
 			auto authReq = json::parse(req.body).get<AuthRequest>();

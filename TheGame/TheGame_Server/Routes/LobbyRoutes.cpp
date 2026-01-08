@@ -1,10 +1,11 @@
 #include "LobbyRoutes.h"
 #include "ResponseUtils.h"
 #include "GameModels.h"
+#include "UsersDatabase.h"
 
 void registerLobbyRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 {
-	CROW_ROUTE(app, "/joinLobby").methods("POST"_method)
+	CROW_ROUTE(app, "/lobby/join").methods("POST"_method)
 		([&gameManager](const crow::request& request) {
 		try {
 			auto req = json::parse(request.body).get<UserRequest>();
@@ -13,7 +14,18 @@ void registerLobbyRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 				return utils::Error(400, "Username required");
 			}
 
-			int userScore = 1; //Database logic
+			int userScore = 1;
+
+			try {
+				auto storage = http::CreateStorage("users.sqlite");
+				auto users = storage.get_all<User>(sql::where(sql::c(&User::GetUsername) == req.username));
+
+				if (!users.empty())
+					userScore = users[0].GetScore();
+			} 
+			catch (const std::exception& e) {
+				std::cerr << "[DB Error] Could not fetch score: " << e.what() << "\n";
+			}
 
 			gameManager.AddPlayerToQueue(req.username, userScore);
 			gameManager.TryMatchmaking();
@@ -25,7 +37,7 @@ void registerLobbyRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 		}
 			});
 
-	CROW_ROUTE(app, "/checkStatus").methods("POST"_method)
+	CROW_ROUTE(app, "/lobby/status").methods("POST"_method)
 		([&gameManager](const crow::request& request) {
 		try {
 			auto req = json::parse(request.body).get<UserRequest>();

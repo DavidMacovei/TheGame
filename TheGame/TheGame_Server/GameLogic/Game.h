@@ -15,6 +15,8 @@ namespace game {
 		bool PlayCard(uint8_t playerIndex, uint8_t handIndex, uint8_t stackIndex);
 		bool EndTurn(uint8_t playerIndex);
 
+		bool IsPlayerInGame(const std::string & username) const;
+
 		const Board& GetBoard() const;
 		const std::vector<Player>& GetPlayers() const;
 		GameStatus GetStatus() const;

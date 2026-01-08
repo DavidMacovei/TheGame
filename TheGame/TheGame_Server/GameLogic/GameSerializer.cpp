@@ -3,7 +3,7 @@
 
 namespace game
 {
-	std::string SerializeGameState(const Game& gameObj, uint8_t requestingPlayerIndex)
+	std::string SerializeGameState(const Game& gameObj, const std::string& requestingUsername)
 	{
 
 		GameState gameState;
@@ -36,7 +36,7 @@ namespace game
 			playerState.cardCount = serverPlayer.GetCardsInHand();
 			playerState.username = serverPlayer.GetUsername();
 
-			if (i == requestingPlayerIndex)
+			if (serverPlayer.GetUsername() == requestingUsername)
 			{
 				const auto& hand = serverPlayer.GetHand();
 				for (const auto& card : hand)

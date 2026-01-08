@@ -55,6 +55,15 @@ namespace game {
 		return true;
 	}
 
+	bool Game::IsPlayerInGame(const std::string& username) const
+	{
+		for (const auto& player : m_players)
+			if (player.GetUsername() == username)
+				return true;
+
+		return false;
+	}
+
 	GameStatus Game::GetStatus() const
 	{
 		return m_status;

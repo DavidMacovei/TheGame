@@ -5,5 +5,5 @@
 
 namespace game 
 {
-	std::string SerializeGameState(const Game& gameObj, uint8_t requestingPlayerIndex);
+	std::string SerializeGameState(const Game& gameObj, const std::string& requestingUsername);
 }
