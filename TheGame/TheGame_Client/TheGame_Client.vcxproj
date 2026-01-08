@@ -133,7 +133,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CardHandWidget.h" />
+    <QtMoc Include="CardHandWidget.h" />
     <QtMoc Include="CardWidget.h" />
     <ClInclude Include="ClientApi.h" />
     <QtMoc Include="StackWidget.h" />

@@ -87,9 +87,6 @@
     <ClInclude Include="ClientApi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CardHandWidget.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="LoginWidget.h">
@@ -123,6 +120,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="StackWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="CardHandWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
