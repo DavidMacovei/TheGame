@@ -149,6 +149,7 @@
     <ClCompile Include="Routes\GameRoutes.cpp" />
     <ClCompile Include="Routes\LobbyRoutes.cpp" />
     <ClCompile Include="Services\ChatService.cpp" />
+    <ClCompile Include="Services\GameManager.cpp" />
     <ClCompile Include="TheGame.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -170,6 +171,7 @@
     <ClInclude Include="Routes\LobbyRoutes.h" />
     <ClInclude Include="Routes\ResponseUtils.h" />
     <ClInclude Include="Services\ChatService.h" />
+    <ClInclude Include="Services\GameManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TheGame_Common\TheGame_Common.vcxproj">

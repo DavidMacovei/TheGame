@@ -19,9 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GameModels.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="GameModels.h" />
   </ItemGroup>
   <ItemGroup>

@@ -1,84 +1,88 @@
 #include "LobbyRoutes.h"
 #include "ResponseUtils.h"
 #include "GameModels.h"
+#include "UsersDatabase.h"
 
-const int PLAYERS_NEEDED = 2;
-
-void registerLobbyRoutes(crow::SimpleApp& app, std::unique_ptr<game::Game>& activeGame, std::vector<std::string>& lobbyPlayers, std::mutex& gameMutex)
+void registerLobbyRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 {
-	CROW_ROUTE(app, "/joinLobby").methods("POST"_method)
-		([&activeGame, &lobbyPlayers, &gameMutex](const crow::request& request) {
-        std::lock_guard<std::mutex> lock(gameMutex);
+	CROW_ROUTE(app, "/lobby/join").methods("POST"_method)
+		([&gameManager](const crow::request& request) {
+		try {
+			auto req = json::parse(request.body).get<UserRequest>();
 
-        try {
-            auto req = json::parse(request.body).get<JoinLobbyRequest>();
+			if (req.username.empty()) {
+				return utils::Error(400, "Username required");
+			}
 
-            if (req.username.empty()) {
-                return utils::Error(400, "Username required");
-            }
+			int userScore = 1;
 
-            if (activeGame != nullptr)
-            {
-                if (activeGame->GetStatus() == game::GameStatus::Won ||
-                    activeGame->GetStatus() == game::GameStatus::Lost)
-                {
-                    activeGame = nullptr;
-                    lobbyPlayers.clear();
-                }
-                else 
-                    return utils::Error(400, "Game already in progress. Please wait!");
-            }
+			try {
+				auto storage = http::CreateStorage("users.sqlite");
+				auto users = storage.get_all<User>(sql::where(sql::c(&User::GetUsername) == req.username));
 
-            bool alreadyPlaying = false;
-            for (const auto& name : lobbyPlayers) {
-                if (name == req.username) {
-                    alreadyPlaying = true;
-                    break;
-                }
-            }
-            if (!alreadyPlaying)
-                lobbyPlayers.push_back(req.username);
+				if (!users.empty())
+					userScore = users[0].GetScore();
+			} 
+			catch (const std::exception& e) {
+				std::cerr << "[DB Error] Could not fetch score: " << e.what() << "\n";
+			}
 
-            if (lobbyPlayers.size() >= PLAYERS_NEEDED)
-            {
-                activeGame = std::make_unique<game::Game>(lobbyPlayers);
-                lobbyPlayers.clear();
+			gameManager.AddPlayerToQueue(req.username, userScore);
+			gameManager.TryMatchmaking();
 
-                return utils::Success("Game started");
-            }
-
-            BasicResponse response;
-            response.status = "waiting";
-            response.message = "Joined lobby, waiting for players";
-            return crow::response(200, json(response).dump());
-        }
-        catch (...) {
-            return utils::Error(400, "Invaild JSON format");
-        }
+			return utils::Success("Joined lobby queue successfully");
+		}
+		catch (...) {
+			return utils::Error(400, "Invaild JSON format");
+		}
 			});
 
-	CROW_ROUTE(app, "/lobbyState")
-		([&activeGame, &lobbyPlayers, &gameMutex]() {
-        std::lock_guard<std::mutex> lock(gameMutex);
+	CROW_ROUTE(app, "/lobby/status").methods("POST"_method)
+		([&gameManager](const crow::request& request) {
+		try {
+			auto req = json::parse(request.body).get<UserRequest>();
 
-        LobbyState lobbyState;
+			if (req.username.empty()) {
+				return utils::Error(400, "Username required");
+			}
 
-        if (activeGame != nullptr)
-        {
-            lobbyState.status = "Game running";
-            lobbyState.currentPlayers = (int)activeGame->GetPlayers().size();
+			int gameId = gameManager.GetGameIdForPlayer(req.username);
+			auto waitingList = gameManager.GetWaitingList();
 
-            for (const auto& player : activeGame->GetPlayers())
-                lobbyState.players.push_back(player.GetUsername());
-        }
-        else
-        {
-            lobbyState.status = "Waiting";
-            lobbyState.currentPlayers = (int)lobbyPlayers.size();
-            lobbyState.waitingList = lobbyPlayers;
-            lobbyState.neededPlayers = PLAYERS_NEEDED;
-        }
+			UserStatusResponse response;
 
-        return crow::response(200, json(lobbyState).dump());
+			if (gameId != -1)
+			{
+				response.status = "running";
+				response.message = "Game is running!";
+				response.gameId = gameId;
+			}
+			else
+			{
+				bool isInQueue = gameManager.IsPlayerInQueue(req.username);
+
+				if (isInQueue)
+				{
+					auto waitingListNames = gameManager.GetWaitingList();
+
+					response.status = "waiting";
+					response.message = "Waiting for match ...";
+					response.playersInQueue = (int)waitingListNames.size();
+					
+					if (waitingListNames.size() <= 10)
+						response.waitingList = waitingListNames;
+				}
+				else
+				{
+					response.status = "idle";
+					response.message = "Not in lobby";
+				}
+			}
+
+			return crow::response(200, json(response).dump());
+		}
+		catch (...) {
+			return utils::Error(400, "Invalid JSON format");
+		}
 			});
 }

@@ -2,6 +2,6 @@
 #include <crow.h>
 #include <memory>
 #include <mutex>
-#include "Game.h"
+#include "GameManager.h"
 
-void registerGameRoutes(crow::SimpleApp& app, std::unique_ptr<game::Game>& activeGame, std::mutex& gameMutex);
+void registerGameRoutes(crow::SimpleApp& app, game::GameManager& gameManager);

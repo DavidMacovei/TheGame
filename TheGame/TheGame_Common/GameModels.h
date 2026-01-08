@@ -14,7 +14,7 @@
 
 using json = nlohmann::json;
 
-const uint8_t numberOfStacks = 4;
+const uint8_t numberOfStacks = 4; //dubla definitie (Board.h)
 
 struct COMMON_API BasicResponse {
 	std::string status;
@@ -30,20 +30,20 @@ struct COMMON_API AuthRequest {
 	NLOHMANN_DEFINE_TYPE_INTRUSIVE(AuthRequest, username, password)
 };
 
-struct COMMON_API JoinLobbyRequest {
+struct COMMON_API UserRequest {
 	std::string username;
 
-	NLOHMANN_DEFINE_TYPE_INTRUSIVE(JoinLobbyRequest, username)
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(UserRequest, username)
 };
 
-struct COMMON_API LobbyState {
+struct COMMON_API UserStatusResponse {
 	std::string status;
-	std::vector<std::string> players;
+	std::string message;
+	int playersInQueue = 0;
+	int gameId = -1;
 	std::vector<std::string> waitingList;
-	int currentPlayers = 0;
-	int neededPlayers = 0;
 
-	NLOHMANN_DEFINE_TYPE_INTRUSIVE(LobbyState, status, players, waitingList, currentPlayers, neededPlayers)
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(UserStatusResponse, status, message, playersInQueue, gameId, waitingList)
 };
 
 struct COMMON_API PlayerState {

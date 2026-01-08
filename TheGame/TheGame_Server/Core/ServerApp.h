@@ -6,7 +6,7 @@
 #include <mutex>
 
 #include "ChatService.h"
-#include "Game.h"
+#include "GameManager.h"
 
 class ServerApp
 {
@@ -14,15 +14,14 @@ public:
     ServerApp();
     void run();
 
+
+private:
+    void setupRoutes();
+
 private:
     crow::SimpleApp app;
 
     ChatService chat;
 
-    std::unique_ptr<game::Game> activeGame;
-    std::vector<std::string> lobbyPlayers;
-
-    std::mutex gameMutex;
-
-    void setupRoutes();
+    game::GameManager gameManager;
 };

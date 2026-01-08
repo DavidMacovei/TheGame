@@ -4,7 +4,7 @@
 
 ClientApi::ClientApi(const std::string& baseUrl) : baseUrl(baseUrl) {}
 
-BasicResponse ClientApi::login(const std::string& username, const std::string& password)
+BasicResponse ClientApi::Login(const std::string& username, const std::string& password)
 {
     try {
         AuthRequest req;
@@ -27,7 +27,7 @@ BasicResponse ClientApi::login(const std::string& username, const std::string& p
     }
 }
 
-BasicResponse ClientApi::registerUser(const std::string& username, const std::string& password)
+BasicResponse ClientApi::RegisterUser(const std::string& username, const std::string& password)
 {
     try {
         AuthRequest req;
@@ -50,7 +50,7 @@ BasicResponse ClientApi::registerUser(const std::string& username, const std::st
     }
 }
 
-BasicResponse ClientApi::joinLobby(const std::string& username)
+JoinGameResponse ClientApi::JoinLobby(const std::string& username)
 {
     try {
         JoinLobbyRequest req;
@@ -65,14 +65,14 @@ BasicResponse ClientApi::joinLobby(const std::string& username)
         if (r.text.empty())
             return { "error", "Server not responding" };
 
-        return json::parse(r.text).get<BasicResponse>();
+        return json::parse(r.text).get<JoinGameResponse>();
     }
     catch (const std::exception& e) {
         return { "error", "Exception in joinLobby: " + std::string(e.what()) };
     }
 }
 
-LobbyState ClientApi::getLobbyState()
+LobbyState ClientApi::GetLobbyState()
 {
     try {
         auto r = cpr::Get(cpr::Url{ baseUrl + "/lobbyState" });
@@ -87,7 +87,7 @@ LobbyState ClientApi::getLobbyState()
     return errState;
 }
 
-GameState ClientApi::getGameState(int myPlayerIndex)
+GameState ClientApi::GetGameState(int myPlayerIndex)
 {
     try {
         auto r = cpr::Get(cpr::Url{ baseUrl + "/gameState/" + std::to_string(myPlayerIndex)});
@@ -102,7 +102,7 @@ GameState ClientApi::getGameState(int myPlayerIndex)
     return errState;
 }
 
-BasicResponse ClientApi::playCard(int playerIndex, int handIndex, int stackIndex)
+BasicResponse ClientApi::PlayCard(int playerIndex, int handIndex, int stackIndex)
 {
     try {
         PlayCardAction action;
@@ -126,7 +126,7 @@ BasicResponse ClientApi::playCard(int playerIndex, int handIndex, int stackIndex
     }
 }
 
-BasicResponse ClientApi::endTurn(int playerIndex)
+BasicResponse ClientApi::EndTurn(int playerIndex)
 {
     try {
         EndTurnAction action;
@@ -171,7 +171,7 @@ BasicResponse ClientApi::sendMessage(const std::string& sender, const std::strin
     }
 }
 
-ChatHistory ClientApi::getChatHistory()
+ChatHistory ClientApi::GetChatHistory()
 {
     try {
         auto r = cpr::Get(cpr::Url{ baseUrl + "/getMessages" });
