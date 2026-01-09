@@ -10,17 +10,23 @@ public:
     BasicResponse Login(const std::string& username, const std::string& password);
     BasicResponse RegisterUser(const std::string& username, const std::string& password);
 
-    JoinGameResponse JoinLobby(const std::string& username);
-    LobbyState GetLobbyState();
+    BasicResponse JoinLobby(const std::string& username);
+    UserStatusResponse GetUserStatus(const std::string& username);
 
-    GameState GetGameState(int myPlayerIndex);
+    GameState GetGameState(const std::string& username);
     BasicResponse PlayCard(int playerIndex, int handIndex, int stackIndex);
     BasicResponse EndTurn(int playerIndex);
 
     BasicResponse sendMessage(const std::string& sender, const std::string& message);//SendMessage existenta?
     ChatHistory GetChatHistory();
+
+
+    void SetActiveGame(int gameId);
+    int GetActiveGameId() const;
+    void ResetGame();
     
 private:
     std::string baseUrl;
+    int m_activeGameId = -1;
 };
 
