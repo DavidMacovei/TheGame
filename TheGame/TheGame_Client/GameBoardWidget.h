@@ -3,6 +3,9 @@
 #include <QWidget>
 #include <QListWidgetItem>
 #include <QLabel>
+#include <QEvent>
+#include "CardHandWidget.h"
+#include "StackWidget.h"
 #include "DeckWidget.h"
 #include "GameNetworkManager.h"
 
@@ -21,16 +24,18 @@ public:
 signals:
     void gameEnded(bool victory, int cardsLeft);
 
+protected:
+    bool eventFilter(QObject* obj, QEvent* event) override;
+
 private slots:
     void onGameStateReceived(const QJsonObject& state);
-
-    void onHandItemClicked(QListWidgetItem* item);
     void onStack1Clicked();
     void onStack2Clicked();
     void onStack3Clicked();
     void onStack4Clicked();
     void onSendChatClicked();
     void onEndTurnClicked();
+    void onCardSelected(int cardIndex);
 
 private:
     Ui::GameBoardWidget* ui;
@@ -44,8 +49,8 @@ private:
     void updateOpponentHands(const QJsonArray& players);
     void updateChat(const QJsonArray& messages);
     void updateTurnInfo(const QJsonObject& state);
+    void updateDeck(int deckCount);
 
     void handleStackClick(int stackId);
-    void clearLayout(QLayout* layout);
-    QWidget* createCardBack();
+    void setupCardHandConnections();
 };
