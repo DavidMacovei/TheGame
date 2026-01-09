@@ -20,6 +20,17 @@ BasicResponse ClientApi::Login(const std::string& username, const std::string& p
         if (r.text.empty()) 
             return { "error", "Server not responding" };
 
+        if (r.status_code != 200)
+        {
+            try {
+                return json::parse(r.text).get<BasicResponse>();
+            }
+            catch (...)
+            {
+                return { "error", "Login failed with code " + std::to_string(r.status_code) };
+            }
+        }
+
         return json::parse(r.text).get<BasicResponse>();
     }
     catch (const std::exception& e) {
@@ -42,6 +53,17 @@ BasicResponse ClientApi::RegisterUser(const std::string& username, const std::st
 
         if (r.text.empty())
             return { "error", "Server not responding" };
+
+        if (r.status_code != 200)
+        {
+            try {
+                return json::parse(r.text).get<BasicResponse>();
+            }
+            catch (...)
+            {
+                return { "error", "Register failed with code " + std::to_string(r.status_code) };
+            }
+        }
 
         return json::parse(r.text).get<BasicResponse>();
     }
@@ -75,17 +97,24 @@ BasicResponse ClientApi::JoinLobby(const std::string& username)
 UserStatusResponse ClientApi::GetUserStatus(const std::string& username)
 {
     try {
-        auto r = cpr::Get(cpr::Url{ baseUrl + "/lobby/status" });
+        UserRequest req;
+        req.username = username;
+
+        auto r = cpr::Post(
+            cpr::Url{ baseUrl + "/lobby/status" },
+            cpr::Body{json(req).dump()},
+            cpr::Header{ {"Content-Type", "application/json"} }
+        );
 
         if (r.status_code == 200)
             return json::parse(r.text).get<UserStatusResponse>();
     }
     catch (...) {}
 
-    UserStatusResponse errState;
-    errState.status = "error";
-    errState.message = "Connection lost";
-    return errState;
+    UserStatusResponse err;
+    err.status = "error";
+    err.message = "Connection lost";
+    return err;
 }
 
 GameState ClientApi::GetGameState(const std::string& username)
@@ -107,9 +136,9 @@ GameState ClientApi::GetGameState(const std::string& username)
     }
     catch (...) {}
 
-    GameState errState;
-    errState.status = "error";
-    return errState;
+    GameState err;
+    err.status = "error";
+    return err;
 }
 
 BasicResponse ClientApi::PlayCard(int playerIndex, int handIndex, int stackIndex)
@@ -131,6 +160,17 @@ BasicResponse ClientApi::PlayCard(int playerIndex, int handIndex, int stackIndex
 
         if (r.text.empty())
             return { "error", "Server not responding" };
+
+        if (r.status_code != 200)
+        {
+            try {
+                return json::parse(r.text).get<BasicResponse>();
+            }
+            catch (...)
+            {
+                return { "error", "Move failed with code " + std::to_string(r.status_code) };
+            }
+        }
 
         return json::parse(r.text).get<BasicResponse>();
     }
@@ -156,6 +196,17 @@ BasicResponse ClientApi::EndTurn(int playerIndex)
 
         if (r.text.empty())
             return { "error", "Server not responding" };
+
+        if (r.status_code != 200)
+        {
+            try {
+                return json::parse(r.text).get<BasicResponse>();
+            }
+            catch (...)
+            {
+                return { "error", "Cannot end turn. Code: " + std::to_string(r.status_code) };
+            }
+        }
 
         return json::parse(r.text).get<BasicResponse>();
     }
@@ -192,6 +243,9 @@ BasicResponse ClientApi::sendMessage(const std::string& sender, const std::strin
 
 ChatHistory ClientApi::GetChatHistory()
 {
+    if (m_activeGameId == -1)
+        return {};
+
     try {
         auto r = cpr::Get(
             cpr::Url{ baseUrl + "/game/" + std::to_string(m_activeGameId) + "/chat/history" });
