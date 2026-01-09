@@ -8,7 +8,7 @@ class StackWidget : public QWidget
     Q_OBJECT
 public:
     enum class StackType { Ascending, Descending };
-    explicit StackWidget(StackType type, QWidget* parent = nullptr);
+    explicit StackWidget(QWidget* parent = nullptr, StackType type = StackType::Ascending);
 
     void setCards(const std::vector<uint8_t>& cards);
     StackType stackType() const;

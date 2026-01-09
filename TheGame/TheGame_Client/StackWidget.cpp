@@ -1,6 +1,6 @@
 #include "StackWidget.h"
 
-StackWidget::StackWidget(StackType type, QWidget* parent)
+StackWidget::StackWidget(QWidget* parent, StackType type)
     : QWidget(parent), m_type(type)
 {
     setFixedSize(60, 120); // Adjust as needed
