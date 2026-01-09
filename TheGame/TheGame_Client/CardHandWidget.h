@@ -12,11 +12,16 @@ public:
     void setCards(const std::vector<uint8_t>& cards);
     int cardCount() const;
 
+signals:
+    void cardClicked(int cardIndex);
+
 protected:
     void resizeEvent(QResizeEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
 
 private:
     std::vector<CardWidget*> m_cardWidgets;
     std::vector<uint8_t> m_cards;
+    int m_selectedIndex = -1;
     void updateHand();
 };

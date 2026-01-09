@@ -1,5 +1,6 @@
 #include "CardHandWidget.h"
 #include <cmath>
+#include <QMouseEvent>
 
 CardHandWidget::CardHandWidget(QWidget* parent)
     : QWidget(parent)
@@ -20,14 +21,12 @@ int CardHandWidget::cardCount() const
 
 void CardHandWidget::updateHand()
 {
-    // Remove old CardWidgets
     for (auto* w : m_cardWidgets) {
         w->setParent(nullptr);
         w->deleteLater();
     }
     m_cardWidgets.clear();
 
-    // Fanned out arrangement
     int n = static_cast<int>(m_cards.size());
     if (n == 0) return;
 
@@ -42,6 +41,26 @@ void CardHandWidget::updateHand()
         card->show();
         m_cardWidgets.push_back(card);
     }
+}
+
+void CardHandWidget::mousePressEvent(QMouseEvent* event)
+{
+    QPoint clickPos = event->pos();
+
+    for (int i = m_cardWidgets.size() - 1; i >= 0; --i) {
+        CardWidget* card = m_cardWidgets[i];
+        QRect cardRect = card->geometry();
+
+        if (cardRect.contains(clickPos)) {
+            m_selectedIndex = i;
+            emit cardClicked(i);
+
+            update();
+            break;
+        }
+    }
+
+    QWidget::mousePressEvent(event);
 }
 
 void CardHandWidget::resizeEvent(QResizeEvent*)
