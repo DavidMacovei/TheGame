@@ -24,6 +24,8 @@ public:
     void SetActiveGame(int gameId);
     int GetActiveGameId() const;
     void ResetGame();
+
+    //TODO: actualizare ore jucate + scor
     
 private:
     std::string baseUrl;
