@@ -46,6 +46,8 @@ void registerLobbyRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 				return utils::Error(400, "Username required");
 			}
 
+			gameManager.TryMatchmaking();
+
 			int gameId = gameManager.GetGameIdForPlayer(req.username);
 			auto waitingList = gameManager.GetWaitingList();
 
