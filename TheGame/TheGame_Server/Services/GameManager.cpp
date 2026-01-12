@@ -134,4 +134,24 @@ namespace game
 			usernames.push_back(player.username);
 		return usernames;
 	}
+
+	int GameManager::GetSecondsRemaining() const
+	{
+		if (m_waitingQueue.empty())
+			return MAX_WAIT_SECONDS;
+
+		auto now = std::chrono::steady_clock::now();
+		auto oldestJoinTime = m_waitingQueue[0].joinTime;
+
+		for (const auto& player : m_waitingQueue)
+		{
+			if (player.joinTime < oldestJoinTime)
+				oldestJoinTime = player.joinTime;
+		}
+
+		auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - oldestJoinTime).count();
+		int remaining = MAX_WAIT_SECONDS - (int)elapsed;
+
+		return std::max(0, remaining);
+	}
 }

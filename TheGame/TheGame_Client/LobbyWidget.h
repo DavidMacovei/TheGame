@@ -26,7 +26,7 @@ signals:
 private slots:
     void onCancelClicked();
     void onProfileClicked();
-    void onLobbyWaiting(QStringList players, int current, int needed);
+    void onLobbyWaiting(QStringList players, int current, int needed, int secondsRemaining);
     void onLobbyGameStarted(QStringList players);
 
 private:
@@ -34,6 +34,5 @@ private:
     PreGameNetworkManager* net;
     QString username;
 
-    int secondsLeft = 30;
-    void updateTimerLabel();
+    void updateTimerLabel(int seconds);
 };

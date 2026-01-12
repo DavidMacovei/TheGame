@@ -31,6 +31,7 @@ namespace game
 		std::shared_ptr<Game> GetGame(int gameId);
 		int GetGameIdForPlayer(const std::string& username);
 		std::vector<std::string> GetWaitingList() const;
+		int GetSecondsRemaining() const;
 
 	private:
 		std::vector<QueuedPlayer> m_waitingQueue;

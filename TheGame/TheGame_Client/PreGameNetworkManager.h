@@ -36,7 +36,8 @@ signals:
     // Lobby
     void lobbyWaiting(QStringList waitingPlayers,
         int currentPlayers,
-        int neededPlayers);
+        int neededPlayers,
+        int secondsRemaining);
 
     void lobbyGameStarted(QStringList playersInGame);
 

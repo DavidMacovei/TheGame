@@ -70,6 +70,7 @@ void registerLobbyRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 					response.status = "waiting";
 					response.message = "Waiting for match ...";
 					response.playersInQueue = (int)waitingListNames.size();
+					response.secondsRemaining = gameManager.GetSecondsRemaining();
 					
 					if (waitingListNames.size() <= 10)
 						response.waitingList = waitingListNames;

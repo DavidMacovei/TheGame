@@ -92,7 +92,7 @@ void PreGameNetworkManager::joinLobby(const QString& username)
                 for (const auto& player : statusResp.waitingList) {
                     waiting << QString::fromStdString(player);
                 }
-                emit lobbyWaiting(waiting, statusResp.playersInQueue, 4);
+                emit lobbyWaiting(waiting, statusResp.playersInQueue, 4, statusResp.secondsRemaining);
             }
             else {
                 emit networkError("Unknown lobby status: " + QString::fromStdString(statusResp.status));
@@ -140,7 +140,7 @@ void PreGameNetworkManager::onLobbyPollTimeout()
                 for (const auto& player : statusResp.waitingList) {
                     waiting << QString::fromStdString(player);
                 }
-                emit lobbyWaiting(waiting, statusResp.playersInQueue, 4);
+                emit lobbyWaiting(waiting, statusResp.playersInQueue, 4, statusResp.secondsRemaining);
             }
         }, Qt::QueuedConnection);
     });

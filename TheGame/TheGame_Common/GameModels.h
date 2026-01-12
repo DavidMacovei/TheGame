@@ -41,9 +41,10 @@ struct COMMON_API UserStatusResponse {
 	std::string message;
 	int playersInQueue = 0;
 	int gameId = -1;
+	int secondsRemaining = 30;
 	std::vector<std::string> waitingList;
 
-	NLOHMANN_DEFINE_TYPE_INTRUSIVE(UserStatusResponse, status, message, playersInQueue, gameId, waitingList)
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(UserStatusResponse, status, message, playersInQueue, gameId, secondsRemaining, waitingList)
 };
 
 struct COMMON_API PlayerState {

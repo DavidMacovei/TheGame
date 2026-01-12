@@ -35,11 +35,10 @@ LobbyWidget::~LobbyWidget()
 void LobbyWidget::enterLobby(const QString& username)
 {
     this->username = username;
-    this->secondsLeft = 30;
 
     ui->statusLabel->setText("Joining lobby...");
     ui->playersList->clear();
-    updateTimerLabel();
+    updateTimerLabel(30);
 
     net->joinLobby(username);
 
@@ -59,7 +58,8 @@ void LobbyWidget::onProfileClicked()
 
 void LobbyWidget::onLobbyWaiting(QStringList players,
     int current,
-    int needed)
+    int needed,
+    int secondsRemaining)
 {
     ui->statusLabel->setText(
         QString("Waiting for players: %1 / %2").arg(current).arg(needed)
@@ -68,10 +68,7 @@ void LobbyWidget::onLobbyWaiting(QStringList players,
     ui->playersList->clear();
     ui->playersList->addItems(players);
 
-    if (secondsLeft > 0)
-        secondsLeft--;
-
-    updateTimerLabel();
+    updateTimerLabel(secondsRemaining);
 }
 
 void LobbyWidget::onLobbyGameStarted(QStringList players)
@@ -85,9 +82,9 @@ void LobbyWidget::onLobbyGameStarted(QStringList players)
     emit gameStarted(players);
 }
 
-void LobbyWidget::updateTimerLabel()
+void LobbyWidget::updateTimerLabel(int seconds)
 {
     ui->timerLabel->setText(
-        QString("00:%1").arg(secondsLeft, 2, 10, QChar('0'))
+        QString("00:%1").arg(seconds, 2, 10, QChar('0'))
     );
 }
