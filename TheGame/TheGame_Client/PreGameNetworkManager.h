@@ -55,6 +55,7 @@ private:
     QNetworkAccessManager m_manager;
     QTimer m_lobbyTimer;
     QString m_baseUrl = "http://localhost:18080";
+    QString m_currentUsername;
 
     ClientApi m_api;
 };
