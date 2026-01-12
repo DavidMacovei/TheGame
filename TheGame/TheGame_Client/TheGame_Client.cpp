@@ -85,6 +85,9 @@ void TheGame_Client::connectSignals()
     
     connect(m_lobbyPage, &LobbyWidget::gameStarted, this, &TheGame_Client::onGameStarted);
     connect(m_lobbyPage, &LobbyWidget::backToLogin, this, &TheGame_Client::onBackToLogin);
+    connect(m_lobbyPage, &LobbyWidget::viewProfile, this, &TheGame_Client::onViewProfile);
+
+    connect(m_profilePage, &ProfileWidget::backToMenu, this, &TheGame_Client::onBackToLobby);
     
     connect(m_preGameNet, &PreGameNetworkManager::networkError, this, &TheGame_Client::onNetworkError);
 }
@@ -115,6 +118,12 @@ void TheGame_Client::onBackToLogin()
     m_currentUsername.clear();
     m_currentPlayers.clear();
     m_stackedWidget->setCurrentWidget(m_loginPage);
+}
+
+void TheGame_Client::onViewProfile(QString username)
+{
+    m_profilePage->loadProfile(username);
+    m_stackedWidget->setCurrentWidget(m_profilePage);
 }
 
 void TheGame_Client::onGameStarted(QStringList players)

@@ -21,9 +21,11 @@ public:
 signals:
     void backToLogin();
     void gameStarted(QStringList players);
+    void viewProfile(QString username);
 
 private slots:
     void onCancelClicked();
+    void onProfileClicked();
     void onLobbyWaiting(QStringList players, int current, int needed);
     void onLobbyGameStarted(QStringList players);
 

@@ -150,6 +150,21 @@ void PreGameNetworkManager::onLobbyPollTimeout()
 
 void PreGameNetworkManager::fetchProfile(const QString& username)
 {
-    //Valori de test, ruta de /profile nu exista
-    emit profileLoaded(username, /*score*/ 3, /*hours*/ 1.5);
+    QtConcurrent::run([this, username]() {
+        ProfileResponse profileResp = m_api.GetProfile(username.toStdString());
+
+        QMetaObject::invokeMethod(this, [=]() {
+            if (profileResp.status == "success") {
+                emit profileLoaded(
+                    QString::fromStdString(profileResp.username),
+                    profileResp.score,
+                    profileResp.hoursPlayed
+                );
+            }
+            else {
+                emit profileError(QString::fromStdString(profileResp.message));
+            }
+        }, Qt::QueuedConnection);
+    });
 }
+

@@ -12,6 +12,9 @@ LobbyWidget::LobbyWidget(PreGameNetworkManager* net, QWidget* parent)
     connect(ui->cancelButton, &QPushButton::clicked,
         this, &LobbyWidget::onCancelClicked);
 
+    connect(ui->profileButton, &QPushButton::clicked,
+        this, &LobbyWidget::onProfileClicked);
+
     connect(net, &PreGameNetworkManager::lobbyWaiting,
         this, &LobbyWidget::onLobbyWaiting);
 
@@ -47,6 +50,11 @@ void LobbyWidget::onCancelClicked()
 {
     net->stopLobbyPolling();
     emit backToLogin();
+}
+
+void LobbyWidget::onProfileClicked()
+{
+    emit viewProfile(username);
 }
 
 void LobbyWidget::onLobbyWaiting(QStringList players,

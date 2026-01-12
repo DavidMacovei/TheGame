@@ -107,3 +107,13 @@ struct COMMON_API ChatHistory {
 	NLOHMANN_DEFINE_TYPE_INTRUSIVE(ChatHistory, messages)
 };
 
+struct COMMON_API ProfileResponse {
+	std::string status;
+	std::string message;
+	std::string username;
+	int score = 0;
+	double hoursPlayed = 0.0;
+
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(ProfileResponse, status, message, username, score, hoursPlayed)
+};
+
