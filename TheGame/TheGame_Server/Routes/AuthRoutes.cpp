@@ -61,4 +61,32 @@ void registerAuthRoutes(crow::SimpleApp& app)
 			return utils::Error(400, "Invalid JSON format");
 		}
 			});
+
+	CROW_ROUTE(app, "/profile").methods("POST"_method)
+		([](const crow::request& req) {
+		try {
+			auto userReq = json::parse(req.body).get<UserRequest>();
+
+			if (userReq.username.empty())
+				return utils::Error(400, "Username required");
+
+			auto storage = http::CreateStorage("users.sqlite");
+
+			auto users = storage.get_all<User>(sql::where(sql::c(&User::GetUsername) == userReq.username));
+			if (users.empty())
+				return utils::Error(404, "User not found");
+
+			ProfileResponse response;
+			response.status = "success";
+			response.message = "Profile retrieved";
+			response.username = users[0].GetUsername();
+			response.score = users[0].GetScore();
+			response.hoursPlayed = users[0].GetHoursPlayed();
+
+			return crow::response(200, json(response).dump());
+		}
+		catch (...) {
+			return utils::Error(400, "Invalid JSON format");
+		}
+			});
 }

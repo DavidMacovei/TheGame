@@ -258,6 +258,46 @@ ChatHistory ClientApi::GetChatHistory()
     return {};
 }
 
+ProfileResponse ClientApi::GetProfile(const std::string& username)
+{
+    try {
+        UserRequest req;
+        req.username = username;
+
+        auto r = cpr::Post(
+            cpr::Url{ baseUrl + "/profile" },
+            cpr::Body{ json(req).dump() },
+            cpr::Header{ {"Content-Type", "application/json"} }
+        );
+
+        if (r.text.empty()) {
+            ProfileResponse err;
+            err.status = "error";
+            err.message = "Server not responding";
+            return err;
+        }
+
+        if (r.status_code == 200)
+            return json::parse(r.text).get<ProfileResponse>();
+
+        try {
+            return json::parse(r.text).get<ProfileResponse>();
+        }
+        catch (...) {
+            ProfileResponse err;
+            err.status = "error";
+            err.message = "Failed to retrieve profile";
+            return err;
+        }
+    }
+    catch (const std::exception& e) {
+        ProfileResponse err;
+        err.status = "error";
+        err.message = "Exception in GetProfile: " + std::string(e.what());
+        return err;
+    }
+}
+
 void ClientApi::SetActiveGame(int gameId)
 {
     m_activeGameId = gameId;
