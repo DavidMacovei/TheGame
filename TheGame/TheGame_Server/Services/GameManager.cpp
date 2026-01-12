@@ -36,7 +36,7 @@ namespace game
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
 
-		if (m_waitingQueue.size() < PLAYERS_NEEDED)
+		if (m_waitingQueue.size() < MIN_PLAYERS)
 			return false;
 
 		auto now = std::chrono::steady_clock::now();
@@ -46,21 +46,32 @@ namespace game
 			return a.score < b.score;
 			});
 
-		bool forceStart = false;
+		bool timeoutReached = false;
 
 		for (const auto& player : m_waitingQueue)
 		{
 			auto duration = std::chrono::duration_cast<std::chrono::seconds>(now - player.joinTime).count();
 			if (duration >= MAX_WAIT_SECONDS)
 			{
-				forceStart = true;
+				timeoutReached = true;
 				break;
 			}
 		}
 
-		if (forceStart || m_waitingQueue.size() >= PLAYERS_NEEDED)
+		int playersToSelect = 0;
+
+		if (m_waitingQueue.size() >= MAX_PLAYERS)
 		{
-			for (int i = 0; i < PLAYERS_NEEDED; i++)
+			playersToSelect = MAX_PLAYERS;
+		}
+		else if (timeoutReached && m_waitingQueue.size() >= MIN_PLAYERS)
+		{
+			playersToSelect = std::min((int)m_waitingQueue.size(), MAX_PLAYERS);
+		}
+
+		if (playersToSelect >= MIN_PLAYERS)
+		{
+			for (int i = 0; i < playersToSelect; i++)
 				selectedPlayers.push_back(m_waitingQueue[i].username);
 
 			int newId = m_nextGameId++;
@@ -70,9 +81,8 @@ namespace game
 			for (const auto& username : selectedPlayers)
 				m_playerSessions[username] = newId;
 
-			m_waitingQueue.erase(m_waitingQueue.begin(), m_waitingQueue.begin() + PLAYERS_NEEDED);
+			m_waitingQueue.erase(m_waitingQueue.begin(), m_waitingQueue.begin() + playersToSelect);
 
-			//cout?
 			return true;
 		}
 

@@ -40,7 +40,8 @@ namespace game
 		int m_nextGameId = 1;
 		std::mutex m_mutex;
 
-		const int PLAYERS_NEEDED = 2;
+		const int MIN_PLAYERS = 2;
+		const int MAX_PLAYERS = 4;
 		const int MAX_WAIT_SECONDS = 30;
 	};
 }
