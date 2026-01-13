@@ -19,7 +19,7 @@ private:
     void setupRoutes();
 
 private:
-    crow::SimpleApp app;
+    crow::SimpleApp app; //referinta
 
     ChatService chat;
 

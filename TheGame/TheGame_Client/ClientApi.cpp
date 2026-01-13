@@ -1,5 +1,4 @@
 #include "ClientApi.h"
-#include <cpr/cpr.h>
 #include <iostream>
 
 ClientApi::ClientApi(const std::string& baseUrl) : baseUrl(baseUrl) {}
@@ -17,21 +16,7 @@ BasicResponse ClientApi::Login(const std::string& username, const std::string& p
             cpr::Header{ {"Content-Type", "application/json"} }
         );
 
-        if (r.text.empty()) 
-            return { "error", "Server not responding" };
-
-        if (r.status_code != 200)
-        {
-            try {
-                return json::parse(r.text).get<BasicResponse>();
-            }
-            catch (...)
-            {
-                return { "error", "Login failed with code " + std::to_string(r.status_code) };
-            }
-        }
-
-        return json::parse(r.text).get<BasicResponse>();
+        return HandleResponse(r, "Login");
     }
     catch (const std::exception& e) {
         return { "error", "Exception in Login: " + std::string(e.what()) };
@@ -51,21 +36,7 @@ BasicResponse ClientApi::RegisterUser(const std::string& username, const std::st
             cpr::Header{ {"Content-Type", "application/json"} }
         );
 
-        if (r.text.empty())
-            return { "error", "Server not responding" };
-
-        if (r.status_code != 200)
-        {
-            try {
-                return json::parse(r.text).get<BasicResponse>();
-            }
-            catch (...)
-            {
-                return { "error", "Register failed with code " + std::to_string(r.status_code) };
-            }
-        }
-
-        return json::parse(r.text).get<BasicResponse>();
+        return HandleResponse(r, "Register");
     }
     catch (const std::exception& e) {
         return { "error", "Exception in RegisterUser: " + std::string(e.what()) };
@@ -84,10 +55,7 @@ BasicResponse ClientApi::JoinLobby(const std::string& username)
             cpr::Header{ {"Content-Type", "application/json"} }
         );
 
-        if (r.text.empty())
-            return { "error", "Server not responding" };
-
-        return json::parse(r.text).get<BasicResponse>();
+        return HandleResponse(r, "JoinLobby");
     }
     catch (const std::exception& e) {
         return { "error", "Exception in JoinLobby: " + std::string(e.what()) };
@@ -158,21 +126,7 @@ BasicResponse ClientApi::PlayCard(int playerIndex, int handIndex, int stackIndex
             cpr::Header{ {"Content-Type", "application/json"} }
         );
 
-        if (r.text.empty())
-            return { "error", "Server not responding" };
-
-        if (r.status_code != 200)
-        {
-            try {
-                return json::parse(r.text).get<BasicResponse>();
-            }
-            catch (...)
-            {
-                return { "error", "Move failed with code " + std::to_string(r.status_code) };
-            }
-        }
-
-        return json::parse(r.text).get<BasicResponse>();
+        return HandleResponse(r, "PlayCard");
     }
     catch (const std::exception& e) {
         return { "error", "Exception in PlayCard: " + std::string(e.what()) };
@@ -194,21 +148,7 @@ BasicResponse ClientApi::EndTurn(int playerIndex)
             cpr::Header{ {"Content-Type", "application/json"} }
         );
 
-        if (r.text.empty())
-            return { "error", "Server not responding" };
-
-        if (r.status_code != 200)
-        {
-            try {
-                return json::parse(r.text).get<BasicResponse>();
-            }
-            catch (...)
-            {
-                return { "error", "Cannot end turn. Code: " + std::to_string(r.status_code) };
-            }
-        }
-
-        return json::parse(r.text).get<BasicResponse>();
+        return HandleResponse(r, "EndTurn");
     }
     catch (const std::exception& e) {
         return { "error", "Exception in EndTurn: " + std::string(e.what()) };
@@ -231,10 +171,7 @@ BasicResponse ClientApi::sendMessage(const std::string& sender, const std::strin
             cpr::Header{ {"Content-Type", "application/json"} }
         );
 
-        if (r.text.empty())
-            return { "error", "Server not responding" };
-
-        return json::parse(r.text).get<BasicResponse>();
+        return HandleResponse(r, "SendMessage");
     }
     catch (const std::exception& e) {
         return { "error", "Exception in SendMessage: " + std::string(e.what()) };
@@ -311,6 +248,30 @@ int ClientApi::GetActiveGameId() const
 void ClientApi::ResetGame()
 {
     m_activeGameId = -1;
+}
+
+BasicResponse ClientApi::HandleResponse(const cpr::Response& r, const std::string& actionName)
+{
+    if (r.text.empty())
+        return { "error", "Server not responding during " + actionName };
+
+    if (r.status_code != 200)
+    {
+        try {
+            return json::parse(r.text).get<BasicResponse>();
+        }
+        catch (...)
+        {
+            return { "error", actionName + " failed with code " + std::to_string(r.status_code) };
+        }
+    }
+
+    try {
+        return json::parse(r.text).get<BasicResponse>();
+    }
+    catch (const std::exception& e) {
+        return { "error", "Invalid JSON in " + actionName + ": " + std::string(e.what()) };
+    }
 }
 
 
