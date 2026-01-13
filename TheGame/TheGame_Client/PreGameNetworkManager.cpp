@@ -101,6 +101,13 @@ void PreGameNetworkManager::joinLobby(const QString& username)
     });
 }
 
+void PreGameNetworkManager::leaveLobby(const QString& username)
+{
+    QtConcurrent::run([this, username]() {
+        m_api.LeaveLobby(username.toStdString());
+    });
+}
+
 void PreGameNetworkManager::startLobbyPolling()
 {
     if (!m_lobbyTimer.isActive())

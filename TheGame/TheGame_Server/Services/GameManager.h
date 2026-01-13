@@ -21,6 +21,7 @@ namespace game
 		GameManager();
 
 		void AddPlayerToQueue(const std::string& username, int score);
+		void RemovePlayerFromQueue(const std::string& username);
 
 		bool IsPlayerInQueue(const std::string& username);
 

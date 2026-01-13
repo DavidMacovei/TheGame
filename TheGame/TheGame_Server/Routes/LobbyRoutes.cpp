@@ -88,4 +88,22 @@ void registerLobbyRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 			return utils::Error(400, "Invalid JSON format");
 		}
 			});
+
+	CROW_ROUTE(app, "/lobby/leave").methods("POST"_method)
+		([&gameManager](const crow::request& request) {
+		try {
+			auto req = json::parse(request.body).get<UserRequest>();
+
+			if (req.username.empty()) {
+				return utils::Error(400, "Username required");
+			}
+
+			gameManager.RemovePlayerFromQueue(req.username);
+
+			return utils::Success("Left lobby successfully");
+		}
+		catch (...) {
+			return utils::Error(400, "Invalid JSON format");
+		}
+			});
 }

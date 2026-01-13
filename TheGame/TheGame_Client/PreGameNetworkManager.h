@@ -20,6 +20,7 @@ public:
 
     // Lobby
     void joinLobby(const QString& username);
+    void leaveLobby(const QString& username);
     void startLobbyPolling();   
     void stopLobbyPolling();
 

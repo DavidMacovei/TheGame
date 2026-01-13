@@ -11,6 +11,7 @@ public:
 	BasicResponse RegisterUser(const std::string& username, const std::string& password);
 
 	BasicResponse JoinLobby(const std::string& username);
+	BasicResponse LeaveLobby(const std::string& username);
 	UserStatusResponse GetUserStatus(const std::string& username);
 
 	GameState GetGameState(const std::string& username);
