@@ -26,14 +26,14 @@ namespace game
 
 		bool TryMatchmaking();
 
-		void CleanupFinishedGames();
-
 		std::shared_ptr<Game> GetGame(int gameId);
 		int GetGameIdForPlayer(const std::string& username);
 		std::vector<std::string> GetWaitingList() const;
 		int GetSecondsRemaining() const;
 
 	private:
+		void CleanupFinishedGames();
+		
 		std::vector<QueuedPlayer> m_waitingQueue;
 		std::map<int, std::shared_ptr<Game>> m_activeGames;
 		std::map<std::string, int> m_playerSessions;

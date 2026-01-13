@@ -93,8 +93,6 @@ namespace game
 
 	void GameManager::CleanupFinishedGames()
 	{
-		std::lock_guard<std::mutex> lock(m_mutex);
-
 		for (auto it = m_activeGames.begin(); it != m_activeGames.end(); )
 		{
 			if (it->second->GetStatus() == GameStatus::Won ||
@@ -131,6 +129,7 @@ namespace game
 
 	std::vector<std::string> GameManager::GetWaitingList() const
 	{
+		std::lock_guard<std::mutex> lock(m_mutex);
 		std::vector<std::string> usernames;
 		for (const auto& player : m_waitingQueue)
 			usernames.push_back(player.username);
@@ -139,6 +138,7 @@ namespace game
 
 	int GameManager::GetSecondsRemaining() const
 	{
+		std::lock_guard<std::mutex> lock(m_mutex);
 		if (m_waitingQueue.empty())
 			return MAX_WAIT_SECONDS;
 
