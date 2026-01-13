@@ -12,10 +12,17 @@ namespace game {
 	{
 		std::lock_guard<std::mutex> lock(m_gameMutex);
 		
+		if (playerIndex >= m_players.size())
+			return false;
+
 		if (playerIndex != m_currentPlayerIndex)
 			return false;
 
 		Player& currentPlayer = m_players[playerIndex];
+
+		if(handIndex >= currentPlayer.GetCardsInHand())
+			return false;
+
 		const Card& candidateCard = currentPlayer.ChooseCardToPlay(handIndex);
 
 		if (m_board.CanPlaceCard(stackIndex, candidateCard))
