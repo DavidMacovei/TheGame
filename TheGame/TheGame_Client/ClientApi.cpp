@@ -222,7 +222,7 @@ BasicResponse ClientApi::HandleResponse(const cpr::Response& r, const std::strin
         }
         catch (...)
         {
-            return { "error", actionName + "failed with code" + std::to_string(r.status_code) };
+            return { "error", actionName + " failed with code " + std::to_string(r.status_code) };
         }
     }
 
