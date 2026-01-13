@@ -33,7 +33,7 @@ void registerLobbyRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 			return utils::Success("Joined lobby queue successfully");
 		}
 		catch (...) {
-			return utils::Error(400, "Invaild JSON format");
+			return utils::Error(400, "Invalid JSON format");
 		}
 			});
 
