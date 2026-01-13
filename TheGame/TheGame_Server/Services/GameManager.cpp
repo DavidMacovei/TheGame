@@ -36,6 +36,8 @@ namespace game
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
 
+		CleanupFinishedGames();
+
 		if (m_waitingQueue.size() < MIN_PLAYERS)
 			return false;
 
