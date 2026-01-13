@@ -42,7 +42,7 @@ namespace game
 		std::mutex m_mutex;
 
 		const int MIN_PLAYERS = 2;
-		const int MAX_PLAYERS = 4;
+		const int MAX_PLAYERS = 5;
 		const int MAX_WAIT_SECONDS = 30;
 	};
 }
