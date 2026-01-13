@@ -3,9 +3,10 @@
 #include "User.h"
 #include "GameModels.h"
 #include "ResponseUtils.h"
+#include "GameManager.h"
 #include <functional>
 
-void registerAuthRoutes(crow::SimpleApp& app)
+void registerAuthRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 {
 	CROW_ROUTE(app, "/auth/register").methods("POST"_method)
 		([](const crow::request& req) {
@@ -36,7 +37,7 @@ void registerAuthRoutes(crow::SimpleApp& app)
 
 
 	CROW_ROUTE(app, "/auth/login").methods("POST"_method)
-		([](const crow::request& req) {
+		([&gameManager](const crow::request& req) {
 		try {
 			auto authReq = json::parse(req.body).get<AuthRequest>();
 
@@ -54,6 +55,10 @@ void registerAuthRoutes(crow::SimpleApp& app)
 
 			if (users[0].GetPasswordHash() != password_hash)
 				return utils::Error(401, "Invalid username or password");
+
+			if (gameManager.IsPlayerInQueue(authReq.username) || 
+			    gameManager.GetGameIdForPlayer(authReq.username) != -1)
+				return utils::Error(409, "This account is already logged into on another device.");
 
 			return utils::Success("Login successful");
 		}
