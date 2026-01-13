@@ -31,6 +31,7 @@ namespace game
 		std::shared_ptr<Game> GetGame(int gameId);
 		int GetGameIdForPlayer(const std::string& username);
 		std::vector<std::string> GetWaitingList() const;
+		int GetSecondsRemaining() const;
 
 	private:
 		std::vector<QueuedPlayer> m_waitingQueue;
@@ -40,7 +41,8 @@ namespace game
 		int m_nextGameId = 1;
 		std::mutex m_mutex;
 
-		const int PLAYERS_NEEDED = 2;
+		const int MIN_PLAYERS = 2;
+		const int MAX_PLAYERS = 4;
 		const int MAX_WAIT_SECONDS = 30;
 	};
 }

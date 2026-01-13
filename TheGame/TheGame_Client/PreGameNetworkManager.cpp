@@ -63,57 +63,42 @@ void PreGameNetworkManager::registerUser(const QString& username,
 
 void PreGameNetworkManager::joinLobby(const QString& username)
 {
-    QUrl url(m_baseUrl + "/joinLobby");
-    QNetworkRequest req(url);
-    req.setHeader(QNetworkRequest::ContentTypeHeader,
-        "application/json");
+    m_currentUsername = username;
+    
+    QtConcurrent::run([this, username]() {
+        BasicResponse joinResp = m_api.JoinLobby(username.toStdString());
 
-    QJsonObject obj;
-    obj["username"] = username;
-    QJsonDocument doc(obj);
-
-    QNetworkReply* reply = m_manager.post(req, doc.toJson());
-
-    connect(reply, &QNetworkReply::finished, this, [=]() {
-        reply->deleteLater();
-
-        if (reply->error() != QNetworkReply::NoError) {
-            emit networkError("Network error: " + reply->errorString());
+        if (joinResp.status != "success") {
+            QMetaObject::invokeMethod(this, [=]() {
+                emit networkError(QString::fromStdString(joinResp.message));
+            }, Qt::QueuedConnection);
             return;
         }
 
-        QByteArray data = reply->readAll();
-        QJsonDocument doc = QJsonDocument::fromJson(data);
-        QJsonObject o = doc.object();
+        UserStatusResponse statusResp = m_api.GetUserStatus(username.toStdString());
 
-        // Răspunsul actual de la /joinLobby:
-        // - status: "Game started" sau "Waiting"
-        // - current_players, needed_players, waiting_list[]   (daca Waiting)
-        // - players[] (daca Game started)
-
-        const QString status = o.value("status").toString();
-
-        if (status == "Game started") {
-            QStringList players;
-            auto playersArr = o.value("players");
-            if (playersArr.isArray()) {
-                for (auto v : playersArr.toArray())
-                    players << v.toString();
+        QMetaObject::invokeMethod(this, [=]() {
+            if (statusResp.status == "running" && statusResp.gameId != -1) {
+                m_api.SetActiveGame(statusResp.gameId);
+                
+                QStringList players;
+                for (const auto& player : statusResp.waitingList) {
+                    players << QString::fromStdString(player);
+                }
+                emit lobbyGameStarted(players);
             }
-            emit lobbyGameStarted(players);
-        }
-        else { // "Waiting"
-            int current = o.value("current_players").toInt();
-            int needed = o.value("needed_players").toInt();
-            QStringList waiting;
-            auto wl = o.value("waiting_list");
-            if (wl.isArray()) {
-                for (auto v : wl.toArray())
-                    waiting << v.toString();
+            else if (statusResp.status == "waiting") {
+                QStringList waiting;
+                for (const auto& player : statusResp.waitingList) {
+                    waiting << QString::fromStdString(player);
+                }
+                emit lobbyWaiting(waiting, statusResp.playersInQueue, 4, statusResp.secondsRemaining);
             }
-            emit lobbyWaiting(waiting, current, needed);
-        }
-        });
+            else {
+                emit networkError("Unknown lobby status: " + QString::fromStdString(statusResp.status));
+            }
+        }, Qt::QueuedConnection);
+    });
 }
 
 void PreGameNetworkManager::startLobbyPolling()
@@ -129,57 +114,57 @@ void PreGameNetworkManager::stopLobbyPolling()
 
 void PreGameNetworkManager::onLobbyPollTimeout()
 {
-    QUrl url(m_baseUrl + "/lobbyState");
-    QNetworkRequest req(url);
+    if (m_currentUsername.isEmpty())
+        return;
 
-    QNetworkReply* reply = m_manager.get(req);
+    QtConcurrent::run([this]() {
+        UserStatusResponse statusResp = m_api.GetUserStatus(m_currentUsername.toStdString());
 
-    connect(reply, &QNetworkReply::finished, this, [=]() {
-        reply->deleteLater();
-
-        if (reply->error() != QNetworkReply::NoError) {
-            emit networkError("Network error: " + reply->errorString());
-            return;
-        }
-
-        QByteArray data = reply->readAll();
-        QJsonDocument doc = QJsonDocument::fromJson(data);
-        QJsonObject o = doc.object();
-
-        // /lobbyStatus are:
-        // - status: "Game running" sau "Waiting"
-        // - players[] (daca Game running)
-        // - current_players, waiting_list[] (daca Waiting)
-
-        const QString status = o.value("status").toString();
-
-        if (status == "Game running") {
-            QStringList players;
-            auto arr = o.value("players");
-            if (arr.isArray()) {
-                for (auto v : arr.toArray())
-                    players << v.toString();
+        QMetaObject::invokeMethod(this, [=]() {
+            if (statusResp.status == "error") {
+                emit networkError(QString::fromStdString(statusResp.message));
+                return;
             }
-            emit lobbyGameStarted(players);
-        }
-        else {
-            int current = o.value("current_players").toInt();
-            int needed = 4;
-            QStringList waiting;
-            auto wl = o.value("waiting_list");
-            if (wl.isArray()) {
-                for (auto v : wl.toArray())
-                    waiting << v.toString();
+
+            if (statusResp.status == "running" && statusResp.gameId != -1) {
+                m_api.SetActiveGame(statusResp.gameId);
+                
+                QStringList players;
+                for (const auto& player : statusResp.waitingList) {
+                    players << QString::fromStdString(player);
+                }
+                emit lobbyGameStarted(players);
             }
-            emit lobbyWaiting(waiting, current, needed);
-        }
-        });
+            else if (statusResp.status == "waiting") {
+                QStringList waiting;
+                for (const auto& player : statusResp.waitingList) {
+                    waiting << QString::fromStdString(player);
+                }
+                emit lobbyWaiting(waiting, statusResp.playersInQueue, 4, statusResp.secondsRemaining);
+            }
+        }, Qt::QueuedConnection);
+    });
 }
 
 // =================== PROFILE (stub) ==================
 
 void PreGameNetworkManager::fetchProfile(const QString& username)
 {
-    //Valori de test, ruta de /profile nu exista
-    emit profileLoaded(username, /*score*/ 3, /*hours*/ 1.5);
+    QtConcurrent::run([this, username]() {
+        ProfileResponse profileResp = m_api.GetProfile(username.toStdString());
+
+        QMetaObject::invokeMethod(this, [=]() {
+            if (profileResp.status == "success") {
+                emit profileLoaded(
+                    QString::fromStdString(profileResp.username),
+                    profileResp.score,
+                    profileResp.hoursPlayed
+                );
+            }
+            else {
+                emit profileError(QString::fromStdString(profileResp.message));
+            }
+        }, Qt::QueuedConnection);
+    });
 }
+

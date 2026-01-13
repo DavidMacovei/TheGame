@@ -20,6 +20,7 @@ public:
 	BasicResponse sendMessage(const std::string& sender, const std::string& message);//SendMessage existenta?
 	ChatHistory GetChatHistory();
 
+    ProfileResponse GetProfile(const std::string& username);
 
 	void SetActiveGame(int gameId);
 	int GetActiveGameId() const;

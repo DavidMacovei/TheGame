@@ -29,6 +29,8 @@ private slots:
     void onRegisterSuccess(QString username);
     void onBackToLogin();
     
+    void onViewProfile(QString username);
+    
     void onGameStarted(QStringList players);
     void onGameEnded(bool victory, int cardsLeft);
     void onBackToLobby();

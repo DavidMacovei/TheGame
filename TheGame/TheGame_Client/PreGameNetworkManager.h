@@ -36,7 +36,8 @@ signals:
     // Lobby
     void lobbyWaiting(QStringList waitingPlayers,
         int currentPlayers,
-        int neededPlayers);
+        int neededPlayers,
+        int secondsRemaining);
 
     void lobbyGameStarted(QStringList playersInGame);
 
@@ -55,6 +56,7 @@ private:
     QNetworkAccessManager m_manager;
     QTimer m_lobbyTimer;
     QString m_baseUrl = "http://localhost:18080";
+    QString m_currentUsername;
 
     ClientApi m_api;
 };

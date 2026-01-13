@@ -41,9 +41,10 @@ struct COMMON_API UserStatusResponse {
 	std::string message;
 	int playersInQueue = 0;
 	int gameId = -1;
+	int secondsRemaining = 30;
 	std::vector<std::string> waitingList;
 
-	NLOHMANN_DEFINE_TYPE_INTRUSIVE(UserStatusResponse, status, message, playersInQueue, gameId, waitingList)
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(UserStatusResponse, status, message, playersInQueue, gameId, secondsRemaining, waitingList)
 };
 
 struct COMMON_API PlayerState {
@@ -105,5 +106,15 @@ struct COMMON_API ChatHistory {
 	std::vector<ChatMessage> messages;
 
 	NLOHMANN_DEFINE_TYPE_INTRUSIVE(ChatHistory, messages)
+};
+
+struct COMMON_API ProfileResponse {
+	std::string status;
+	std::string message;
+	std::string username;
+	int score = 0;
+	double hoursPlayed = 0.0;
+
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(ProfileResponse, status, message, username, score, hoursPlayed)
 };
 

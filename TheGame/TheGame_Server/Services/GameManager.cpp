@@ -38,7 +38,7 @@ namespace game
 
 		CleanupFinishedGames();
 
-		if (m_waitingQueue.size() < PLAYERS_NEEDED)
+		if (m_waitingQueue.size() < MIN_PLAYERS)
 			return false;
 
 		auto now = std::chrono::steady_clock::now();
@@ -48,21 +48,32 @@ namespace game
 			return a.score < b.score;
 			});
 
-		bool forceStart = false;
+		bool timeoutReached = false;
 
 		for (const auto& player : m_waitingQueue)
 		{
 			auto duration = std::chrono::duration_cast<std::chrono::seconds>(now - player.joinTime).count();
 			if (duration >= MAX_WAIT_SECONDS)
 			{
-				forceStart = true;
+				timeoutReached = true;
 				break;
 			}
 		}
 
-		if (forceStart || m_waitingQueue.size() >= PLAYERS_NEEDED)
+		int playersToSelect = 0;
+
+		if (m_waitingQueue.size() >= MAX_PLAYERS)
 		{
-			for (int i = 0; i < PLAYERS_NEEDED; i++)
+			playersToSelect = MAX_PLAYERS;
+		}
+		else if (timeoutReached && m_waitingQueue.size() >= MIN_PLAYERS)
+		{
+			playersToSelect = std::min((int)m_waitingQueue.size(), MAX_PLAYERS);
+		}
+
+		if (playersToSelect >= MIN_PLAYERS)
+		{
+			for (int i = 0; i < playersToSelect; i++)
 				selectedPlayers.push_back(m_waitingQueue[i].username);
 
 			int newId = m_nextGameId++;
@@ -72,9 +83,8 @@ namespace game
 			for (const auto& username : selectedPlayers)
 				m_playerSessions[username] = newId;
 
-			m_waitingQueue.erase(m_waitingQueue.begin(), m_waitingQueue.begin() + PLAYERS_NEEDED);
+			m_waitingQueue.erase(m_waitingQueue.begin(), m_waitingQueue.begin() + playersToSelect);
 
-			//cout?
 			return true;
 		}
 
@@ -125,5 +135,25 @@ namespace game
 		for (const auto& player : m_waitingQueue)
 			usernames.push_back(player.username);
 		return usernames;
+	}
+
+	int GameManager::GetSecondsRemaining() const
+	{
+		if (m_waitingQueue.empty())
+			return MAX_WAIT_SECONDS;
+
+		auto now = std::chrono::steady_clock::now();
+		auto oldestJoinTime = m_waitingQueue[0].joinTime;
+
+		for (const auto& player : m_waitingQueue)
+		{
+			if (player.joinTime < oldestJoinTime)
+				oldestJoinTime = player.joinTime;
+		}
+
+		auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - oldestJoinTime).count();
+		int remaining = MAX_WAIT_SECONDS - (int)elapsed;
+
+		return std::max(0, remaining);
 	}
 }
