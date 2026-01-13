@@ -1,9 +1,6 @@
 #include "Player.h"
 
-Player::Player(std::string username)
-{
-	this->m_username = username;
-}
+Player::Player(std::string username) : m_username{ std::move(username) } {}
 
 void Player::AddCardToHand(Card&& c)
 {
@@ -13,7 +10,6 @@ void Player::AddCardToHand(Card&& c)
 const Card& Player::ChooseCardToPlay(int handIndex)
 {
 	return m_hand[handIndex];
-	
 }
 
 Card Player::ExtractCard(int handIndex)

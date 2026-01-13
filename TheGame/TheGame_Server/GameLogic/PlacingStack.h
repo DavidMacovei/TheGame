@@ -8,12 +8,11 @@ public:
 	PlacingStack() = default;
 	PlacingStack(StackType type);
 
-	uint8_t GetCurrentValue() const;
-	StackType GetType() const;
-
 	bool CanPlace(const Card& card) const;
 	void PlaceCard(Card&& card);
 
+	uint8_t GetCurrentValue() const;
+	StackType GetType() const;
 
 private:
 	uint8_t m_currentValue;

@@ -1,13 +1,39 @@
 #include <cassert>
-
+#include <cmath>
+#include <format>
+#include <stdexcept>
 #include "PlacingStack.h"
 
-
-constexpr int BACKWARDS_TRICK_OFFSET = 10;
+const int BACKWARDS_TRICK_OFFSET = 10;
 
 PlacingStack::PlacingStack(StackType type) : m_type{type}
 {
-	(type == StackType::Ascending) ? (m_currentValue = 1) : (m_currentValue = 100);
+	m_currentValue = (type == StackType::Ascending) ? 1 : 100;
+}
+
+bool PlacingStack::CanPlace(const Card& card) const
+{
+	int cardValue = card.GetValue();
+	int diff = cardValue - m_currentValue;
+
+	bool isBackwardsMove = std::abs(diff) == BACKWARDS_TRICK_OFFSET;
+	if (isBackwardsMove)
+		return true;
+
+	if (m_type == StackType::Ascending)
+		return cardValue > m_currentValue;
+	else
+		return cardValue < m_currentValue;
+}
+
+void PlacingStack::PlaceCard(Card&& card)
+{
+	if (!CanPlace(card))
+		throw std::logic_error(
+			std::format("Invalid move: Cannot place card {} over {}.", card.GetValue(), m_currentValue)
+		);
+
+	m_currentValue = card.GetValue();
 }
 
 uint8_t PlacingStack::GetCurrentValue() const
@@ -18,34 +44,4 @@ uint8_t PlacingStack::GetCurrentValue() const
 StackType PlacingStack::GetType() const
 {
 	return m_type;
-}
-
-bool PlacingStack::CanPlace(const Card& card) const
-{
-	int cardValue = card.GetValue();
-
-	if (m_type == StackType::Ascending)
-	{
-		if (cardValue > m_currentValue)
-			return true;
-
-		if (cardValue == m_currentValue - BACKWARDS_TRICK_OFFSET)
-			return true;
-	}
-	else
-	{
-		if (cardValue < m_currentValue)
-			return true;
-
-		if (cardValue == m_currentValue + BACKWARDS_TRICK_OFFSET)
-			return true;
-	}
-	return false;
-}
-
-void PlacingStack::PlaceCard(Card&& card)
-{
-	assert(CanPlace(card) && "PRECONDITION FAILED: Cannot place this card!");
-
-	m_currentValue = card.GetValue();
 }

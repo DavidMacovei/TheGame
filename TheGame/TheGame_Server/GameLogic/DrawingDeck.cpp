@@ -1,26 +1,27 @@
 #include "DrawingDeck.h"
+#include <algorithm>
+#include <numeric>
+#include <random>
 
-const uint8_t nrOfCards = 98;
+const uint8_t NR_OF_CARDS = 98;
+const uint8_t START_VALUE = 2;
 
 DrawingDeck::DrawingDeck()
 {
-	m_cards.resize(nrOfCards);
-	for (int i = 0; i < nrOfCards; i++)
-		m_cards[i] = i + 2;
+	m_cards.resize(NR_OF_CARDS);
+
+	uint8_t currentValue = START_VALUE;
+	std::generate(m_cards.begin(), m_cards.end(), [&currentValue]() {
+		return Card(currentValue++);
+		});
 }
 
 void DrawingDeck::Shuffle()
 {
-	std::random_device r_seed;
-	std::mt19937 rng(r_seed());
-	for (int i = m_cards.size() - 1; i > 0; i--) {
-		std::uniform_int_distribution<std::mt19937::result_type> dist(0, i-1);
-		int j = dist(rng);
-		Card temp;
-		temp = m_cards[i];
-		m_cards[i] = m_cards[j];
-		m_cards[j] = temp;
-	}
+	std::random_device rd;
+	std::mt19937 g(rd());
+
+	std::ranges::shuffle(m_cards, g);
 }
 
 Card DrawingDeck::DrawCard()
@@ -32,12 +33,10 @@ Card DrawingDeck::DrawCard()
 
 bool DrawingDeck::IsEmpty() const
 {
-	if (m_cards.size() == 0)
-		return true;
-	return false;
+	return m_cards.empty();
 }
 
 int DrawingDeck::GetLeftoverCardNumber() const
 {
-	return m_cards.size();
+	return static_cast<int>(m_cards.size());
 }
