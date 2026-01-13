@@ -114,6 +114,10 @@ void TheGame_Client::onRegisterSuccess(QString username)
 
 void TheGame_Client::onBackToLogin()
 {
+    if (!m_currentUsername.isEmpty()) {
+        m_preGameNet->leaveLobby(m_currentUsername);
+    }
+    
     m_preGameNet->stopLobbyPolling();
     m_currentUsername.clear();
     m_currentPlayers.clear();

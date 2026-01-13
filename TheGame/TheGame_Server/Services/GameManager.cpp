@@ -21,6 +21,19 @@ namespace game
 		m_waitingQueue.push_back(qp);
 	}
 
+	void GameManager::RemovePlayerFromQueue(const std::string& username)
+	{
+		std::lock_guard<std::mutex> lock(m_mutex);
+
+		m_waitingQueue.erase(
+			std::remove_if(m_waitingQueue.begin(), m_waitingQueue.end(),
+				[&username](const QueuedPlayer& player) {
+					return player.username == username;
+				}),
+			m_waitingQueue.end()
+		);
+	}
+
 	bool GameManager::IsPlayerInQueue(const std::string& username)
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);

@@ -62,6 +62,25 @@ BasicResponse ClientApi::JoinLobby(const std::string& username)
     }
 }
 
+BasicResponse ClientApi::LeaveLobby(const std::string& username)
+{
+    try {
+        UserRequest req;
+        req.username = username;
+
+        auto r = cpr::Post(
+            cpr::Url{ baseUrl + "/lobby/leave" },
+            cpr::Body{ json(req).dump() },
+            cpr::Header{ {"Content-Type", "application/json"} }
+        );
+
+        return HandleResponse(r, "LeaveLobby");
+    }
+    catch (const std::exception& e) {
+        return { "error", "Exception in LeaveLobby: " + std::string(e.what()) };
+    }
+}
+
 UserStatusResponse ClientApi::GetUserStatus(const std::string& username)
 {
     try {

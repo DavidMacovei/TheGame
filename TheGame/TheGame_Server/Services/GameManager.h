@@ -21,6 +21,7 @@ namespace game
 		GameManager();
 
 		void AddPlayerToQueue(const std::string& username, int score);
+		void RemovePlayerFromQueue(const std::string& username);
 
 		bool IsPlayerInQueue(const std::string& username);
 
@@ -39,7 +40,7 @@ namespace game
 		std::map<std::string, int> m_playerSessions;
 
 		int m_nextGameId = 1;
-		std::mutex m_mutex;
+		mutable std::mutex m_mutex;
 
 		const int MIN_PLAYERS = 2;
 		const int MAX_PLAYERS = 5;

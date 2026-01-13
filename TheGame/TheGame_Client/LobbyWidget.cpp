@@ -47,6 +47,7 @@ void LobbyWidget::enterLobby(const QString& username)
 
 void LobbyWidget::onCancelClicked()
 {
+    net->leaveLobby(username);
     net->stopLobbyPolling();
     emit backToLogin();
 }
