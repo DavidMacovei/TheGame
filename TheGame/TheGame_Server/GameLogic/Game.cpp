@@ -10,6 +10,8 @@ namespace game {
 
 	bool Game::PlayCard(uint8_t playerIndex, uint8_t handIndex, uint8_t stackIndex)
 	{
+		std::lock_guard<std::mutex> lock(m_gameMutex);
+		
 		if (playerIndex != m_currentPlayerIndex)
 			return false;
 
@@ -31,6 +33,8 @@ namespace game {
 
 	bool Game::EndTurn(uint8_t playerIndex)
 	{
+		std::lock_guard<std::mutex> lock(m_gameMutex);
+		
 		if (m_currentPlayerIndex != playerIndex)
 			return false;
 
@@ -57,6 +61,8 @@ namespace game {
 
 	bool Game::IsPlayerInGame(const std::string& username) const
 	{
+		std::lock_guard<std::mutex> lock(m_gameMutex);
+		
 		for (const auto& player : m_players)
 			if (player.GetUsername() == username)
 				return true;
@@ -66,26 +72,31 @@ namespace game {
 
 	GameStatus Game::GetStatus() const
 	{
+		std::lock_guard<std::mutex> lock(m_gameMutex);
 		return m_status;
 	}
 
 	int Game::GetCurrentPlayerIndex() const
 	{
+		std::lock_guard<std::mutex> lock(m_gameMutex);
 		return m_currentPlayerIndex;
 	}
 
 	const Board& Game::GetBoard() const
 	{
+		std::lock_guard<std::mutex> lock(m_gameMutex);
 		return m_board;
 	}
 
 	const std::vector<Player>& Game::GetPlayers() const
 	{
+		std::lock_guard<std::mutex> lock(m_gameMutex);
 		return m_players;
 	}
 
 	int Game::GetMinimumNumberOfCardsToPlay() const
 	{
+		std::lock_guard<std::mutex> lock(m_gameMutex);
 		return m_minimumNumberOfCardsToPlay;
 	}
 

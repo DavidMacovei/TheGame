@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "Board.h"
 #include <vector>
+#include <mutex>
 
 namespace game {
 
@@ -37,6 +38,8 @@ namespace game {
 		int m_minimumNumberOfCardsToPlay;
 		int m_cardsPlayedThisTurn;
 		int m_currentPlayerIndex;
+
+		mutable std::mutex m_gameMutex;
 	};
 }
 
