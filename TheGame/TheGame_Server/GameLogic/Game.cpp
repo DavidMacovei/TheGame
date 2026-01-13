@@ -1,8 +1,8 @@
 #include "Game.h"
 #include <algorithm>
 
-namespace game {
-
+namespace game 
+{
 	Game::Game(const std::vector<std::string>& playerNames)
 	{
 		InitializeGame(playerNames);
@@ -70,11 +70,9 @@ namespace game {
 	{
 		std::lock_guard<std::mutex> lock(m_gameMutex);
 		
-		for (const auto& player : m_players)
-			if (player.GetUsername() == username)
-				return true;
-
-		return false;
+		return std::ranges::any_of(m_players, [&](const Player& p) {
+			return p.GetUsername() == username;
+			});
 	}
 
 	GameStatus Game::GetStatus() const
@@ -112,13 +110,14 @@ namespace game {
 		m_board.Reset();
 		m_players.clear();
 
+		m_players.reserve(playerNames.size());
 		for (const auto& name : playerNames)
 		{
 			m_players.emplace_back(name);
 		}
 
 		int n = (int)m_players.size();
-		if (n < 2 || n>5)
+		if (n < 2 || n > 5)
 		{
 			throw std::invalid_argument("Number of players must be between 2 and 5.");
 		}
@@ -164,8 +163,11 @@ namespace game {
 
 	void Game::UpdateGameStatus()
 	{
-		bool allEmpty = std::all_of(m_players.begin(), m_players.end(),
-			[](const Player& p) { return p.GetHand().empty(); });
+		bool allEmpty = std::ranges::all_of(m_players,
+			[](const Player& p) { 
+				return p.GetHand().empty(); 
+			});
+
 		if (allEmpty && m_board.IsDeckEmpty())
 		{
 			m_status = GameStatus::Won;
@@ -183,10 +185,8 @@ namespace game {
 	{
 		const auto& playerHand = m_players[m_currentPlayerIndex].GetHand();
 
-		for (const auto& card : playerHand)
-			if (m_board.CanPlaceCardAnywhere(card))
-				return true;
-
-		return false;
+		return std::ranges::any_of(playerHand, [&](const Card& c) {
+			return m_board.CanPlaceCardAnywhere(c);
+			});
 	}
 }

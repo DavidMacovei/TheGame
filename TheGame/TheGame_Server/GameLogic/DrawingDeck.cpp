@@ -3,40 +3,43 @@
 #include <numeric>
 #include <random>
 
-const uint8_t NR_OF_CARDS = 98;
-const uint8_t START_VALUE = 2;
-
-DrawingDeck::DrawingDeck()
+namespace game
 {
-	m_cards.resize(NR_OF_CARDS);
+	const uint8_t NR_OF_CARDS = 98;
+	const uint8_t START_VALUE = 2;
 
-	uint8_t currentValue = START_VALUE;
-	std::generate(m_cards.begin(), m_cards.end(), [&currentValue]() {
-		return Card(currentValue++);
-		});
-}
+	DrawingDeck::DrawingDeck()
+	{
+		m_cards.resize(NR_OF_CARDS);
 
-void DrawingDeck::Shuffle()
-{
-	std::random_device rd;
-	std::mt19937 g(rd());
+		uint8_t currentValue = START_VALUE;
+		std::generate(m_cards.begin(), m_cards.end(), [&currentValue]() {
+			return Card(currentValue++);
+			});
+	}
 
-	std::ranges::shuffle(m_cards, g);
-}
+	void DrawingDeck::Shuffle()
+	{
+		std::random_device rd;
+		std::mt19937 g(rd());
 
-Card DrawingDeck::DrawCard()
-{
-	Card card = std::move(m_cards.back());
-	m_cards.pop_back();
-	return card;
-}
+		std::ranges::shuffle(m_cards, g);
+	}
 
-bool DrawingDeck::IsEmpty() const
-{
-	return m_cards.empty();
-}
+	Card DrawingDeck::DrawCard()
+	{
+		Card card = std::move(m_cards.back());
+		m_cards.pop_back();
+		return card;
+	}
 
-int DrawingDeck::GetLeftoverCardNumber() const
-{
-	return static_cast<int>(m_cards.size());
+	bool DrawingDeck::IsEmpty() const
+	{
+		return m_cards.empty();
+	}
+
+	int DrawingDeck::GetLeftoverCardNumber() const
+	{
+		return static_cast<int>(m_cards.size());
+	}
 }

@@ -1,9 +1,12 @@
 #pragma once
 #include <cstdint>
 
-enum class StackType : std::uint8_t
+namespace game
 {
-	Ascending,
-	Descending
-};
+	enum class StackType : std::uint8_t
+	{
+		Ascending,
+		Descending
+	};
+}
 

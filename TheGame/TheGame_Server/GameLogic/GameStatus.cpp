@@ -1,7 +1,8 @@
 #include "GameStatus.h"
 #include <stdexcept>
-namespace game {
 
+namespace game 
+{
 	GameStatus ToGameStatus(std::string_view str)
 	{
 		using enum GameStatus;

@@ -2,20 +2,23 @@
 #include "StackType.h"
 #include "Card.h"
 
-class PlacingStack
+namespace game
 {
-public:
-	PlacingStack() = default;
-	PlacingStack(StackType type);
+	class PlacingStack
+	{
+	public:
+		PlacingStack() = default;
+		PlacingStack(StackType type);
 
-	bool CanPlace(const Card& card) const;
-	void PlaceCard(Card&& card);
+		bool CanPlace(const Card& card) const;
+		void PlaceCard(Card&& card);
 
-	uint8_t GetCurrentValue() const;
-	StackType GetType() const;
+		uint8_t GetCurrentValue() const;
+		StackType GetType() const;
 
-private:
-	uint8_t m_currentValue;
-	StackType m_type;
-};
+	private:
+		uint8_t m_currentValue;
+		StackType m_type;
+	};
+}
 

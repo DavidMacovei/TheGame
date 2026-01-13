@@ -1,9 +1,8 @@
 #pragma once
 
+#include <array>
 #include "DrawingDeck.h"
 #include "PlacingStack.h"
-
-#include <array>
 
 namespace game
 {

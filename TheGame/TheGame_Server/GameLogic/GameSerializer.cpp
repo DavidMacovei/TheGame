@@ -13,40 +13,35 @@ namespace game
 		gameState.drawDeckCount = gameObj.GetBoard().GetCardsLeftInDeck();
 		gameState.minCardsToPlay = gameObj.GetMinimumNumberOfCardsToPlay();
 
-		const std::array<PlacingStack, numberOfStacks>& placingStacks = gameObj.GetBoard().GetPlacingStacks();
-		for (size_t i = 0; i < numberOfStacks; i++)
-		{
-			StackState stackState;
+		const auto& placingStacks = gameObj.GetBoard().GetPlacingStacks();
 
-			stackState.topCardValue = placingStacks[i].GetCurrentValue();
-			if (placingStacks[i].GetType() == StackType::Ascending)
-				stackState.isAscending = true;
-			else
-				stackState.isAscending = false;
+		std::transform(placingStacks.begin(), placingStacks.end(), gameState.placingStacks.begin(),
+			[](const PlacingStack& stack) {
+				StackState stackState;
+				stackState.topCardValue = stack.GetCurrentValue();
+				stackState.isAscending = (stack.GetType() == StackType::Ascending);
+				return stackState;
+			});
 
-			gameState.placingStacks[i] = stackState;
-		}
+		const auto& players = gameObj.GetPlayers();
 
-		const std::vector<Player>& players = gameObj.GetPlayers();
-		for (size_t i = 0; i < players.size(); i++)
-		{
-			const auto& serverPlayer = players[i];
+		gameState.players.clear();
 
-			PlayerState playerState;
-			playerState.cardCount = serverPlayer.GetCardsInHand();
-			playerState.username = serverPlayer.GetUsername();
+		std::transform(players.begin(), players.end(), std::back_inserter(gameState.players),
+			[&requestingUsername](const Player& serverPlayer) {
+				PlayerState playerState;
+				playerState.cardCount = serverPlayer.GetCardsInHand();
+				playerState.username = serverPlayer.GetUsername();
 
-			if (serverPlayer.GetUsername() == requestingUsername)
-			{
-				const auto& hand = serverPlayer.GetHand();
-				for (const auto& card : hand)
+				if (serverPlayer.GetUsername() == requestingUsername)
 				{
-					playerState.hand.push_back(card.GetValue());
+					const auto& hand = serverPlayer.GetHand();
+					for (const auto& card : hand)
+						playerState.hand.push_back(card.GetValue());
 				}
-			}
-			
-			gameState.players.push_back(playerState);
-		}
+
+				return playerState;
+			});
 
 		json j = gameState;
 		return j.dump();

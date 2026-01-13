@@ -1,22 +1,25 @@
 #pragma once
 #include<cstdint>
 
-class Card
+namespace game
 {
-public:
-	Card();
-	explicit Card(uint8_t value);
+	class Card
+	{
+	public:
+		Card();
+		explicit Card(uint8_t value);
 
-    Card(const Card&) = default;
-    Card(Card&&) = default;
-	Card& operator=(const Card&) = default;
-    Card& operator=(Card&&) = default;
-	~Card() = default;
+		Card(const Card&) = default;
+		Card(Card&&) = default;
+		Card& operator=(const Card&) = default;
+		Card& operator=(Card&&) = default;
+		~Card() = default;
 
-	std::uint8_t GetValue() const;
+		std::uint8_t GetValue() const;
 
-	auto operator<=>(const Card& other) const = default;
+		auto operator<=>(const Card& other) const = default;
 
-private:
-	std::uint8_t m_value;
-};
+	private:
+		std::uint8_t m_value;
+	};
+}

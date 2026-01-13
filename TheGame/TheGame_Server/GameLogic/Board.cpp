@@ -1,4 +1,5 @@
 #include "Board.h"
+#include <algorithm>
 
 namespace game
 {
@@ -45,10 +46,9 @@ namespace game
 
 	bool Board::CanPlaceCardAnywhere(const Card& card) const
 	{
-		for (const auto& stack : m_placingStacks)
-			if (stack.CanPlace(card))
-				return true;
-		return false;
+		return std::ranges::any_of(m_placingStacks, [&](const auto& stack) {
+			return stack.CanPlace(card);
+			});
 	}
 
 	void Board::PlaceCard(uint8_t stackIndex, Card&& card)

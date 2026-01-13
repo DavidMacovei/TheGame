@@ -4,17 +4,20 @@
 #include<vector>
 #include<random>
 
-class DrawingDeck
+namespace game
 {
-public:
-	DrawingDeck();
+	class DrawingDeck
+	{
+	public:
+		DrawingDeck();
 
-	void Shuffle();
-	Card DrawCard();
-	bool IsEmpty() const;
-	int GetLeftoverCardNumber() const;
+		void Shuffle();
+		Card DrawCard();
+		bool IsEmpty() const;
+		int GetLeftoverCardNumber() const;
 
-private:
-	std::vector<Card> m_cards;
-};
+	private:
+		std::vector<Card> m_cards;
+	};
+}
 

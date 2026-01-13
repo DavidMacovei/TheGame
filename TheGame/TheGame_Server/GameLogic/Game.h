@@ -6,8 +6,8 @@
 #include <vector>
 #include <mutex>
 
-namespace game {
-
+namespace game 
+{
 	class Game
 	{
 	public:
