@@ -187,31 +187,34 @@ void GameBoardWidget::updateOpponentHands(const QJsonArray& players)
     }
 
     // Update player labels and hands based on position
+    // Player 1 = Left, Player 2 = Top, Player 3 = Right, Player 4 = Bottom-Left
     QList<CardHandWidget*> handWidgets = {
       ui->player1Hand,
         ui->player2Hand,
-        ui->player3Hand
+        ui->player3Hand,
+  ui->player4Hand
     };
     QList<QLabel*> nameLabels = {
         ui->lblPlayer1Name,
-  ui->lblPlayer2Name,
-        ui->lblPlayer3Name
+        ui->lblPlayer2Name,
+     ui->lblPlayer3Name,
+        ui->lblPlayer4Name
     };
 
-    for (int i = 0; i < 3; i++) {
-      if (i < opponents.size()) {
-int cardCount = opponents[i].second.size();
-        nameLabels[i]->setText(opponents[i].first + " (" + QString::number(cardCount) + " cards)");
-            nameLabels[i]->setVisible(true);
-    
-        // Create vector of card backs (0 = card back)
+  for (int i = 0; i < 4; i++) {
+        if (i < opponents.size()) {
+            int cardCount = opponents[i].second.size();
+            nameLabels[i]->setText(opponents[i].first + " (" + QString::number(cardCount) + " cards)");
+    nameLabels[i]->setVisible(true);
+        
+// Create vector of card backs (0 = card back)
             std::vector<uint8_t> cardBacks(cardCount, 0);
-       handWidgets[i]->setCards(cardBacks);
-      } else {
-   nameLabels[i]->setText("Waiting...");
-            nameLabels[i]->setStyleSheet("color: gray; font-style: italic; background-color: transparent;");
-        handWidgets[i]->setCards(std::vector<uint8_t>());
-        }
+    handWidgets[i]->setCards(cardBacks);
+    } else {
+    nameLabels[i]->setText("Waiting...");
+       nameLabels[i]->setStyleSheet("color: gray; font-style: italic; background-color: transparent;");
+            handWidgets[i]->setCards(std::vector<uint8_t>());
+  }
     }
 }
 

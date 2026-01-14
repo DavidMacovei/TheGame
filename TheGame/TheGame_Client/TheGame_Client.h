@@ -46,7 +46,7 @@ private:
     RegisterWidget* m_registerPage;
     LobbyWidget* m_lobbyPage;
     ProfileWidget* m_profilePage;
-    GameBoardWidget* m_gamePage;
+        GameBoardWidget* m_gamePage;
     GameOverWidget* m_gameOverPage;
     
     PreGameNetworkManager* m_preGameNet;
