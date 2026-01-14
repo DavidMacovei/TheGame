@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1200</width>
-    <height>900</height>
+ <height>900</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,19 +20,19 @@
    <item>
     <layout class="QVBoxLayout" name="gameAreaLayout">
      <item>
-  <widget class="QLabel" name="lblStatus">
-       <property name="font">
-     <font>
-  <pointsize>14</pointsize>
-         <bold>true</bold>
-  </font>
-       </property>
+      <widget class="QLabel" name="lblStatus">
+     <property name="font">
+   <font>
+         <pointsize>14</pointsize>
+ <bold>true</bold>
+</font>
+    </property>
        <property name="styleSheet">
         <string>color: white; background-color: transparent;</string>
-       </property>
+  </property>
        <property name="text">
         <string>Waiting for game state...</string>
-  </property>
+       </property>
        <property name="alignment">
         <set>Qt::AlignmentFlag::AlignCenter</set>
        </property>
@@ -41,272 +41,311 @@
      <!-- Opponent 2 (Top) -->
      <item>
       <layout class="QVBoxLayout" name="topPlayerLayout">
-       <item>
-        <widget class="QLabel" name="lblPlayer2Name">
-         <property name="styleSheet">
+     <item>
+  <widget class="QLabel" name="lblPlayer2Name">
+    <property name="styleSheet">
           <string>color: white; font-weight: bold; background-color: transparent;</string>
          </property>
-         <property name="text">
+     <property name="text">
           <string>Player 2</string>
          </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
-         </property>
-        </widget>
- </item>
-       <item>
-   <widget class="CardHandWidget" name="player2Hand">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
- <height>100</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-<size>
-           <width>16777215</width>
-           <height>120</height>
-          </size>
-     </property>
-      </widget>
-       </item>
-      </layout>
-     </item>
-     <!-- Middle Row: Left Player, Stacks + Deck, Right Player -->
-     <item>
- <layout class="QHBoxLayout" name="middleLayout">
-   <!-- Opponent 1 (Left) -->
-       <item>
-        <layout class="QVBoxLayout" name="leftPlayerLayout">
-         <item>
-        <widget class="QLabel" name="lblPlayer1Name">
-     <property name="styleSheet">
-            <string>color: white; font-weight: bold; background-color: transparent;</string>
-    </property>
-           <property name="text">
-    <string>Player 1</string>
-           </property>
-       <property name="alignment">
-            <set>Qt::AlignmentFlag::AlignCenter</set>
-           </property>
-          </widget>
-      </item>
-         <item>
-     <widget class="CardHandWidget" name="player1Hand">
-   <property name="minimumSize">
- <size>
-      <width>100</width>
-     <height>200</height>
-            </size>
-           </property>
-       </widget>
-   </item>
-        </layout>
-       </item>
-     <!-- Center: Deck and Stacks -->
-       <item>
-        <layout class="QVBoxLayout" name="centerLayout">
-         <!-- Draw Deck -->
-         <item>
-          <layout class="QHBoxLayout" name="deckLayout">
-           <item>
-            <spacer name="horizontalSpacer1">
-             <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-             </property>
-     <property name="sizeHint" stdset="0">
- <size>
-   <width>40</width>
-      <height>20</height>
-          </size>
-             </property>
- </spacer>
-      </item>
-    <item>
-            <widget class="DeckWidget" name="drawDeck">
-       <property name="minimumSize">
-              <size>
-  <width>80</width>
-     <height>120</height>
-   </size>
-     </property>
-            </widget>
-     </item>
-           <item>
-     <widget class="QLabel" name="lblDeckCount">
-      <property name="minimumSize">
-       <size>
-     <width>60</width>
-   <height>0</height>
-              </size>
-         </property>
-        <property name="styleSheet">
-           <string>color: white; font-size: 12px; font-weight: bold; background-color: transparent;</string>
- </property>
-      <property name="text">
-          <string>Deck: 98</string>
- </property>
-        <property name="alignment">
-  <set>Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
-       </property>
-   </widget>
-           </item>
-     <item>
-      <spacer name="horizontalSpacer2">
-        <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-        </property>
-  <property name="sizeHint" stdset="0">
-       <size>
-          <width>40</width>
-     <height>20</height>
-   </size>
-          </property>
-         </spacer>
-     </item>
-          </layout>
-</item>
-         <!-- Stacks Grid -->
-     <item>
-          <layout class="QGridLayout" name="stacksLayout">
-       <item row="0" column="0">
-   <widget class="StackWidget" name="stack1">
- <property name="minimumSize">
-              <size>
-             <width>80</width>
-   <height>140</height>
-   </size>
-      </property>
-            </widget>
-      </item>
-    <item row="0" column="1">
-   <widget class="StackWidget" name="stack2">
-         <property name="minimumSize">
-              <size>
-        <width>80</width>
-               <height>140</height>
-       </size>
-             </property>
-            </widget>
-      </item>
-           <item row="1" column="0">
-    <widget class="StackWidget" name="stack3">
-    <property name="minimumSize">
-     <size>
-         <width>80</width>
-       <height>140</height>
-              </size>
-       </property>
-     </widget>
-      </item>
-           <item row="1" column="1">
-     <widget class="StackWidget" name="stack4">
-             <property name="minimumSize">
-   <size>
-               <width>80</width>
-         <height>140</height>
-              </size>
-             </property>
-   </widget>
-    </item>
-   </layout>
-       </item>
-        </layout>
-       </item>
-       <!-- Opponent 3 (Right) -->
-       <item>
-        <layout class="QVBoxLayout" name="rightPlayerLayout">
-    <item>
-     <widget class="QLabel" name="lblPlayer3Name">
-           <property name="styleSheet">
-          <string>color: white; font-weight: bold; background-color: transparent;</string>
-        </property>
-           <property name="text">
-            <string>Player 3</string>
-           </property>
-           <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
- <item>
-  <widget class="CardHandWidget" name="player3Hand">
-   <property name="minimumSize">
-     <size>
-         <width>100</width>
-       <height>200</height>
-          </size>
-   </property>
-    </widget>
-         </item>
-        </layout>
-       </item>
-   </layout>
-     </item>
-     <!-- Main Player (Bottom) -->
-   <item>
-      <layout class="QVBoxLayout" name="bottomPlayerLayout">
-  <item>
-        <widget class="QLabel" name="lblYourHand">
-         <property name="styleSheet">
-          <string>color: white; font-weight: bold; font-size: 14px; background-color: transparent;</string>
-    </property>
-         <property name="text">
-          <string>Your Hand (Click to select):</string>
-    </property>
  <property name="alignment">
           <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="CardHandWidget" name="mainPlayerHand">
+        <widget class="CardHandWidget" name="player2Hand">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+      <height>100</height>
+        </size>
+   </property>
+         <property name="maximumSize">
+    <size>
+    <width>16777215</width>
+        <height>120</height>
+          </size>
+         </property>
+      </widget>
+       </item>
+      </layout>
+     </item>
+     <!-- Middle Row: Left Player, Stacks + Deck, Right Player -->
+     <item>
+      <layout class="QHBoxLayout" name="middleLayout">
+   <!-- Opponent 1 (Left) -->
+       <item>
+        <layout class="QVBoxLayout" name="leftPlayerLayout">
+         <item>
+      <widget class="QLabel" name="lblPlayer1Name">
+    <property name="styleSheet">
+            <string>color: white; font-weight: bold; background-color: transparent;</string>
+        </property>
+     <property name="text">
+          <string>Player 1</string>
+           </property>
+           <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+           </property>
+        </widget>
+         </item>
+       <item>
+     <widget class="CardHandWidget" name="player1Hand">
+           <property name="minimumSize">
+          <size>
+    <width>100</width>
+    <height>200</height>
+    </size>
+   </property>
+      </widget>
+    </item>
+        </layout>
+       </item>
+ <!-- Center: Deck and Stacks -->
+       <item>
+   <layout class="QVBoxLayout" name="centerLayout">
+         <!-- Draw Deck -->
+       <item>
+       <layout class="QHBoxLayout" name="deckLayout">
+ <item>
+            <spacer name="horizontalSpacer1">
+  <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+         </property>
+     <property name="sizeHint" stdset="0">
+     <size>
+ <width>40</width>
+    <height>20</height>
+      </size>
+       </property>
+        </spacer>
+           </item>
+    <item>
+          <widget class="DeckWidget" name="drawDeck">
+             <property name="minimumSize">
+           <size>
+               <width>80</width>
+    <height>120</height>
+     </size>
+     </property>
+      </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="lblDeckCount">
+    <property name="minimumSize">
+      <size>
+     <width>60</width>
+       <height>0</height>
+              </size>
+  </property>
+             <property name="styleSheet">
+              <string>color: white; font-size: 12px; font-weight: bold; background-color: transparent;</string>
+     </property>
+       <property name="text">
+     <string>Deck: 98</string>
+          </property>
+      <property name="alignment">
+ <set>Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+       </property>
+  </widget>
+    </item>
+           <item>
+    <spacer name="horizontalSpacer2">
+         <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+    </property>
+      <property name="sizeHint" stdset="0">
+    <size>
+        <width>40</width>
+   <height>20</height>
+     </size>
+ </property>
+ </spacer>
+        </item>
+  </layout>
+         </item>
+         <!-- Stacks Grid -->
+   <item>
+          <layout class="QGridLayout" name="stacksLayout">
+   <item row="0" column="0">
+       <widget class="QWidget" name="stackPlaceholder1" native="true">
+        <property name="minimumSize">
+              <size>
+               <width>80</width>
+    <height>140</height>
+</size>
+             </property>
+</widget>
+           </item>
+ <item row="0" column="1">
+    <widget class="QWidget" name="stackPlaceholder2" native="true">
+      <property name="minimumSize">
+         <size>
+               <width>80</width>
+      <height>140</height>
+  </size>
+         </property>
+      </widget>
+     </item>
+   <item row="1" column="0">
+ <widget class="QWidget" name="stackPlaceholder3" native="true">
      <property name="minimumSize">
         <size>
-           <width>0</width>
-           <height>100</height>
-          </size>
-         </property>
-       <property name="maximumSize">
- <size>
-         <width>16777215</width>
-           <height>120</height>
-    </size>
-         </property>
-   </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="btnEndTurn">
-    <property name="minimumSize">
-          <size>
-           <width>200</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-   <width>300</width>
-           <height>16777215</height>
-        </size>
-         </property>
-         <property name="styleSheet">
-          <string>background-color: #ff6600; color: white; font-weight: bold; font-size: 14px; border-radius: 5px;</string>
+      <width>80</width>
+    <height>140</height>
+      </size>
+       </property>
+            </widget>
+           </item>
+       <item row="1" column="1">
+            <widget class="QWidget" name="stackPlaceholder4" native="true">
+             <property name="minimumSize">
+   <size>
+     <width>80</width>
+  <height>140</height>
+      </size>
  </property>
-      <property name="text">
-   <string>END TURN</string>
-     </property>
-        </widget>
+   </widget>
+           </item>
+          </layout>
+     </item>
+      </layout>
        </item>
+       <!-- Opponent 3 (Right) -->
+       <item>
+        <layout class="QVBoxLayout" name="rightPlayerLayout">
+         <item>
+ <widget class="QLabel" name="lblPlayer3Name">
+<property name="styleSheet">
+ <string>color: white; font-weight: bold; background-color: transparent;</string>
+         </property>
+           <property name="text">
+       <string>Player 3</string>
+           </property>
+         <property name="alignment">
+<set>Qt::AlignmentFlag::AlignCenter</set>
+           </property>
+      </widget>
+         </item>
+         <item>
+ <widget class="CardHandWidget" name="player3Hand">
+           <property name="minimumSize">
+            <size>
+       <width>100</width>
+     <height>200</height>
+   </size>
+           </property>
+      </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <!-- Bottom Row: Player 4 (Opponent) and Main Player -->
+     <item>
+ <layout class="QHBoxLayout" name="bottomRowLayout">
+       <!-- Opponent 4 (Bottom-Left) -->
+ <item>
+     <layout class="QVBoxLayout" name="bottomLeftPlayerLayout">
+  <item>
+     <widget class="QLabel" name="lblPlayer4Name">
+           <property name="styleSheet">
+      <string>color: white; font-weight: bold; background-color: transparent;</string>
+     </property>
+ <property name="text">
+            <string>Player 4</string>
+      </property>
+<property name="alignment">
+            <set>Qt::AlignmentFlag::AlignCenter</set>
+           </property>
+     </widget>
+    </item>
+      <item>
+      <widget class="CardHandWidget" name="player4Hand">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>100</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+  <height>120</height>
+         </size>
+     </property>
+          </widget>
+     </item>
+  </layout>
+   </item>
+    <!-- Main Player (Bottom-Center/Right) -->
+       <item>
+        <layout class="QVBoxLayout" name="bottomPlayerLayout">
+         <item>
+          <widget class="QLabel" name="lblYourHand">
+           <property name="styleSheet">
+            <string>color: white; font-weight: bold; font-size: 14px; background-color: transparent;</string>
+           </property>
+           <property name="text">
+<string>Your Hand (Click to select):</string>
+           </property>
+           <property name="alignment">
+  <set>Qt::AlignmentFlag::AlignCenter</set>
+ </property>
+          </widget>
+         </item>
+      <item>
+          <widget class="CardHandWidget" name="mainPlayerHand">
+           <property name="minimumSize">
+            <size>
+    <width>0</width>
+             <height>100</height>
+ </size>
+           </property>
+         <property name="maximumSize">
+   <size>
+          <width>16777215</width>
+             <height>120</height>
+            </size>
+           </property>
+          </widget>
+    </item>
+      <item>
+          <widget class="QPushButton" name="btnEndTurn">
+           <property name="minimumSize">
+   <size>
+         <width>200</width>
+             <height>40</height>
+    </size>
+    </property>
+    <property name="maximumSize">
+    <size>
+<width>300</width>
+             <height>16777215</height>
+ </size>
+    </property>
+  <property name="styleSheet">
+      <string>background-color: #ff6600; color: white; font-weight: bold; font-size: 14px; border-radius: 5px;</string>
+           </property>
+  <property name="text">
+            <string>END TURN</string>
+     </property>
+          </widget>
+         </item>
     </layout>
+       </item>
+      </layout>
      </item>
     </layout>
- </item>
+   </item>
    <!-- Chat Panel (Right Side) -->
    <item>
     <widget class="QWidget" name="chatPanel" native="true">
      <property name="minimumSize">
       <size>
-    <width>250</width>
+       <width>250</width>
        <height>0</height>
       </size>
      </property>
@@ -316,60 +355,60 @@
        <height>16777215</height>
       </size>
      </property>
-  <property name="styleSheet">
+     <property name="styleSheet">
       <string>background-color: #1a3d16; border-radius: 10px;</string>
      </property>
      <layout class="QVBoxLayout" name="chatLayout">
       <item>
        <widget class="QLabel" name="label_3">
-        <property name="font">
-      <font>
-          <pointsize>12</pointsize>
-      <bold>true</bold>
+     <property name="font">
+         <font>
+       <pointsize>12</pointsize>
+          <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">
-         <string>color: white; background-color: transparent;</string>
+  <string>color: white; background-color: transparent;</string>
         </property>
-  <property name="text">
- <string>💬 Chat</string>
-    </property>
-     </widget>
-      </item>
-      <item>
-   <widget class="QListWidget" name="listChat">
-        <property name="styleSheet">
-     <string>QListWidget { background-color: rgba(255,255,255,0.1); color: white; border: none; border-radius: 5px; }
-QListWidget::item { padding: 5px; }</string>
+   <property name="text">
+         <string>💬 Chat</string>
         </property>
        </widget>
     </item>
       <item>
+       <widget class="QListWidget" name="listChat">
+        <property name="styleSheet">
+  <string>QListWidget { background-color: rgba(255,255,255,0.1); color: white; border: none; border-radius: 5px; }
+QListWidget::item { padding: 5px; }</string>
+        </property>
+   </widget>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="chatInputLayout">
-   <item>
-         <widget class="QLineEdit" name="lineChatMsg">
+        <item>
+       <widget class="QLineEdit" name="lineChatMsg">
           <property name="styleSheet">
-         <string>background-color: white; border-radius: 3px; padding: 5px;</string>
-          </property>
-     <property name="placeholderText">
-           <string>Type message...</string>
-          </property>
-         </widget>
+           <string>background-color: white; border-radius: 3px; padding: 5px;</string>
+        </property>
+<property name="placeholderText">
+      <string>Type message...</string>
+     </property>
+    </widget>
         </item>
-  <item>
+        <item>
          <widget class="QPushButton" name="btnSendChat">
           <property name="minimumSize">
-           <size>
-        <width>60</width>
-          <height>0</height>
- </size>
-     </property>
- <property name="styleSheet">
+      <size>
+    <width>60</width>
+            <height>0</height>
+     </size>
+ </property>
+      <property name="styleSheet">
            <string>background-color: #4CAF50; color: white; font-weight: bold; border-radius: 3px; padding: 5px;</string>
           </property>
-        <property name="text">
+      <property name="text">
            <string>Send</string>
-          </property>
+    </property>
          </widget>
         </item>
        </layout>
@@ -382,15 +421,9 @@ QListWidget::item { padding: 5px; }</string>
  <customwidgets>
   <customwidget>
    <class>CardHandWidget</class>
-   <extends>QWidget</extends>
-   <header>CardHandWidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>StackWidget</class>
  <extends>QWidget</extends>
-   <header>StackWidget.h</header>
-   <container>1</container>
+   <header>CardHandWidget.h</header>
+ <container>1</container>
   </customwidget>
   <customwidget>
    <class>DeckWidget</class>
