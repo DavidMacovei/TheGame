@@ -1,12 +1,17 @@
 #include "UsersDatabase.h"
 
-bool http::UserStorage::Initialize()
+DatabaseManager& DatabaseManager::GetInstance()
 {
-    const std::string dbFile = "users.sqlite";
-    bool dbExists = std::filesystem::exists(dbFile);
-    auto storage = CreateStorage(dbFile);
-    if (!dbExists) {
-        storage.sync_schema();
-    }
-    return true;
+    static DatabaseManager instance;
+    return instance;
+}
+
+StorageType& DatabaseManager::GetStorage()
+{
+    return m_storage;
+}
+
+DatabaseManager::DatabaseManager() : m_storage(CreateStorage("users.sqlite"))
+{
+    m_storage.sync_schema();
 }

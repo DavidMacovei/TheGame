@@ -1,31 +1,31 @@
 #pragma once
 #include <string>
-#include <sstream>
+#include <nlohmann/json.hpp>
 
-class User {
+class User 
+{
 public:
-    User();
-    User(const std::string& username, const std::string& pwd_hash);
+	User() = default;
+	User(std::string username, std::string pwd_hash);
 
-    int GetId() const;
-    const std::string& GetUsername() const;
-    const std::string& GetPasswordHash() const;
-    int GetScore() const;
-    double GetHoursPlayed() const;
+	int GetId() const;
+	const std::string& GetUsername() const;
+	const std::string& GetPasswordHash() const;
+	int GetScore() const;
+	double GetHoursPlayed() const;
 
-    void SetId(int id);
-    void SetUsername(const std::string& username);
-    void SetScore(int s);
-    void SetHoursPlayed(double h);
-    void SetPasswordHash(const std::string& hash);
+	void SetId(int id);
+	void SetUsername(const std::string& username);
+	void SetPasswordHash(const std::string& hash);
+	void SetScore(int s);
+	void SetHoursPlayed(double h);
 
-    std::string ToJson() const;
-    static User FromJson(const std::string& jsonStr);
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(User, m_id, m_username, m_score, m_hours_played)
 
 private:
-    int m_id;
-    std::string m_username;
-    std::string m_password_hash;
-    int m_score;
-    int m_hours_played;
+	int m_id{ 0 };
+	std::string m_username;
+	std::string m_password_hash;
+	int m_score{ 0 };
+	double m_hours_played{ 0.0 };
 };
