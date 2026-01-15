@@ -38,37 +38,76 @@
        </property>
       </widget>
      </item>
-     <!-- Opponent 2 (Top) -->
+     <!-- Top Row: Player 2 and Player 3 -->
      <item>
-      <layout class="QVBoxLayout" name="topPlayerLayout">
-     <item>
+      <layout class="QHBoxLayout" name="topRowLayout">
+       <!-- Player 2 (Top-Left) -->
+       <item>
+      <layout class="QVBoxLayout" name="topLeftPlayerLayout">
+         <item>
   <widget class="QLabel" name="lblPlayer2Name">
     <property name="styleSheet">
-          <string>color: white; font-weight: bold; background-color: transparent;</string>
-         </property>
-     <property name="text">
-          <string>Player 2</string>
-         </property>
- <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
-         </property>
+       <string>color: white; font-weight: bold; background-color: transparent;</string>
+    </property>
+    <property name="text">
+  <string>Player 2</string>
+     </property>
+         <property name="alignment">
+   <set>Qt::AlignmentFlag::AlignCenter</set>
+           </property>
+    </widget>
+</item>
+  <item>
+          <widget class="CardHandWidget" name="player2Hand">
+    <property name="minimumSize">
+         <size>
+   <width>0</width>
+  <height>100</height>
+       </size>
+        </property>
+      <property name="maximumSize">
+            <size>
+   <width>16777215</width>
+       <height>120</height>
+       </size>
+    </property>
         </widget>
-       </item>
+   </item>
+     </layout>
+    </item>
+     <!-- Player 3 (Top-Right) -->
        <item>
-        <widget class="CardHandWidget" name="player2Hand">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-      <height>100</height>
-        </size>
-   </property>
-         <property name="maximumSize">
-    <size>
-    <width>16777215</width>
-        <height>120</height>
-          </size>
-         </property>
+        <layout class="QVBoxLayout" name="topRightPlayerLayout">
+ <item>
+       <widget class="QLabel" name="lblPlayer3Name">
+           <property name="styleSheet">
+      <string>color: white; font-weight: bold; background-color: transparent;</string>
+       </property>
+   <property name="text">
+     <string>Player 3</string>
+      </property>
+       <property name="alignment">
+ <set>Qt::AlignmentFlag::AlignCenter</set>
+           </property>
       </widget>
+         </item>
+ <item>
+  <widget class="CardHandWidget" name="player3Hand">
+   <property name="minimumSize">
+<size>
+    <width>0</width>
+     <height>100</height>
+       </size>
+           </property>
+     <property name="maximumSize">
+        <size>
+          <width>16777215</width>
+             <height>120</height>
+     </size>
+</property>
+  </widget>
+         </item>
+     </layout>
        </item>
       </layout>
      </item>
@@ -216,126 +255,87 @@
        <!-- Opponent 3 (Right) -->
        <item>
         <layout class="QVBoxLayout" name="rightPlayerLayout">
-         <item>
- <widget class="QLabel" name="lblPlayer3Name">
+       <item>
+ <widget class="QLabel" name="lblPlayer4Name">
 <property name="styleSheet">
  <string>color: white; font-weight: bold; background-color: transparent;</string>
          </property>
-           <property name="text">
-       <string>Player 3</string>
-           </property>
+       <property name="text">
+       <string>Player 4</string>
+       </property>
          <property name="alignment">
 <set>Qt::AlignmentFlag::AlignCenter</set>
-           </property>
-      </widget>
-         </item>
-         <item>
- <widget class="CardHandWidget" name="player3Hand">
-           <property name="minimumSize">
-            <size>
+       </property>
+</widget>
+    </item>
+     <item>
+ <widget class="CardHandWidget" name="player4Hand">
+       <property name="minimumSize">
+<size>
        <width>100</width>
      <height>200</height>
    </size>
-           </property>
-      </widget>
-         </item>
+    </property>
+</widget>
+    </item>
         </layout>
        </item>
       </layout>
      </item>
-     <!-- Bottom Row: Player 4 (Opponent) and Main Player -->
+     <!-- Bottom Row: Main Player Only -->
      <item>
- <layout class="QHBoxLayout" name="bottomRowLayout">
-       <!-- Opponent 4 (Bottom-Left) -->
+  <layout class="QVBoxLayout" name="bottomPlayerLayout">
  <item>
-     <layout class="QVBoxLayout" name="bottomLeftPlayerLayout">
-  <item>
-     <widget class="QLabel" name="lblPlayer4Name">
-           <property name="styleSheet">
-      <string>color: white; font-weight: bold; background-color: transparent;</string>
-     </property>
- <property name="text">
-            <string>Player 4</string>
-      </property>
-<property name="alignment">
-            <set>Qt::AlignmentFlag::AlignCenter</set>
-           </property>
-     </widget>
-    </item>
-      <item>
-      <widget class="CardHandWidget" name="player4Hand">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>100</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-  <height>120</height>
-         </size>
-     </property>
-          </widget>
-     </item>
-  </layout>
-   </item>
-    <!-- Main Player (Bottom-Center/Right) -->
-       <item>
-        <layout class="QVBoxLayout" name="bottomPlayerLayout">
-         <item>
           <widget class="QLabel" name="lblYourHand">
-           <property name="styleSheet">
-            <string>color: white; font-weight: bold; font-size: 14px; background-color: transparent;</string>
-           </property>
-           <property name="text">
-<string>Your Hand (Click to select):</string>
-           </property>
-           <property name="alignment">
-  <set>Qt::AlignmentFlag::AlignCenter</set>
+         <property name="styleSheet">
+      <string>color: white; font-weight: bold; font-size: 14px; background-color: transparent;</string>
+         </property>
+     <property name="text">
+            <string>Your Hand (Click to select):</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
  </property>
           </widget>
-         </item>
-      <item>
-          <widget class="CardHandWidget" name="mainPlayerHand">
-           <property name="minimumSize">
-            <size>
-    <width>0</width>
-             <height>100</height>
- </size>
-           </property>
-         <property name="maximumSize">
-   <size>
-          <width>16777215</width>
-             <height>120</height>
-            </size>
-           </property>
-          </widget>
     </item>
-      <item>
-          <widget class="QPushButton" name="btnEndTurn">
-           <property name="minimumSize">
-   <size>
-         <width>200</width>
-             <height>40</height>
+         <item>
+      <widget class="CardHandWidget" name="mainPlayerHand">
+    <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>100</height>
+    </size>
+     </property>
+           <property name="maximumSize">
+            <size>
+  <width>16777215</width>
+  <height>120</height>
     </size>
     </property>
-    <property name="maximumSize">
-    <size>
-<width>300</width>
-             <height>16777215</height>
- </size>
-    </property>
-  <property name="styleSheet">
-      <string>background-color: #ff6600; color: white; font-weight: bold; font-size: 14px; border-radius: 5px;</string>
-           </property>
-  <property name="text">
-            <string>END TURN</string>
-     </property>
-          </widget>
+       </widget>
          </item>
-    </layout>
-       </item>
+         <item>
+          <widget class="QPushButton" name="btnEndTurn">
+     <property name="minimumSize">
+         <size>
+             <width>200</width>
+       <height>40</height>
+     </size>
+           </property>
+           <property name="maximumSize">
+       <size>
+         <width>300</width>
+        <height>16777215</height>
+      </size>
+     </property>
+         <property name="styleSheet">
+       <string>background-color: #ff6600; color: white; font-weight: bold; font-size: 14px; border-radius: 5px;</string>
+     </property>
+     <property name="text">
+     <string>END TURN</string>
+   </property>
+  </widget>
+         </item>
       </layout>
      </item>
     </layout>

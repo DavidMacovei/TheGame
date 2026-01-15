@@ -42,6 +42,12 @@ private:
     GameNetworkManager* m_net;
     QString m_username;
 
+    // Stack widgets (created manually since they need StackType parameter)
+    StackWidget* m_stack1;
+    StackWidget* m_stack2;
+    StackWidget* m_stack3;
+    StackWidget* m_stack4;
+
     int m_selectedCardIndex = -1;
 
     void updateStacks(const QJsonArray& stacks);
