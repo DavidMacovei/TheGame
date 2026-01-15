@@ -150,7 +150,7 @@
     <ClCompile Include="Routes\LobbyRoutes.cpp" />
     <ClCompile Include="Services\ChatService.cpp" />
     <ClCompile Include="Services\GameManager.cpp" />
-    <ClCompile Include="TheGame.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\ServerApp.h" />
