@@ -5,6 +5,16 @@
 #include "ResponseUtils.h"
 #include "GameManager.h"
 #include <functional>
+#include <regex>
+
+namespace
+{
+	bool IsValidUsername(const std::string& username)
+	{
+		static const std::regex usernamePattern("^[a-zA-Z0-9_]{3,20}$");
+		return std::regex_match(username, usernamePattern);
+	}
+}
 
 void registerAuthRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 {
@@ -13,13 +23,16 @@ void registerAuthRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 		try {
 			auto authReq = json::parse(req.body).get<AuthRequest>();
 
-			if (authReq.username.empty() || authReq.password.empty())
-				return utils::Error(400, "Username and password cannot be empty");
+			if (!IsValidUsername(authReq.username))
+				return utils::Error(400, "Invalid username. Use 3-20 alphanumeric characters");
+
+			if (authReq.password.empty())
+				return utils::Error(400, "Password cannot be empty");
 
 			std::hash<std::string> hasher;
 			std::string password_hash = std::to_string(hasher(authReq.password));
 
-			auto storage = http::CreateStorage("users.sqlite");
+			auto& storage = DatabaseManager::GetInstance().GetStorage();
 
 			auto existing = storage.get_all<User>(sql::where(sql::c(&User::GetUsername) == authReq.username));
 			if (!existing.empty())
@@ -30,8 +43,11 @@ void registerAuthRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 
 			return utils::Success("Registration successful");
 		}
+		catch (const std::exception& e) {
+			return utils::Error(400, std::string("Bad Request: ") + e.what());
+		}
 		catch (...) {
-			return utils::Error(400, "Invalid JSON format");
+			return utils::Error(500, "Internal Server Error");
 		}
 			});
 
@@ -41,29 +57,32 @@ void registerAuthRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 		try {
 			auto authReq = json::parse(req.body).get<AuthRequest>();
 
-			if (authReq.username.empty() || authReq.password.empty())
-				return utils::Error(400, "Username and password cannot be empty");
+			if (!IsValidUsername(authReq.username))
+				return utils::Error(400, "Invalid username format");
+
+			if (authReq.password.empty())
+				return utils::Error(400, "Password cannot be empty");
 
 			std::hash<std::string> hasher;
 			std::string password_hash = std::to_string(hasher(authReq.password));
 
-			auto storage = http::CreateStorage("users.sqlite");
+			auto& storage = DatabaseManager::GetInstance().GetStorage();
 
 			auto users = storage.get_all<User>(sql::where(sql::c(&User::GetUsername) == authReq.username));
-			if (users.empty()) 
+			if (users.empty() || users[0].GetPasswordHash() != password_hash)
 				return utils::Error(401, "Invalid username or password");
 
-			if (users[0].GetPasswordHash() != password_hash)
-				return utils::Error(401, "Invalid username or password");
-
-			if (gameManager.IsPlayerInQueue(authReq.username) || 
-			    gameManager.GetGameIdForPlayer(authReq.username) != -1)
+			if (gameManager.IsPlayerInQueue(authReq.username) ||
+				gameManager.GetGameIdForPlayer(authReq.username) != -1)
 				return utils::Error(409, "This account is already logged into on another device.");
 
 			return utils::Success("Login successful");
 		}
+		catch (const std::exception& e) {
+			return utils::Error(400, std::string("Bad Request: ") + e.what());
+		}
 		catch (...) {
-			return utils::Error(400, "Invalid JSON format");
+			return utils::Error(500, "Internal Server Error");
 		}
 			});
 
@@ -75,7 +94,7 @@ void registerAuthRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 			if (userReq.username.empty())
 				return utils::Error(400, "Username required");
 
-			auto storage = http::CreateStorage("users.sqlite");
+			auto& storage = DatabaseManager::GetInstance().GetStorage();
 
 			auto users = storage.get_all<User>(sql::where(sql::c(&User::GetUsername) == userReq.username));
 			if (users.empty())
@@ -90,8 +109,11 @@ void registerAuthRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 
 			return crow::response(200, json(response).dump());
 		}
+		catch (const std::exception& e) {
+			return utils::Error(400, std::string("Bad Request: ") + e.what());
+		}
 		catch (...) {
-			return utils::Error(400, "Invalid JSON format");
+			return utils::Error(500, "Internal Server Error");
 		}
 			});
 }
