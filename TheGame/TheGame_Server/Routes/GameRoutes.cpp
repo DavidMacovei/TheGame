@@ -2,7 +2,7 @@
 #include "GameModels.h"
 #include "ResponseUtils.h"
 #include "GameSerializer.h"
-#include <format>
+#include "Logger.h"
 
 
 void CheckAndLogGameEnd(const std::shared_ptr<game::Game>& game, int gameId)
@@ -10,7 +10,8 @@ void CheckAndLogGameEnd(const std::shared_ptr<game::Game>& game, int gameId)
 	auto status = game->GetStatus();
 	if (status == game::GameStatus::Won || status == game::GameStatus::Lost)
 	{
-		std::cout << std::format("[Game {}] Finished. Status: {}\n", gameId, (status == game::GameStatus::Won ? "WON" : "LOST"));
+		Logger::Info("[Game{}] Finished. Status: {}", 
+			gameId, (status == game::GameStatus::Won ? "WON" : "LOST"));
 	}
 }
 

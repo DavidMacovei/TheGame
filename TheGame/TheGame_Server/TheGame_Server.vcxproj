@@ -153,6 +153,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Core\Logger.h" />
     <ClInclude Include="Core\ServerApp.h" />
     <ClInclude Include="Database\User.h" />
     <ClInclude Include="Database\UsersDatabase.h" />

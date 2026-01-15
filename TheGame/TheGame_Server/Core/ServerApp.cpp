@@ -3,7 +3,7 @@
 #include "GameRoutes.h"
 #include "LobbyRoutes.h"
 #include "AuthRoutes.h"
-#include <format>
+#include "Logger.h"
 
 ServerApp::ServerApp()
 {
@@ -20,7 +20,7 @@ void ServerApp::setupRoutes()
 
 void ServerApp::run()
 {
-    std::cout << std::format("[Server] Starting on port {}... \n", SERVER_PORT);
+    Logger::Info("Server starting on port {}...", SERVER_PORT);
 
     m_app.port(SERVER_PORT).multithreaded().run();
 }

@@ -2,6 +2,7 @@
 #include "ResponseUtils.h"
 #include "GameModels.h"
 #include "UsersDatabase.h"
+#include "Logger.h"
 
 void registerLobbyRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 {
@@ -27,7 +28,7 @@ void registerLobbyRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 					userScore = users[0].GetScore();
 			} 
 			catch (const std::exception& e) {
-				std::cerr << "[DB Error] Could not fetch score: " << e.what() << "\n";
+				Logger::Error("[DB ERROR] Could not fetch score {}", e.what());
 			}
 
 			gameManager.AddPlayerToQueue(req.username, userScore);
