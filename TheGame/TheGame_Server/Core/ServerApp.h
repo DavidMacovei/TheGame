@@ -14,14 +14,13 @@ public:
     ServerApp();
     void run();
 
-
 private:
     void setupRoutes();
 
 private:
-    crow::SimpleApp app; //referinta
+    ChatService m_chat;
+    game::GameManager m_gameManager;
+    crow::SimpleApp m_app;
 
-    ChatService chat;
-
-    game::GameManager gameManager;
+    static const uint16_t SERVER_PORT = 18080;
 };
