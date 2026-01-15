@@ -16,16 +16,45 @@ enum class LogLevel
 	Error
 };
 
+struct LogMessage
+{
+	std::string_view message;
+	std::source_location location;
+
+	template<typename T>
+	LogMessage(const T& msg, const std::source_location& loc = std::source_location::current()) : message(msg), location(loc) {}
+};
+
 class Logger
 {
 public:
+	template <typename... Args>
+	static void Info(LogMessage logMsg, Args&&... args)
+	{
+		Log(LogLevel::Info, logMsg.location, logMsg.message, std::forward<Args>(args)...);
+	}
+
+	template <typename... Args>
+	static void Warn(LogMessage logMsg, Args&&... args)
+	{
+		Log(LogLevel::Warning, logMsg.location, logMsg.message, std::forward<Args>(args)...);
+	}
+
+	template <typename... Args>
+	static void Error(LogMessage logMsg, Args&&... args)
+	{
+		Log(LogLevel::Error, logMsg.location, logMsg.message, std::forward<Args>(args)...);
+	}
+
+private:
 	template<typename... Args>
 	static void Log(LogLevel level, const std::source_location& location, std::string_view format, Args&&... args)
 	{
 		static std::mutex logMutex;
 		std::lock_guard<std::mutex> lock(logMutex);
 
-		auto const time = std::chrono::current_zone()->to_local(std::chrono::system_clock::now());
+		auto const now = std::chrono::system_clock::now();
+		auto const time = std::chrono::current_zone()->to_local(std::chrono::floor<std::chrono::seconds>(now));
 
 		std::string_view levelStr = "[INFO]";
 		if (level == LogLevel::Warning)
@@ -45,31 +74,13 @@ public:
 			time, levelStr, GetFileName(location.file_name()), location.line(), userMessage);
 
 		std::cout << finalLogLine;
-		
+
 		static std::ofstream logFile = OpenLogFile();
 		if (logFile.is_open())
 		{
 			logFile << finalLogLine;
 			logFile.flush();
 		}
-	}
-
-	template <typename... Args>
-	static void Info(std::string_view format, Args&&... args)
-	{
-		Log(LogLevel::Info, std::source_location::current(), format, std::forward<Args>(args)...);
-	}
-
-	template <typename... Args>
-	static void Warn(std::string_view format, Args&&... args)
-	{
-		Log(LogLevel::Warning, std::source_location::current(), format, std::forward<Args>(args)...);
-	}
-
-	template <typename... Args>
-	static void Error(std::string_view format, Args&&... args)
-	{
-		Log(LogLevel::Error, std::source_location::current(), format, std::forward<Args>(args)...);
 	}
 
 private:
