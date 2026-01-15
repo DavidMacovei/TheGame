@@ -146,6 +146,8 @@ namespace game
 		std::ranges::transform(m_waitingQueue, std::back_inserter(usernames), [](const auto& player) {
 			return player.username;
 			});
+
+		return usernames;
 	}
 
 	int GameManager::GetSecondsRemaining() const
