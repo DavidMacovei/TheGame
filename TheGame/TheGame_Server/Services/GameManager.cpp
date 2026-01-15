@@ -1,5 +1,6 @@
 #include "GameManager.h"
 #include <algorithm>
+#include <ranges>
 
 namespace game
 {
@@ -8,41 +9,36 @@ namespace game
 	void GameManager::AddPlayerToQueue(const std::string& username, int score)
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
-		
-		for (const auto& player : m_waitingQueue)
-			if (player.username == username)
-				return;
 
-		if (m_playerSessions.find(username) != m_playerSessions.end())
+		bool alreadyInQueue = std::ranges::any_of(m_waitingQueue, [&username](const QueuedPlayer& player) {
+			return player.username == username;
+			});
+
+		if (alreadyInQueue)
 			return;
 
-		QueuedPlayer qp{ username, score, std::chrono::steady_clock::now() };
+		if (m_playerSessions.contains(username))
+			return;
 
-		m_waitingQueue.push_back(qp);
+		m_waitingQueue.emplace_back(username, score, std::chrono::steady_clock::now());
 	}
 
 	void GameManager::RemovePlayerFromQueue(const std::string& username)
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
 
-		m_waitingQueue.erase(
-			std::remove_if(m_waitingQueue.begin(), m_waitingQueue.end(),
-				[&username](const QueuedPlayer& player) {
-					return player.username == username;
-				}),
-			m_waitingQueue.end()
-		);
+		std::erase_if(m_waitingQueue, [&username](const QueuedPlayer& player) {
+			return player.username == username;
+			});
 	}
 
 	bool GameManager::IsPlayerInQueue(const std::string& username)
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
 
-		for (const auto& player : m_waitingQueue)
-			if (player.username == username)
-				return true;
-
-		return false;
+		return std::ranges::any_of(m_waitingQueue, [&username](const auto& player) {
+			return player.username == username;
+			});
 	}
 
 	bool GameManager::TryMatchmaking()
@@ -55,25 +51,15 @@ namespace game
 			return false;
 
 		auto now = std::chrono::steady_clock::now();
-		std::vector<std::string> selectedPlayers;
 
-		std::sort(m_waitingQueue.begin(), m_waitingQueue.end(), [](const QueuedPlayer& a, const QueuedPlayer& b) {
-			return a.score < b.score;
+		std::ranges::sort(m_waitingQueue, {}, &QueuedPlayer::score);
+
+		bool timeoutReached = std::ranges::any_of(m_waitingQueue, [&now](const auto& player) {
+			auto duration = std::chrono::duration_cast<std::chrono::seconds>(now - player.joinTime).count();
+			return duration >= MAX_WAIT_SECONDS;
 			});
 
-		bool timeoutReached = false;
-
-		for (const auto& player : m_waitingQueue)
-		{
-			auto duration = std::chrono::duration_cast<std::chrono::seconds>(now - player.joinTime).count();
-			if (duration >= MAX_WAIT_SECONDS)
-			{
-				timeoutReached = true;
-				break;
-			}
-		}
-
-		int playersToSelect = 0;
+		size_t playersToSelect = 0;
 
 		if (m_waitingQueue.size() >= MAX_PLAYERS)
 		{
@@ -81,20 +67,26 @@ namespace game
 		}
 		else if (timeoutReached && m_waitingQueue.size() >= MIN_PLAYERS)
 		{
-			playersToSelect = std::min((int)m_waitingQueue.size(), MAX_PLAYERS);
+			playersToSelect = std::min((size_t)m_waitingQueue.size(), (size_t)MAX_PLAYERS);
 		}
 
 		if (playersToSelect >= MIN_PLAYERS)
 		{
-			for (int i = 0; i < playersToSelect; i++)
-				selectedPlayers.push_back(m_waitingQueue[i].username);
+			auto selectedUsernamesView = m_waitingQueue
+				| std::views::take(playersToSelect)
+				| std::views::transform([](const auto& player) {
+				return player.username;
+					});
+
+			std::vector<std::string> selectedPlayers(selectedUsernamesView.begin(), selectedUsernamesView.end());
 
 			int newId = m_nextGameId++;
 			auto newGame = std::make_shared<Game>(selectedPlayers);
 			m_activeGames[newId] = newGame;
 
-			for (const auto& username : selectedPlayers)
+			std::ranges::for_each(selectedPlayers, [&](const std::string& username) {
 				m_playerSessions[username] = newId;
+				});
 
 			m_waitingQueue.erase(m_waitingQueue.begin(), m_waitingQueue.begin() + playersToSelect);
 
@@ -108,11 +100,15 @@ namespace game
 	{
 		for (auto it = m_activeGames.begin(); it != m_activeGames.end(); )
 		{
-			if (it->second->GetStatus() == GameStatus::Won ||
-				it->second->GetStatus() == GameStatus::Lost)
+			auto& [id, gamePtr] = *it;
+
+			if (gamePtr->GetStatus() == GameStatus::Won ||
+				gamePtr->GetStatus() == GameStatus::Lost)
 			{
-				for (const auto& player : it->second->GetPlayers())
+				std::ranges::for_each(gamePtr->GetPlayers(), [&](const auto& player) {
 					m_playerSessions.erase(player.GetUsername());
+					});
+
 				it = m_activeGames.erase(it);
 			}
 			else
@@ -124,7 +120,7 @@ namespace game
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
 
-		if (m_activeGames.find(gameId) != m_activeGames.end())
+		if (m_activeGames.contains(gameId))
 			return m_activeGames[gameId];
 
 		return nullptr;
@@ -134,7 +130,7 @@ namespace game
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
 
-		if (m_playerSessions.find(username) != m_playerSessions.end())
+		if (m_playerSessions.contains(username))
 			return m_playerSessions[username];
 
 		return -1;
@@ -143,28 +139,27 @@ namespace game
 	std::vector<std::string> GameManager::GetWaitingList() const
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
+
 		std::vector<std::string> usernames;
-		for (const auto& player : m_waitingQueue)
-			usernames.push_back(player.username);
-		return usernames;
+		usernames.reserve(m_waitingQueue.size());
+
+		std::ranges::transform(m_waitingQueue, std::back_inserter(usernames), [](const auto& player) {
+			return player.username;
+			});
 	}
 
 	int GameManager::GetSecondsRemaining() const
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
+
 		if (m_waitingQueue.empty())
 			return MAX_WAIT_SECONDS;
 
 		auto now = std::chrono::steady_clock::now();
-		auto oldestJoinTime = m_waitingQueue[0].joinTime;
 
-		for (const auto& player : m_waitingQueue)
-		{
-			if (player.joinTime < oldestJoinTime)
-				oldestJoinTime = player.joinTime;
-		}
+		auto oldestPlayerIt = std::ranges::min_element(m_waitingQueue, {}, &QueuedPlayer::joinTime);
 
-		auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - oldestJoinTime).count();
+		auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - oldestPlayerIt->joinTime).count();
 		int remaining = MAX_WAIT_SECONDS - (int)elapsed;
 
 		return std::max(0, remaining);
