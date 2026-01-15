@@ -24,8 +24,11 @@ void registerChatRoutes(crow::SimpleApp& app, ChatService& chat, game::GameManag
 
 			return utils::Success("Message sent");
 		}
+		catch (const std::exception& e) {
+			return utils::Error(400, std::string("Bad Request: ") + e.what());
+		}
 		catch (...) {
-			return utils::Error(400, "Invalid JSON format");
+			return utils::Error(500, "Internal Server Error");
 		}
 			});
 

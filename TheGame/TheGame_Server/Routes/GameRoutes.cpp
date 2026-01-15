@@ -2,6 +2,7 @@
 #include "GameModels.h"
 #include "ResponseUtils.h"
 #include "GameSerializer.h"
+#include <format>
 
 
 void CheckAndLogGameEnd(const std::shared_ptr<game::Game>& game, int gameId)
@@ -9,8 +10,7 @@ void CheckAndLogGameEnd(const std::shared_ptr<game::Game>& game, int gameId)
 	auto status = game->GetStatus();
 	if (status == game::GameStatus::Won || status == game::GameStatus::Lost)
 	{
-		std::cout << "[Game " << gameId << "] Finished. Status: "
-			<< (status == game::GameStatus::Won ? "WON" : "LOST") << "\n";
+		std::cout << std::format("[Game {}] Finished. Status: {}\n", gameId, (status == game::GameStatus::Won ? "WON" : "LOST"));
 	}
 }
 
@@ -31,8 +31,11 @@ void registerGameRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 
 			return crow::response(200, game::SerializeGameState(*game, req.username));
 		}
+		catch (const std::exception& e) {
+			return utils::Error(400, std::string("Bad Request: ") + e.what());
+		}
 		catch (...) {
-			return utils::Error(400, "Invalid JSON format");
+			return utils::Error(500, "Internal Server Error");
 		}
 		});
 
@@ -50,14 +53,16 @@ void registerGameRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 			if (success)
 			{
 				CheckAndLogGameEnd(game, gameId);
-
 				return utils::Success("Card played successfully");
 			}
 
 			return utils::Error(400, "Invalid move (rules violation or not your turn)");
 		}
+		catch (const std::exception& e) {
+			return utils::Error(400, std::string("Bad Request: ") + e.what());
+		}
 		catch (...) {
-			return utils::Error(400, "Invalid JSON format");
+			return utils::Error(500, "Internal Server Error");
 		}
 			});
 
@@ -76,15 +81,16 @@ void registerGameRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 			if (success)	
 			{
 				CheckAndLogGameEnd(game, gameId);
-
-
 				return utils::Success("Turn ended");
 			}
 
 			return utils::Error(400, "Cannot end turn yet (minimum cards played?)");
 		}
+		catch (const std::exception& e) {
+			return utils::Error(400, std::string("Bad Request: ") + e.what());
+		}
 		catch (...) {
-			return utils::Error(400, "Invalid JSON format");
+			return utils::Error(500, "Internal Server Error");
 		}
 			});
 }
