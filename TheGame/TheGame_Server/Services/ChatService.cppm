@@ -1,10 +1,17 @@
-#pragma once
+module;
 
 #include <deque>
 #include <mutex>
+#include <map>
+#include <string>
+#include <vector>
+#include <ctime>
 #include "GameModels.h"
 
-class ChatService
+export module chat;
+
+
+export class ChatService
 {
 public:
     ChatService() = default;
@@ -18,5 +25,5 @@ private:
     std::map<int, std::deque<ChatMessage>> m_gameChats;
     mutable std::mutex m_mutex;
 
-    static constexpr std::size_t MAX_CHAT_MESSAGES = 20;
+    static const std::size_t MAX_CHAT_MESSAGES = 20;
 };

@@ -1,4 +1,8 @@
-#include "ChatService.h"
+module;
+
+#include <mutex>
+
+module chat;
 
 void ChatService::AddMessage(int gameId, const std::string& sender, const std::string& message)
 {
@@ -17,7 +21,7 @@ void ChatService::AddMessage(int gameId, const std::string& sender, const std::s
 std::deque<ChatMessage> ChatService::GetMessages(int gameId)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
-    
+
     if (m_gameChats.contains(gameId))
         return m_gameChats[gameId];
 

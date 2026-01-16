@@ -149,6 +149,7 @@
     <ClCompile Include="Routes\GameRoutes.cpp" />
     <ClCompile Include="Routes\LobbyRoutes.cpp" />
     <ClCompile Include="Services\ChatService.cpp" />
+    <ClCompile Include="Services\ChatService.cppm" />
     <ClCompile Include="Services\GameManager.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -171,7 +172,6 @@
     <ClInclude Include="Routes\GameRoutes.h" />
     <ClInclude Include="Routes\LobbyRoutes.h" />
     <ClInclude Include="Routes\ResponseUtils.h" />
-    <ClInclude Include="Services\ChatService.h" />
     <ClInclude Include="Services\GameManager.h" />
   </ItemGroup>
   <ItemGroup>

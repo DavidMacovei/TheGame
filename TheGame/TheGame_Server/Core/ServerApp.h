@@ -4,9 +4,9 @@
 #include <memory>
 #include <vector>
 #include <mutex>
-
-#include "ChatService.h"
 #include "GameManager.h"
+
+import chat;
 
 class ServerApp
 {
