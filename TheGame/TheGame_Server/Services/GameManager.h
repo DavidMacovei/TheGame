@@ -34,6 +34,7 @@ namespace game
 
 	private:
 		void CleanupFinishedGames();
+		void UpdatePlayerStatistics(const Game& game);
 		
 		std::vector<QueuedPlayer> m_waitingQueue;
 		std::map<int, std::shared_ptr<Game>> m_activeGames;

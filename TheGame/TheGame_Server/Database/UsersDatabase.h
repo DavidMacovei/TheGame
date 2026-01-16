@@ -13,7 +13,10 @@ inline auto CreateStorage(const std::string& filename)
 			sql::make_column("username", &User::SetUsername, &User::GetUsername, sql::unique()),
 			sql::make_column("password_hash", &User::SetPasswordHash, &User::GetPasswordHash),
 			sql::make_column("score", &User::SetScore, &User::GetScore),
-			sql::make_column("hours_played", &User::SetHoursPlayed, &User::GetHoursPlayed)
+			sql::make_column("hours_played", &User::SetHoursPlayed, &User::GetHoursPlayed),
+			sql::make_column("games_played", &User::SetGamesPlayed, &User::GetGamesPlayed),
+			sql::make_column("games_won", &User::SetGamesWon, &User::GetGamesWon),
+			sql::make_column("total_cards_left_on_loss", &User::SetTotalCardsLeftOnLoss, &User::GetTotalCardsLeftOnLoss)
 		)
 	);
 }

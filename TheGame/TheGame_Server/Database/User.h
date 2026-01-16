@@ -13,14 +13,22 @@ public:
 	const std::string& GetPasswordHash() const;
 	int GetScore() const;
 	double GetHoursPlayed() const;
+	int GetGamesPlayed() const;
+	int GetGamesWon() const;
+	int GetTotalCardsLeftOnLoss() const;
 
 	void SetId(int id);
 	void SetUsername(const std::string& username);
 	void SetPasswordHash(const std::string& hash);
 	void SetScore(int s);
 	void SetHoursPlayed(double h);
+	void SetGamesPlayed(int gp);
+	void SetGamesWon(int gw);
+	void SetTotalCardsLeftOnLoss(int cards);
 
-	NLOHMANN_DEFINE_TYPE_INTRUSIVE(User, m_id, m_username, m_score, m_hours_played)
+	double CalculatePerformanceRating() const;
+
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(User, m_id, m_username, m_score, m_hours_played, m_games_played, m_games_won, m_total_cards_left_on_loss)
 
 private:
 	int m_id = 0;
@@ -28,4 +36,7 @@ private:
 	std::string m_password_hash;
 	int m_score = 0;
 	double m_hours_played = 0.0;
+	int m_games_played = 0;
+	int m_games_won = 0;
+	int m_total_cards_left_on_loss = 0;
 };

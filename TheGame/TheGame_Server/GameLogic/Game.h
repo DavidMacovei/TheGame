@@ -5,6 +5,7 @@
 #include "Board.h"
 #include <vector>
 #include <mutex>
+#include <chrono>
 
 namespace game 
 {
@@ -23,6 +24,7 @@ namespace game
 		GameStatus GetStatus() const;
 		int GetCurrentPlayerIndex() const;
 		int GetMinimumNumberOfCardsToPlay() const;
+		double GetGameDurationInHours() const;
 
 	private:
 		void InitializeGame(const std::vector<std::string>& playerNames);
@@ -38,6 +40,8 @@ namespace game
 		int m_minimumNumberOfCardsToPlay;
 		int m_cardsPlayedThisTurn;
 		int m_currentPlayerIndex;
+
+		std::chrono::steady_clock::time_point m_startTime;
 
 		mutable std::mutex m_gameMutex;
 

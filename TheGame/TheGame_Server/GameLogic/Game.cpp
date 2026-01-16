@@ -31,7 +31,6 @@ namespace game
 			m_board.PlaceCard(stackIndex, std::move(cardToPlay));
 
 			m_cardsPlayedThisTurn++;
-			UpdateGameStatus();
 			return true;
 		}
 		
@@ -150,6 +149,7 @@ namespace game
 		m_currentPlayerIndex = 0;
 		m_cardsPlayedThisTurn = 0;
 		m_status = GameStatus::Active;
+		m_startTime = std::chrono::steady_clock::now();
 	}
 
 	void Game::NextPlayer()
@@ -190,5 +190,13 @@ namespace game
 		return std::ranges::any_of(playerHand, [&](const Card& c) {
 			return m_board.CanPlaceCardAnywhere(c);
 			});
+	}
+
+	double Game::GetGameDurationInHours() const
+	{
+		std::lock_guard<std::mutex> lock(m_gameMutex);
+		auto now = std::chrono::steady_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::seconds>(now - m_startTime);
+		return duration.count() / 3600.0;
 	}
 }

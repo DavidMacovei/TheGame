@@ -1,4 +1,6 @@
 #include "GameManager.h"
+#include "UsersDatabase.h"
+#include "Logger.h"
 #include <algorithm>
 #include <ranges>
 
@@ -105,6 +107,8 @@ namespace game
 			if (gamePtr->GetStatus() == GameStatus::Won ||
 				gamePtr->GetStatus() == GameStatus::Lost)
 			{
+				UpdatePlayerStatistics(*gamePtr);
+
 				std::ranges::for_each(gamePtr->GetPlayers(), [&](const auto& player) {
 					m_playerSessions.erase(player.GetUsername());
 					});
@@ -165,5 +169,69 @@ namespace game
 		int remaining = MAX_WAIT_SECONDS - (int)elapsed;
 
 		return std::max(0, remaining);
+	}
+
+	void GameManager::UpdatePlayerStatistics(const Game& game)
+	{
+		try {
+			auto& storage = DatabaseManager::GetInstance().GetStorage();
+			double gameDuration = game.GetGameDurationInHours();
+			bool isVictory = (game.GetStatus() == GameStatus::Won);
+
+			int totalCardsLeft = 0;
+			if (!isVictory)
+			{
+				totalCardsLeft = game.GetBoard().GetCardsLeftInDeck();
+				for (const auto& player : game.GetPlayers())
+				{
+					totalCardsLeft += player.GetCardsInHand();
+				}
+			}
+
+			for (const auto& player : game.GetPlayers())
+			{
+				try {
+					auto users = storage.get_all<User>(
+						sql::where(sql::c(&User::GetUsername) == player.GetUsername())
+					);
+
+					if (!users.empty())
+					{
+						User& user = users[0];
+						
+						user.SetGamesPlayed(user.GetGamesPlayed() + 1);
+						if (isVictory)
+						{
+							user.SetGamesWon(user.GetGamesWon() + 1);
+						}
+						else
+						{
+							user.SetTotalCardsLeftOnLoss(user.GetTotalCardsLeftOnLoss() + totalCardsLeft);
+						}
+						
+						user.SetHoursPlayed(user.GetHoursPlayed() + gameDuration);
+						
+						double performanceRating = user.CalculatePerformanceRating();
+						user.SetScore(static_cast<int>(std::round(performanceRating * 100)));
+						
+						storage.update(user);
+
+						Logger::Info("[Stats] Updated {} - Games: {}/{}, Rating: {:.2f}, Hours: +{:.4f}",
+							player.GetUsername(), 
+							user.GetGamesWon(), 
+							user.GetGamesPlayed(),
+							performanceRating,
+							gameDuration);
+					}
+				}
+				catch (const std::exception& e) {
+					Logger::Error("[Stats] Failed to update {}: {}", 
+						player.GetUsername(), e.what());
+				}
+			}
+		}
+		catch (const std::exception& e) {
+			Logger::Error("[Stats] Database error: {}", e.what());
+		}
 	}
 }

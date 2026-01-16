@@ -104,7 +104,8 @@ void registerAuthRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 			response.status = "success";
 			response.message = "Profile retrieved";
 			response.username = users[0].GetUsername();
-			response.score = users[0].GetScore();
+			
+			response.score = static_cast<int>(users[0].CalculatePerformanceRating() * 100);
 			response.hoursPlayed = users[0].GetHoursPlayed();
 
 			return crow::response(200, json(response).dump());

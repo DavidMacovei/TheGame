@@ -44,8 +44,14 @@ void ProfileWidget::onProfileLoaded(const QString& username,
     double hours)
 {
     ui->usernameLabel->setText("User: " + username);
-    ui->scoreLabel->setText("Score: " + QString::number(score));
-    ui->hoursLabel->setText("Hours played: " + QString::number(hours));
+    
+    double rating = score / 100.0;
+    QString stars = QString("★").repeated(static_cast<int>(rating));
+    ui->scoreLabel->setText(QString("Score: %1 / 5.0 %2")
+        .arg(rating, 0, 'f', 2)
+        .arg(stars));
+    
+    ui->hoursLabel->setText("Hours played: " + QString::number(hours, 'f', 2));
 }
 
 void ProfileWidget::onProfileError(const QString& msg)

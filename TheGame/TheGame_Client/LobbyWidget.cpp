@@ -41,7 +41,6 @@ void LobbyWidget::enterLobby(const QString& username)
     updateTimerLabel(30);
 
     net->setCurrentUsername(username);
-    
     net->startLobbyPolling();
 }
 
