@@ -26,6 +26,9 @@ public:
 
     void fetchProfile(const QString& username);
 
+    // Access to ClientApi for GameNetworkManager
+    ClientApi* getClientApi() { return &m_api; }
+
 signals:
     // Auth
     void loginSuccess(const QString& username);

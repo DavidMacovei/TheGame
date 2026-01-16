@@ -135,16 +135,17 @@ void TheGame_Client::onGameStarted(QStringList players)
     m_currentPlayers = players;
     
     if (m_gamePage) {
-        m_stackedWidget->removeWidget(m_gamePage);
-        delete m_gamePage;
+      m_stackedWidget->removeWidget(m_gamePage);
+  delete m_gamePage;
     }
     
-    m_gamePage = new GameBoardWidget(m_currentUsername, this);
+    // Pass ClientApi from PreGameNetworkManager to GameBoardWidget
+    m_gamePage = new GameBoardWidget(m_currentUsername, m_preGameNet->getClientApi(), this);
     m_stackedWidget->addWidget(m_gamePage);
     m_stackedWidget->setCurrentWidget(m_gamePage);
     
     connect(m_gamePage, &GameBoardWidget::gameEnded, this, &TheGame_Client::onGameEnded);
-    
+
     m_gamePage->start();
 }
 
