@@ -38,7 +38,7 @@ namespace game
 
 	bool Board::CanPlaceCard(uint8_t stackIndex, const Card& card) const
 	{
-		if (stackIndex >= NumberOfStacks)
+		if (stackIndex >= NUMBER_OF_STACKS)
 			return false;
 
 		return m_placingStacks[stackIndex].CanPlace(card);
@@ -56,7 +56,7 @@ namespace game
 		m_placingStacks[stackIndex].PlaceCard(std::move(card));
 	}
 
-	const std::array<PlacingStack, Board::NumberOfStacks>& Board::GetPlacingStacks() const
+	const std::array<PlacingStack, NUMBER_OF_STACKS>& Board::GetPlacingStacks() const
 	{
 		return m_placingStacks;
 	}

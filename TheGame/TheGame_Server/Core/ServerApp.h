@@ -22,5 +22,5 @@ private:
     game::GameManager m_gameManager;
     crow::SimpleApp m_app;
 
-    static const uint16_t SERVER_PORT = 18080;
+    static constexpr uint16_t SERVER_PORT = 18080;
 };

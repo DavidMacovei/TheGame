@@ -40,6 +40,14 @@ namespace game
 		int m_currentPlayerIndex;
 
 		mutable std::mutex m_gameMutex;
+
+	private:
+		static constexpr int HAND_SIZE_FOR_2_PLAYERS = 8;
+		static constexpr int HAND_SIZE_FOR_3_PLAYERS = 7;
+		static constexpr int HAND_SIZE_DEFAULT = 6;
+
+		static constexpr int MIN_CARDS_TO_PLAY_NORMAL = 2;
+		static constexpr int MIN_CARDS_TO_PLAY_DEPLETED = 1;
 	};
 }
 

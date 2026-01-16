@@ -117,22 +117,23 @@ namespace game
 		}
 
 		int n = (int)m_players.size();
-		if (n < 2 || n > 5)
+		if (n < MIN_PLAYERS || n > MAX_PLAYERS)
 		{
-			throw std::invalid_argument("Number of players must be between 2 and 5.");
+			throw std::invalid_argument(std::format("Number of players must be between {} and {}.",
+				MIN_PLAYERS, MAX_PLAYERS));
 		}
 
 		int cardsPerPlayer;
 		switch (n)
 		{
 		case 2:
-			cardsPerPlayer = 8;
+			cardsPerPlayer = HAND_SIZE_FOR_2_PLAYERS;
 			break;
 		case 3:
-			cardsPerPlayer = 7;
+			cardsPerPlayer = HAND_SIZE_FOR_3_PLAYERS;
 			break;
 		default:
-			cardsPerPlayer = 6;
+			cardsPerPlayer = HAND_SIZE_DEFAULT;
 			break;
 		}
 
@@ -144,8 +145,9 @@ namespace game
 				player.AddCardToHand(std::move(newCard));
 			}
 		}
+
+		m_minimumNumberOfCardsToPlay = MIN_CARDS_TO_PLAY_NORMAL;
 		m_currentPlayerIndex = 0;
-		m_minimumNumberOfCardsToPlay = 2;
 		m_cardsPlayedThisTurn = 0;
 		m_status = GameStatus::Active;
 	}
@@ -156,9 +158,9 @@ namespace game
 		m_cardsPlayedThisTurn = 0;
 
 		if (m_board.IsDeckEmpty())
-			m_minimumNumberOfCardsToPlay = 1;
+			m_minimumNumberOfCardsToPlay = MIN_CARDS_TO_PLAY_DEPLETED;
 		else
-			m_minimumNumberOfCardsToPlay = 2;
+			m_minimumNumberOfCardsToPlay = MIN_CARDS_TO_PLAY_NORMAL;
 	}
 
 	void Game::UpdateGameStatus()

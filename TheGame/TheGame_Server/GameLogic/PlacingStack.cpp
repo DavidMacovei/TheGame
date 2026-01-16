@@ -6,11 +6,9 @@
 
 namespace game
 {
-	const int BACKWARDS_TRICK_OFFSET = 10;
-
 	PlacingStack::PlacingStack(StackType type) : m_type{ type }
 	{
-		m_currentValue = (type == StackType::Ascending) ? 1 : 100;
+		m_currentValue = (type == StackType::Ascending) ? START_VALUE_ASCENDING : START_VALUE_DESCENDING;
 	}
 
 	bool PlacingStack::CanPlace(const Card& card) const

@@ -23,9 +23,9 @@ public:
 	NLOHMANN_DEFINE_TYPE_INTRUSIVE(User, m_id, m_username, m_score, m_hours_played)
 
 private:
-	int m_id{ 0 };
+	int m_id = 0;
 	std::string m_username;
 	std::string m_password_hash;
-	int m_score{ 0 };
-	double m_hours_played{ 0.0 };
+	int m_score = 0;
+	double m_hours_played = 0.0;
 };

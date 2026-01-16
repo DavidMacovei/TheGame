@@ -42,8 +42,6 @@ namespace game
 		int m_nextGameId = 1;
 		mutable std::mutex m_mutex;
 
-		static const int MIN_PLAYERS = 2;
-		static const int MAX_PLAYERS = 5;
-		static const int MAX_WAIT_SECONDS = 30;
+		static constexpr int MAX_WAIT_SECONDS = 30;
 	};
 }

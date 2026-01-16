@@ -25,5 +25,5 @@ private:
     std::map<int, std::deque<ChatMessage>> m_gameChats;
     mutable std::mutex m_mutex;
 
-    static const std::size_t MAX_CHAT_MESSAGES = 20;
+    static constexpr size_t MAX_CHAT_MESSAGES = 20;
 };

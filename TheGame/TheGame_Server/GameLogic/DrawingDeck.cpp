@@ -5,9 +5,6 @@
 
 namespace game
 {
-	const uint8_t NR_OF_CARDS = 98;
-	const uint8_t START_VALUE = 2;
-
 	DrawingDeck::DrawingDeck()
 	{
 		m_cards.resize(NR_OF_CARDS);

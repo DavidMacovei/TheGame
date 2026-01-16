@@ -14,7 +14,10 @@
 
 using json = nlohmann::json;
 
-const uint8_t numberOfStacks = 4; //dubla definitie (Board.h)
+constexpr int NUMBER_OF_STACKS = 4;	
+constexpr int MIN_PLAYERS = 2;
+constexpr int MAX_PLAYERS = 5;
+constexpr int LOBBY_TIMER_INIT = 30;
 
 struct COMMON_API BasicResponse {
 	std::string status;
@@ -41,7 +44,7 @@ struct COMMON_API UserStatusResponse {
 	std::string message;
 	int playersInQueue = 0;
 	int gameId = -1;
-	int secondsRemaining = 30;
+	int secondsRemaining = LOBBY_TIMER_INIT;
 	std::vector<std::string> waitingList;
 
 	NLOHMANN_DEFINE_TYPE_INTRUSIVE(UserStatusResponse, status, message, playersInQueue, gameId, secondsRemaining, waitingList)
@@ -66,7 +69,7 @@ struct COMMON_API GameState {
 	std::string status;
 	int currentPlayer = -1;
 	std::vector<PlayerState> players;
-	std::array<StackState, numberOfStacks> placingStacks;
+	std::array<StackState, NUMBER_OF_STACKS> placingStacks;
 	int drawDeckCount = 0;
 	int minCardsToPlay = 0;
 

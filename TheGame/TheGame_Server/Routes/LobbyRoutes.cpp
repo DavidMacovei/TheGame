@@ -4,6 +4,8 @@
 #include "UsersDatabase.h"
 #include "Logger.h"
 
+static constexpr int MAX_WAITING_LIST_PREVIEW = 10;
+
 void registerLobbyRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 {
 	CROW_ROUTE(app, "/lobby/join").methods("POST"_method)
@@ -77,7 +79,7 @@ void registerLobbyRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 					response.playersInQueue = (int)waitingListNames.size();
 					response.secondsRemaining = gameManager.GetSecondsRemaining();
 					
-					if (waitingListNames.size() <= 10)
+					if (waitingListNames.size() <= MAX_WAITING_LIST_PREVIEW)
 						response.waitingList = waitingListNames;
 				}
 				else

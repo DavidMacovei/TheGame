@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Card.h"
-#include<vector>
-#include<random>
+#include <vector>
+#include <random>
 
 namespace game
 {
@@ -18,6 +18,9 @@ namespace game
 
 	private:
 		std::vector<Card> m_cards;
+
+		static constexpr uint8_t NR_OF_CARDS = 98;
+		static constexpr uint8_t START_VALUE = 2;
 	};
 }
 

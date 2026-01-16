@@ -19,6 +19,10 @@ namespace game
 	private:
 		uint8_t m_currentValue;
 		StackType m_type;
+
+		static constexpr uint8_t BACKWARDS_TRICK_OFFSET = 10;
+		static constexpr uint8_t START_VALUE_ASCENDING = 1;
+		static constexpr uint8_t START_VALUE_DESCENDING = 100;
 	};
 }
 
