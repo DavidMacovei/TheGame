@@ -45,7 +45,10 @@ namespace game
 			return false;
 
 		if (m_cardsPlayedThisTurn < m_minimumNumberOfCardsToPlay)
-			return false;
+		{
+			if (CurrentPlayerCanPlay())
+				return false;
+		}
 
 		Player& currentPlayer = m_players[m_currentPlayerIndex];
 		int cardsToDraw = m_cardsPlayedThisTurn;
