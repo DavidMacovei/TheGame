@@ -23,6 +23,7 @@ public:
     void leaveLobby(const QString& username);
     void startLobbyPolling();   
     void stopLobbyPolling();
+    void setCurrentUsername(const QString& username);
 
     void fetchProfile(const QString& username);
 

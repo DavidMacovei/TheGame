@@ -119,6 +119,11 @@ void PreGameNetworkManager::stopLobbyPolling()
     m_lobbyTimer.stop();
 }
 
+void PreGameNetworkManager::setCurrentUsername(const QString& username)
+{
+    m_currentUsername = username;
+}
+
 void PreGameNetworkManager::onLobbyPollTimeout()
 {
     if (m_currentUsername.isEmpty())
@@ -148,6 +153,17 @@ void PreGameNetworkManager::onLobbyPollTimeout()
                     waiting << QString::fromStdString(player);
                 }
                 emit lobbyWaiting(waiting, statusResp.playersInQueue, 5, statusResp.secondsRemaining);
+            }
+            else if (statusResp.status == "idle") {
+                QtConcurrent::run([this]() {
+                    BasicResponse joinResp = m_api.JoinLobby(m_currentUsername.toStdString());
+                    
+                    if (joinResp.status != "success") {
+                        QMetaObject::invokeMethod(this, [=]() {
+                            emit networkError(QString::fromStdString(joinResp.message));
+                        }, Qt::QueuedConnection);
+                    }
+                });
             }
         }, Qt::QueuedConnection);
     });

@@ -36,12 +36,12 @@ void LobbyWidget::enterLobby(const QString& username)
 {
     this->username = username;
 
-    ui->statusLabel->setText("Joining lobby...");
+    ui->statusLabel->setText("Connecting to lobby...");
     ui->playersList->clear();
     updateTimerLabel(30);
 
-    net->joinLobby(username);
-
+    net->setCurrentUsername(username);
+    
     net->startLobbyPolling();
 }
 
