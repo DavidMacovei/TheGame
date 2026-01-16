@@ -1,7 +1,7 @@
 #include "ClientApi.h"
 #include <iostream>
 
-ClientApi::ClientApi(const std::string& baseUrl) : baseUrl(baseUrl) {}
+ClientApi::ClientApi(const std::string& baseUrl) : m_baseUrl(baseUrl) {}
 
 BasicResponse ClientApi::Login(const std::string& username, const std::string& password)
 {
@@ -11,7 +11,7 @@ BasicResponse ClientApi::Login(const std::string& username, const std::string& p
         req.password = password;
 
         auto r = cpr::Post(
-            cpr::Url{ baseUrl + "/auth/login" },
+            cpr::Url{ m_baseUrl + "/auth/login" },
             cpr::Body{ json(req).dump() },
             cpr::Header{ {"Content-Type", "application/json"} }
         );
@@ -31,7 +31,7 @@ BasicResponse ClientApi::RegisterUser(const std::string& username, const std::st
         req.password = password;
 
         auto r = cpr::Post(
-            cpr::Url{ baseUrl + "/auth/register" },
+            cpr::Url{ m_baseUrl + "/auth/register" },
             cpr::Body{ json(req).dump() },
             cpr::Header{ {"Content-Type", "application/json"} }
         );
@@ -50,7 +50,7 @@ BasicResponse ClientApi::JoinLobby(const std::string& username)
         req.username = username;
 
         auto r = cpr::Post(
-            cpr::Url{ baseUrl + "/lobby/join" },
+            cpr::Url{ m_baseUrl + "/lobby/join" },
             cpr::Body{ json(req).dump() },
             cpr::Header{ {"Content-Type", "application/json"} }
         );
@@ -69,7 +69,7 @@ BasicResponse ClientApi::LeaveLobby(const std::string& username)
         req.username = username;
 
         auto r = cpr::Post(
-            cpr::Url{ baseUrl + "/lobby/leave" },
+            cpr::Url{ m_baseUrl + "/lobby/leave" },
             cpr::Body{ json(req).dump() },
             cpr::Header{ {"Content-Type", "application/json"} }
         );
@@ -88,7 +88,7 @@ UserStatusResponse ClientApi::GetUserStatus(const std::string& username)
         req.username = username;
 
         auto r = cpr::Post(
-            cpr::Url{ baseUrl + "/lobby/status" },
+            cpr::Url{ m_baseUrl + "/lobby/status" },
             cpr::Body{json(req).dump()},
             cpr::Header{ {"Content-Type", "application/json"} }
         );
@@ -114,7 +114,7 @@ GameState ClientApi::GetGameState(const std::string& username)
         req.username = username;
 
         auto r = cpr::Post(
-            cpr::Url{ baseUrl + "/game/" + std::to_string(m_activeGameId) + "/state" },
+            cpr::Url{ m_baseUrl + "/game/" + std::to_string(m_activeGameId) + "/state" },
             cpr::Body{ json(req).dump() },
             cpr::Header{ {"Content-Type", "application/json"} });
 
@@ -140,7 +140,7 @@ BasicResponse ClientApi::PlayCard(int playerIndex, int handIndex, int stackIndex
         action.stackIndex = stackIndex;
 
         auto r = cpr::Post(
-            cpr::Url{ baseUrl + "/game/" + std::to_string(m_activeGameId) + "/playCard"},
+            cpr::Url{ m_baseUrl + "/game/" + std::to_string(m_activeGameId) + "/playCard"},
             cpr::Body{ json(action).dump() },
             cpr::Header{ {"Content-Type", "application/json"} }
         );
@@ -162,7 +162,7 @@ BasicResponse ClientApi::EndTurn(int playerIndex)
         action.playerIndex = playerIndex;
 
         auto r = cpr::Post(
-            cpr::Url{ baseUrl + "/game/" + std::to_string(m_activeGameId) + "/endTurn" },
+            cpr::Url{ m_baseUrl + "/game/" + std::to_string(m_activeGameId) + "/endTurn" },
             cpr::Body{ json(action).dump() },
             cpr::Header{ {"Content-Type", "application/json"} }
         );
@@ -185,7 +185,7 @@ BasicResponse ClientApi::sendMessage(const std::string& sender, const std::strin
         req.message = message;
 
         auto r = cpr::Post(
-            cpr::Url{ baseUrl + "/game/" + std::to_string(m_activeGameId) + "/chat/send"},
+            cpr::Url{ m_baseUrl + "/game/" + std::to_string(m_activeGameId) + "/chat/send"},
             cpr::Body{ json(req).dump() },
             cpr::Header{ {"Content-Type", "application/json"} }
         );
@@ -204,7 +204,7 @@ ChatHistory ClientApi::GetChatHistory()
 
     try {
         auto r = cpr::Get(
-            cpr::Url{ baseUrl + "/game/" + std::to_string(m_activeGameId) + "/chat/history" });
+            cpr::Url{ m_baseUrl + "/game/" + std::to_string(m_activeGameId) + "/chat/history" });
 
         if (r.status_code == 200)
             return json::parse(r.text).get<ChatHistory>();
@@ -221,7 +221,7 @@ ProfileResponse ClientApi::GetProfile(const std::string& username)
         req.username = username;
 
         auto r = cpr::Post(
-            cpr::Url{ baseUrl + "/profile" },
+            cpr::Url{ m_baseUrl + "/profile" },
             cpr::Body{ json(req).dump() },
             cpr::Header{ {"Content-Type", "application/json"} }
         );

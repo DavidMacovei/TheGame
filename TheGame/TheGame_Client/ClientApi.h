@@ -18,7 +18,7 @@ public:
 	BasicResponse PlayCard(int playerIndex, int handIndex, int stackIndex);
 	BasicResponse EndTurn(int playerIndex);
 
-	BasicResponse sendMessage(const std::string& sender, const std::string& message);//SendMessage existenta?
+	BasicResponse sendMessage(const std::string& sender, const std::string& message);
 	ChatHistory GetChatHistory();
 
     ProfileResponse GetProfile(const std::string& username);
@@ -27,15 +27,11 @@ public:
 	int GetActiveGameId() const;
 	void ResetGame();
 
-	//TODO: actualizare ore jucate + scor
-	//TODO: cleanup finished games
-	//TODO: review final multigaming
-
 private:
 	BasicResponse HandleResponse(const cpr::Response& r, const std::string& actionName);
 
 private:
-	std::string baseUrl;
+	std::string m_baseUrl;
 	int m_activeGameId = -1;
 };
 
