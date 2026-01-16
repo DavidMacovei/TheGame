@@ -376,40 +376,40 @@
        </widget>
     </item>
       <item>
-       <widget class="QListWidget" name="listChat">
-        <property name="styleSheet">
-  <string>QListWidget { background-color: rgba(255,255,255,0.1); color: white; border: none; border-radius: 5px; }
+     <widget class="QListWidget" name="listChat">
+<property name="styleSheet">
+  <string>QListWidget { background-color: rgba(255,255,255,0.9); color: black; border: none; border-radius: 5px; }
 QListWidget::item { padding: 5px; }</string>
-        </property>
+     </property>
    </widget>
       </item>
       <item>
        <layout class="QHBoxLayout" name="chatInputLayout">
         <item>
        <widget class="QLineEdit" name="lineChatMsg">
-          <property name="styleSheet">
-           <string>background-color: white; border-radius: 3px; padding: 5px;</string>
+  <property name="styleSheet">
+           <string>background-color: white; color: black; border-radius: 3px; padding: 5px; font-size: 12px;</string>
         </property>
 <property name="placeholderText">
-      <string>Type message...</string>
+    <string>Type message...</string>
      </property>
     </widget>
-        </item>
+  </item>
         <item>
          <widget class="QPushButton" name="btnSendChat">
           <property name="minimumSize">
       <size>
     <width>60</width>
-            <height>0</height>
+       <height>0</height>
      </size>
  </property>
       <property name="styleSheet">
-           <string>background-color: #4CAF50; color: white; font-weight: bold; border-radius: 3px; padding: 5px;</string>
-          </property>
+      <string>background-color: #4CAF50; color: white; font-weight: bold; border-radius: 3px; padding: 5px;</string>
+        </property>
       <property name="text">
-           <string>Send</string>
+         <string>Send</string>
     </property>
-         </widget>
+    </widget>
         </item>
        </layout>
       </item>

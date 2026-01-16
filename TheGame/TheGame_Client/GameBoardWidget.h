@@ -8,6 +8,7 @@
 #include "StackWidget.h"
 #include "DeckWidget.h"
 #include "GameNetworkManager.h"
+#include "ClientApi.h"
 
 namespace Ui { class GameBoardWidget; }
 
@@ -16,7 +17,7 @@ class GameBoardWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit GameBoardWidget(const QString& username, QWidget* parent = nullptr);
+    explicit GameBoardWidget(const QString& username, ClientApi* api, QWidget* parent = nullptr);
     ~GameBoardWidget();
 
     void start();
@@ -49,6 +50,7 @@ private:
     StackWidget* m_stack4;
 
     int m_selectedCardIndex = -1;
+    int m_cardsPlayedThisTurn = 0; // Track cards played this turn
 
     void updateStacks(const QJsonArray& stacks);
     void updateHand(const QJsonArray& players);
