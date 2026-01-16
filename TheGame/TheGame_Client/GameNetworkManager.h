@@ -1,36 +1,42 @@
 #pragma once
 
 #include <QObject>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
 #include <QTimer>
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include "ClientApi.h"
+#include <memory>
 
 class GameNetworkManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit GameNetworkManager(QObject* parent = nullptr);
+    explicit GameNetworkManager(const QString& username, ClientApi* api, QObject* parent = nullptr);
 
     void startGamePolling();
     void stopGamePolling();
 
-    void sendMove(const QString& username, int cardIndex, int stackId);
-    void sendChatMessage(const QString& username, const QString& message);
-    void endTurn(const QString& username);
+    void sendMove(int cardIndex, int stackId);
+    void sendChatMessage(const QString& message);
+    void endTurn();
+  
+    void setPlayerIndex(int playerIndex);
+    int getPlayerIndex() const { return m_playerIndex; }
 
 signals:
     void gameStateReceived(const QJsonObject& gameState);
-
     void moveResult(bool success, QString message);
+    void networkError(QString message);
 
 private slots:
     void onPollTimeout();
 
 private:
-    QNetworkAccessManager m_manager;
+    QJsonObject convertGameStateToJson(const GameState& state);
+    
+    ClientApi* m_api;  // Pointer, not unique_ptr - shared with PreGameNetworkManager
     QTimer m_gameTimer;
-    QString m_baseUrl = "http://localhost:18080";
+    QString m_username;
+    int m_playerIndex = -1;
 };

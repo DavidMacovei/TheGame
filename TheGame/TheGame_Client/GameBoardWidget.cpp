@@ -3,13 +3,23 @@
 #include <QMessageBox>
 #include <QDebug>
 
-GameBoardWidget::GameBoardWidget(const QString& username, QWidget* parent)
+GameBoardWidget::GameBoardWidget(const QString& username, ClientApi* api, QWidget* parent)
     : QWidget(parent)
-    , ui(new Ui::GameBoardWidget)
-    , m_net(new GameNetworkManager(this))
+ , ui(new Ui::GameBoardWidget)
+    , m_net(new GameNetworkManager(username, api, this))
     , m_username(username)
 {
     ui->setupUi(this);
+
+    // Set orientation for player hand widgets
+  // Player 1 (Left) and Player 4 (Right) - Vertical
+    ui->player1Hand->setOrientation(CardHandWidget::Orientation::Vertical);
+    ui->player4Hand->setOrientation(CardHandWidget::Orientation::Vertical);
+  
+    // Player 2 (Top-Left), Player 3 (Top-Right), Main Player (Bottom) - Horizontal
+    ui->player2Hand->setOrientation(CardHandWidget::Orientation::Horizontal);
+    ui->player3Hand->setOrientation(CardHandWidget::Orientation::Horizontal);
+    ui->mainPlayerHand->setOrientation(CardHandWidget::Orientation::Horizontal);
 
     // Replace placeholder widgets with properly typed StackWidgets
     // Find and remove placeholders
@@ -23,8 +33,8 @@ GameBoardWidget::GameBoardWidget(const QString& username, QWidget* parent)
         placeholder1->deleteLater();
     }
     if (placeholder2) {
- ui->stacksLayout->removeWidget(placeholder2);
-    placeholder2->deleteLater();
+        ui->stacksLayout->removeWidget(placeholder2);
+        placeholder2->deleteLater();
     }
     if (placeholder3) {
         ui->stacksLayout->removeWidget(placeholder3);
@@ -32,7 +42,7 @@ GameBoardWidget::GameBoardWidget(const QString& username, QWidget* parent)
     }
     if (placeholder4) {
         ui->stacksLayout->removeWidget(placeholder4);
- placeholder4->deleteLater();
+        placeholder4->deleteLater();
     }
 
     // Create properly typed StackWidgets
@@ -49,24 +59,27 @@ GameBoardWidget::GameBoardWidget(const QString& username, QWidget* parent)
     m_stack1->setMinimumSize(QSize(80, 140));
     m_stack2->setMinimumSize(QSize(80, 140));
     m_stack3->setMinimumSize(QSize(80, 140));
-  m_stack4->setMinimumSize(QSize(80, 140));
+    m_stack4->setMinimumSize(QSize(80, 140));
 
     ui->stacksLayout->addWidget(m_stack1, 0, 0);
     ui->stacksLayout->addWidget(m_stack2, 0, 1);
     ui->stacksLayout->addWidget(m_stack3, 1, 0);
     ui->stacksLayout->addWidget(m_stack4, 1, 1);
 
- // Make stack widgets clickable
+    // Make stack widgets clickable
     m_stack1->installEventFilter(this);
     m_stack2->installEventFilter(this);
     m_stack3->installEventFilter(this);
     m_stack4->installEventFilter(this);
 
     connect(m_net, &GameNetworkManager::gameStateReceived, this, &GameBoardWidget::onGameStateReceived);
-    connect(m_net, &GameNetworkManager::moveResult, this, [](bool success, QString msg) {
+    connect(m_net, &GameNetworkManager::moveResult, this, [this](bool success, QString msg) {
         if (!success) {
-  QMessageBox::warning(nullptr, "Invalid Move", msg);
+            QMessageBox::warning(this, "Invalid Move", msg);
         }
+    });
+    connect(m_net, &GameNetworkManager::networkError, this, [this](QString msg) {
+        QMessageBox::critical(this, "Network Error", msg);
     });
 
     connect(ui->btnSendChat, &QPushButton::clicked, this, &GameBoardWidget::onSendChatClicked);
@@ -113,45 +126,59 @@ bool GameBoardWidget::eventFilter(QObject* obj, QEvent* event)
 
 void GameBoardWidget::onGameStateReceived(const QJsonObject& state)
 {
+    // Determine player index from the game state
+    if (m_net->getPlayerIndex() < 0 && state.contains("players")) {
+        QJsonArray players = state["players"].toArray();
+  for (int i = 0; i < players.size(); ++i) {
+ QJsonObject pObj = players[i].toObject();
+      if (pObj["username"].toString() == m_username) {
+             m_net->setPlayerIndex(i);
+         break;
+            }
+  }
+    }
+
     // Check if game has ended (Won or Lost)
     if (state.contains("status")) {
-        QString status = state["status"].toString();
- 
-if (status == "Won") {
-     m_net->stopGamePolling();
-            emit gameEnded(true, 0);
-      return;
-        }
-      else if (status == "Lost") {
-            int cardsLeft = 0;
-    
-    if (state.contains("drawDeckCount")) {
-         cardsLeft += state["drawDeckCount"].toInt();
-      }
-        
-            if (state.contains("players")) {
-    QJsonArray players = state["players"].toArray();
- for (const auto& p : players) {
-       QJsonObject pObj = p.toObject();
-                  if (pObj.contains("hand")) {
-  cardsLeft += pObj["hand"].toArray().size();
-      } else if (pObj.contains("cardCount")) {
-       cardsLeft += pObj["cardCount"].toInt();
-      }
-         }
-     }
+  QString status = state["status"].toString();
    
-    m_net->stopGamePolling();
-            emit gameEnded(false, cardsLeft);
-            return;
+   if (status == "Won") {
+     m_net->stopGamePolling();
+  emit gameEnded(true, 0);
+      return;
+ }
+        else if (status == "Lost") {
+          int cardsLeft = 0;
+    
+            if (state.contains("drawDeckCount")) {
+         cardsLeft += state["drawDeckCount"].toInt();
+  }
+   
+  // Count cards in all players' hands
+    if (state.contains("players")) {
+   QJsonArray players = state["players"].toArray();
+          for (const auto& p : players) {
+        QJsonObject pObj = p.toObject();
+   if (pObj.contains("hand")) {
+     cardsLeft += pObj["hand"].toArray().size();
+     } else if (pObj.contains("cardCount")) {
+   cardsLeft += pObj["cardCount"].toInt();
+    }
    }
+   }
+  
+            m_net->stopGamePolling();
+        emit gameEnded(false, cardsLeft);
+         return;
+ }
     }
     
-    if (state.contains("placingStacks")) updateStacks(state["placingStacks"].toArray());
+    // Game is still active - update UI
+ if (state.contains("placingStacks")) updateStacks(state["placingStacks"].toArray());
     if (state.contains("drawDeckCount")) updateDeck(state["drawDeckCount"].toInt());
     if (state.contains("players")) {
- updateHand(state["players"].toArray());
-    updateOpponentHands(state["players"].toArray());
+        updateHand(state["players"].toArray());
+   updateOpponentHands(state["players"].toArray());
     }
     if (state.contains("chatMessages")) updateChat(state["chatMessages"].toArray());
 
@@ -222,90 +249,104 @@ void GameBoardWidget::updateHand(const QJsonArray& players)
 void GameBoardWidget::updateOpponentHands(const QJsonArray& players)
 {
     // Find opponents (players other than current user)
-    QVector<QPair<QString, QJsonArray>> opponents;
+QVector<QPair<QString, int>> opponents; // Store name and cardCount
     for (const auto& p : players) {
-     QJsonObject pObj = p.toObject();
-  QString name = pObj["username"].toString();
+        QJsonObject pObj = p.toObject();
+        QString name = pObj["username"].toString();
      if (name != m_username) {
-    QJsonArray hand = pObj["hand"].toArray();
-     opponents.append({name, hand});
- }
+ // Use cardCount instead of hand.size() - server doesn't send opponent cards
+int cardCount = pObj["cardCount"].toInt();
+  opponents.append({name, cardCount});
+  }
     }
 
     // Update player labels and hands based on position
     // Player 1 = Left, Player 2 = Top-Left, Player 3 = Top-Right, Player 4 = Right
     QList<CardHandWidget*> handWidgets = {
-        ui->player1Hand,
- ui->player2Hand,
+  ui->player1Hand,
+        ui->player2Hand,
         ui->player3Hand,
-        ui->player4Hand
+ui->player4Hand
     };
     QList<QLabel*> nameLabels = {
-     ui->lblPlayer1Name,
-        ui->lblPlayer2Name,
-        ui->lblPlayer3Name,
+        ui->lblPlayer1Name,
+    ui->lblPlayer2Name,
+   ui->lblPlayer3Name,
         ui->lblPlayer4Name
     };
 
     for (int i = 0; i < 4; i++) {
-     if (i < opponents.size()) {
-  int cardCount = opponents[i].second.size();
-    nameLabels[i]->setText(opponents[i].first + " (" + QString::number(cardCount) + " cards)");
-         nameLabels[i]->setVisible(true);
-            
-            // Create vector of card backs (0 = card back)
-            std::vector<uint8_t> cardBacks(cardCount, 0);
+      if (i < opponents.size()) {
+int cardCount = opponents[i].second;
+          nameLabels[i]->setText(opponents[i].first + " (" + QString::number(cardCount) + " cards)");
+nameLabels[i]->setVisible(true);
+  
+  // Create vector of card backs (0 = card back)
+ std::vector<uint8_t> cardBacks(cardCount, 0);
   handWidgets[i]->setCards(cardBacks);
-        } else {
-    nameLabels[i]->setText("Waiting...");
-         nameLabels[i]->setStyleSheet("color: gray; font-style: italic; background-color: transparent;");
-   handWidgets[i]->setCards(std::vector<uint8_t>());
+  } else {
+   nameLabels[i]->setText("Waiting...");
+  nameLabels[i]->setStyleSheet("color: gray; font-style: italic; background-color: transparent;");
+            handWidgets[i]->setCards(std::vector<uint8_t>());
         }
     }
 }
 
 void GameBoardWidget::updateChat(const QJsonArray& messages)
 {
-    if (ui->listChat->count() != messages.size()) {
-        ui->listChat->clear();
-        for (const auto& m : messages) {
-            QJsonObject mObj = m.toObject();
-            QString line = mObj["username"].toString() + ": " + mObj["text"].toString();
-    ui->listChat->addItem(line);
- }
-        ui->listChat->scrollToBottom();
+    // Always update to ensure new messages appear
+    ui->listChat->clear();
+    for (const auto& m : messages) {
+        QJsonObject mObj = m.toObject();
+    QString line = mObj["username"].toString() + ": " + mObj["text"].toString();
+     ui->listChat->addItem(line);
     }
+    ui->listChat->scrollToBottom();
 }
 
 void GameBoardWidget::updateTurnInfo(const QJsonObject& state)
 {
     int currentIdx = state["currentPlayer"].toInt();
- QJsonArray players = state["players"].toArray();
+    QJsonArray players = state["players"].toArray();
+    int minCardsToPlay = state["minCardsToPlay"].toInt();
 
-    if (currentIdx >= 0 && currentIdx < players.size()) {
-  QString currentPlayer = players[currentIdx].toObject()["username"].toString();
+  if (currentIdx >= 0 && currentIdx < players.size()) {
+QString currentPlayer = players[currentIdx].toObject()["username"].toString();
 
-      if (currentPlayer == m_username) {
-  ui->lblStatus->setText("🎯 ESTE RANDUL TAU!");
-         ui->lblStatus->setStyleSheet("font-size: 16pt; font-weight: bold; color: #ffd700; background-color: transparent;");
+  if (currentPlayer == m_username) {
+        // Calculate cards played this turn by comparing hand sizes
+     int currentHandSize = 0;
+if (state.contains("players")) {
+       for (const auto& p : players) {
+        QJsonObject pObj = p.toObject();
+            if (pObj["username"].toString() == m_username) {
+      currentHandSize = pObj["hand"].toArray().size();
+        break;
+      }
+             }
+      }
+   
+   QString statusMsg = QString("🎯 ESTE RANDUL TAU! (Trebuie să joci minim %1 cărți)").arg(minCardsToPlay);
+      ui->lblStatus->setText(statusMsg);
+    ui->lblStatus->setStyleSheet("font-size: 14pt; font-weight: bold; color: #ffd700; background-color: transparent;");
 
-   m_stack1->setEnabled(true);
+     m_stack1->setEnabled(true);
             m_stack2->setEnabled(true);
-      m_stack3->setEnabled(true);
-      m_stack4->setEnabled(true);
-     ui->btnEndTurn->setEnabled(true);
+    m_stack3->setEnabled(true);
+     m_stack4->setEnabled(true);
+          ui->btnEndTurn->setEnabled(true);
   }
-     else {
- ui->lblStatus->setText("⏳ Asteptam jucatorul: " + currentPlayer);
-  ui->lblStatus->setStyleSheet("font-size: 14pt; color: white; background-color: transparent;");
+        else {
+            ui->lblStatus->setText("⏳ Asteptam jucatorul: " + currentPlayer);
+      ui->lblStatus->setStyleSheet("font-size: 14pt; color: white; background-color: transparent;");
 
-      m_stack1->setEnabled(false);
-            m_stack2->setEnabled(false);
-      m_stack3->setEnabled(false);
- m_stack4->setEnabled(false);
-   ui->btnEndTurn->setEnabled(false);
- }
-    }
+            m_stack1->setEnabled(false);
+     m_stack2->setEnabled(false);
+     m_stack3->setEnabled(false);
+     m_stack4->setEnabled(false);
+            ui->btnEndTurn->setEnabled(false);
+        }
+  }
 }
 
 void GameBoardWidget::onCardSelected(int cardIndex)
@@ -318,9 +359,9 @@ void GameBoardWidget::handleStackClick(int stackId)
     if (m_selectedCardIndex == -1) {
         QMessageBox::information(this, "Info", "Selecteaza o carte din mana mai intai!");
         return;
-}
+    }
 
-    m_net->sendMove(m_username, m_selectedCardIndex, stackId);
+    m_net->sendMove(m_selectedCardIndex, stackId);
     m_selectedCardIndex = -1; // Reset selection after move attempt
 }
 
@@ -333,12 +374,12 @@ void GameBoardWidget::onSendChatClicked()
 {
     QString msg = ui->lineChatMsg->text().trimmed();
     if (!msg.isEmpty()) {
-     m_net->sendChatMessage(m_username, msg);
-        ui->lineChatMsg->clear();
+  m_net->sendChatMessage(msg);
+ui->lineChatMsg->clear();
     }
 }
 
 void GameBoardWidget::onEndTurnClicked()
 {
-    m_net->endTurn(m_username);
+    m_net->endTurn();
 }
