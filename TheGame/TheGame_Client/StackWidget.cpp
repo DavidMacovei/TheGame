@@ -1,4 +1,7 @@
 #include "StackWidget.h"
+#include <QPainter>
+#include <QPen>
+#include <QBrush>
 
 StackWidget::StackWidget(QWidget* parent, StackType type)
     : QWidget(parent), m_type(type)
@@ -44,4 +47,40 @@ void StackWidget::updateStack()
 void StackWidget::resizeEvent(QResizeEvent*)
 {
     updateStack();
+}
+
+void StackWidget::paintEvent(QPaintEvent* event)
+{
+    QWidget::paintEvent(event);
+
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    int arrowSize = 18;
+
+    QPolygon arrow;
+    if (m_type == StackType::Ascending) {
+        // Bottom right, green arrow, facing up
+        int marginBR = 14;      // margin from right and bottom
+        int yOffsetBR = 57;     // extra offset from bottom if needed
+        QPoint bottomRight(width() - marginBR, height() - marginBR - yOffsetBR);
+
+        arrow << QPoint(bottomRight.x() - arrowSize / 2, bottomRight.y())                // left base
+              << QPoint(bottomRight.x() + arrowSize / 2, bottomRight.y())                // right base
+              << QPoint(bottomRight.x(), bottomRight.y() - arrowSize);                   // tip (upwards)
+        painter.setBrush(QBrush(Qt::green));
+        painter.setPen(Qt::green);
+    } else {
+        // Top right, red arrow
+        int marginTR = 14;     // margin from right
+        int yOffsetTR = -12;     // offset from top
+        QPoint topRight(width() - marginTR, marginTR + yOffsetTR);
+
+        arrow << QPoint(topRight.x() - arrowSize / 2, topRight.y())
+              << QPoint(topRight.x() + arrowSize / 2, topRight.y())
+              << QPoint(topRight.x(), topRight.y() + arrowSize);
+        painter.setBrush(QBrush(Qt::red));
+        painter.setPen(Qt::red);
+    }
+    painter.drawPolygon(arrow);
 }

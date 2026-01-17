@@ -21,4 +21,5 @@ private:
     std::vector<CardWidget*> m_cardWidgets;
     std::vector<uint8_t> m_cards;
     void updateStack();
+    void paintEvent(QPaintEvent* event) override;
 };

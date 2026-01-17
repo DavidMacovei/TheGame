@@ -37,7 +37,7 @@ void CardHandWidget::updateHand()
     int n = static_cast<int>(m_cards.size());
     if (n == 0) return;
 
-    int cardWidth = 50, cardHeight = 70, overlap = 30;
+    int cardWidth = 50, cardHeight = 70, overlap = 40;
 
     if (m_orientation == Orientation::Horizontal) {
         // Horizontal layout (bottom/top players)
