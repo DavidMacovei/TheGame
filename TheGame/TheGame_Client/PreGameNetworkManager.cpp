@@ -181,7 +181,9 @@ void PreGameNetworkManager::fetchProfile(const QString& username)
                 emit profileLoaded(
                     QString::fromStdString(profileResp.username),
                     profileResp.score,
-                    profileResp.hoursPlayed
+                    profileResp.hoursPlayed,
+                    profileResp.gamesWon,
+                    profileResp.gamesPlayed
                 );
             }
             else {

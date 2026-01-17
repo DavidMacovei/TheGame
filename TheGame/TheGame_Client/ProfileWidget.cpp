@@ -41,7 +41,9 @@ void ProfileWidget::onBackClicked()
 
 void ProfileWidget::onProfileLoaded(const QString& username,
     int score,
-    double hours)
+    double hours,
+    int gamesWon,
+    int gamesPlayed)
 {
     ui->usernameLabel->setText("User: " + username);
     
@@ -52,6 +54,10 @@ void ProfileWidget::onProfileLoaded(const QString& username,
         .arg(stars));
     
     ui->hoursLabel->setText("Hours played: " + QString::number(hours, 'f', 2));
+    
+    ui->winsLabel->setText(QString("Wins: %1/%2")
+        .arg(gamesWon)
+        .arg(gamesPlayed));
 }
 
 void ProfileWidget::onProfileError(const QString& msg)

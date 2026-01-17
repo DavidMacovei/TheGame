@@ -107,6 +107,8 @@ void registerAuthRoutes(crow::SimpleApp& app, game::GameManager& gameManager)
 			
 			response.score = static_cast<int>(users[0].CalculatePerformanceRating() * 100);
 			response.hoursPlayed = users[0].GetHoursPlayed();
+			response.gamesWon = users[0].GetGamesWon();
+			response.gamesPlayed = users[0].GetGamesPlayed();
 
 			return crow::response(200, json(response).dump());
 		}

@@ -59,6 +59,13 @@
             </widget>
            </item>
            <item>
+            <widget class="QLabel" name="winsLabel">
+             <property name="text">
+              <string>Wins: </string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QLabel" name="scoreLabel">
              <property name="text">
               <string>Score:</string>

@@ -51,7 +51,9 @@ signals:
     // Profile
     void profileLoaded(const QString& username,
         int score,
-        double hoursPlayed);
+        double hoursPlayed,
+        int gamesWon,
+        int gamesPlayed);
     void profileError(const QString& message);
 
 private slots:

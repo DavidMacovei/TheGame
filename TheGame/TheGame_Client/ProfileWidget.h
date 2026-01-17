@@ -22,7 +22,7 @@ signals:
 
 private slots:
     void onBackClicked();
-    void onProfileLoaded(const QString& username, int score, double hours);
+    void onProfileLoaded(const QString& username, int score, double hours, int gamesWon, int gamesPlayed);
     void onProfileError(const QString& msg);
 
 private:

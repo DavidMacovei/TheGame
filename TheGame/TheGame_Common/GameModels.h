@@ -117,7 +117,9 @@ struct COMMON_API ProfileResponse {
 	std::string username;
 	int score = 0;
 	double hoursPlayed = 0.0;
+	int gamesWon = 0;
+	int gamesPlayed = 0;
 
-	NLOHMANN_DEFINE_TYPE_INTRUSIVE(ProfileResponse, status, message, username, score, hoursPlayed)
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(ProfileResponse, status, message, username, score, hoursPlayed, gamesWon, gamesPlayed)
 };
 
