@@ -53,6 +53,8 @@ namespace game
 		Player& currentPlayer = m_players[m_currentPlayerIndex];
 		int cardsToDraw = m_cardsPlayedThisTurn;
 
+		UpdateGameStatus();
+
 		for (int i = 0; i < cardsToDraw; i++)
 		{
 			if (m_board.IsDeckEmpty())
@@ -62,7 +64,6 @@ namespace game
 			currentPlayer.AddCardToHand(std::move(newCard));
 		}
 
-		UpdateGameStatus();
 		NextPlayer();
 
 		return true;
