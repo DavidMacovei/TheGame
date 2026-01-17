@@ -49,6 +49,10 @@ TheGame_Client::~TheGame_Client()
 void TheGame_Client::setupUI()
 {
     m_stackedWidget = new QStackedWidget(this);
+    
+    // Make stacked widget transparent to allow child backgrounds
+    m_stackedWidget->setStyleSheet("QStackedWidget { background-color: transparent; }");
+    
     setCentralWidget(m_stackedWidget);
     
     m_preGameNet = new PreGameNetworkManager(this);

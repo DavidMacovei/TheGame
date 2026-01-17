@@ -5,20 +5,41 @@
 
 GameBoardWidget::GameBoardWidget(const QString& username, ClientApi* api, QWidget* parent)
     : QWidget(parent)
- , ui(new Ui::GameBoardWidget)
+    , ui(new Ui::GameBoardWidget)
     , m_net(new GameNetworkManager(username, api, this))
     , m_username(username)
 {
     ui->setupUi(this);
 
+    // FUNDAL VERDE POKER - SOLUȚIE DEFINITIVĂ
+    // Setare directă pe widget-ul principal
+    setObjectName("GameBoardWidget");
+    setAutoFillBackground(true);
+    
+    // Aplică stylesheet DUPĂ setupUi pentru a suprascrie orice din .ui
+    QString greenBg = 
+      "QWidget#GameBoardWidget { "
+        "    background: qradialgradient(cx:0.5, cy:0.5, radius:1, fx:0.5, fy:0.5, "
+        "   stop:0 #2d5a27, stop:0.5 #1e4620, stop:1 #0f2310); "
+   "} "
+      "QLabel { background-color: transparent; } "
+        "QVBoxLayout { background-color: transparent; } "
+        "QHBoxLayout { background-color: transparent; }";
+    
+    setStyleSheet(greenBg);
+    
+    // Forțează repaint pentru a aplica background-ul
+    setAttribute(Qt::WA_StyledBackground, true);
+    update();
+
     // Set orientation for player hand widgets
-  // Player 1 (Left) and Player 4 (Right) - Vertical
+    // Player 1 (Left) and Player 4 (Right) - Vertical
     ui->player1Hand->setOrientation(CardHandWidget::Orientation::Vertical);
-    ui->player4Hand->setOrientation(CardHandWidget::Orientation::Vertical);
-  
-    // Player 2 (Top-Left), Player 3 (Top-Right), Main Player (Bottom) - Horizontal
+  ui->player4Hand->setOrientation(CardHandWidget::Orientation::Vertical);
+    
+ // Player 2 (Top-Left), Player 3 (Top-Right), Main Player (Bottom) - Horizontal
     ui->player2Hand->setOrientation(CardHandWidget::Orientation::Horizontal);
-    ui->player3Hand->setOrientation(CardHandWidget::Orientation::Horizontal);
+ui->player3Hand->setOrientation(CardHandWidget::Orientation::Horizontal);
     ui->mainPlayerHand->setOrientation(CardHandWidget::Orientation::Horizontal);
 
     // Replace placeholder widgets with properly typed StackWidgets
@@ -96,7 +117,11 @@ GameBoardWidget::~GameBoardWidget()
 void GameBoardWidget::start()
 {
     m_net->startGamePolling();
- ui->lblStatus->setText("Connecting to game...");
+    ui->lblStatus->setText("Connecting to game...");
+    
+// Force background to repaint when game starts
+    setStyleSheet(styleSheet()); // Re-apply stylesheet
+    repaint(); // Force immediate repaint
 }
 
 void GameBoardWidget::setupCardHandConnections()
@@ -235,59 +260,80 @@ void GameBoardWidget::updateHand(const QJsonArray& players)
     for (const auto& p : players) {
         QJsonObject pObj = p.toObject();
         if (pObj["username"].toString() == m_username) {
-        QJsonArray myHandArray = pObj["hand"].toArray();
-       std::vector<uint8_t> myHand;
-         for (const auto& c : myHandArray) {
- myHand.push_back(static_cast<uint8_t>(c.toInt()));
-   }
+            QJsonArray myHandArray = pObj["hand"].toArray();
+            std::vector<uint8_t> myHand;
+      for (const auto& c : myHandArray) {
+                myHand.push_back(static_cast<uint8_t>(c.toInt()));
+       }
+       
+          // Reset selection if hand size changed (card was played)
+            int oldHandSize = ui->mainPlayerHand->cardCount();
+          if (oldHandSize != myHand.size()) {
+          m_selectedCardIndex = -1;
+                ui->mainPlayerHand->clearSelection();
+      }
+   
             ui->mainPlayerHand->setCards(myHand);
-  break;
-    }
+         break;
+        }
     }
 }
 
 void GameBoardWidget::updateOpponentHands(const QJsonArray& players)
 {
     // Find opponents (players other than current user)
-QVector<QPair<QString, int>> opponents; // Store name and cardCount
+    QVector<QPair<QString, int>> opponents; // Store name and cardCount
     for (const auto& p : players) {
         QJsonObject pObj = p.toObject();
-        QString name = pObj["username"].toString();
-     if (name != m_username) {
- // Use cardCount instead of hand.size() - server doesn't send opponent cards
-int cardCount = pObj["cardCount"].toInt();
-  opponents.append({name, cardCount});
-  }
+      QString name = pObj["username"].toString();
+   if (name != m_username) {
+// Use cardCount instead of hand.size() - server doesn't send opponent cards
+         int cardCount = pObj["cardCount"].toInt();
+        opponents.append({name, cardCount});
+        }
     }
 
     // Update player labels and hands based on position
     // Player 1 = Left, Player 2 = Top-Left, Player 3 = Top-Right, Player 4 = Right
-    QList<CardHandWidget*> handWidgets = {
-  ui->player1Hand,
+ QList<CardHandWidget*> handWidgets = {
+        ui->player1Hand,
         ui->player2Hand,
         ui->player3Hand,
-ui->player4Hand
-    };
+        ui->player4Hand
+  };
     QList<QLabel*> nameLabels = {
         ui->lblPlayer1Name,
-    ui->lblPlayer2Name,
-   ui->lblPlayer3Name,
+        ui->lblPlayer2Name,
+  ui->lblPlayer3Name,
         ui->lblPlayer4Name
     };
 
     for (int i = 0; i < 4; i++) {
-      if (i < opponents.size()) {
-int cardCount = opponents[i].second;
+     if (i < opponents.size()) {
+    int cardCount = opponents[i].second;
           nameLabels[i]->setText(opponents[i].first + " (" + QString::number(cardCount) + " cards)");
-nameLabels[i]->setVisible(true);
+   nameLabels[i]->setVisible(true);
+
+   // Create vector of card backs (0 = card back)
+          std::vector<uint8_t> cardBacks(cardCount, 0);
+   handWidgets[i]->setCards(cardBacks);
   
-  // Create vector of card backs (0 = card back)
- std::vector<uint8_t> cardBacks(cardCount, 0);
-  handWidgets[i]->setCards(cardBacks);
-  } else {
-   nameLabels[i]->setText("Waiting...");
-  nameLabels[i]->setStyleSheet("color: gray; font-style: italic; background-color: transparent;");
-            handWidgets[i]->setCards(std::vector<uint8_t>());
+  // Set rotation based on player position (like in poker)
+// Player 1 (left) - 90° (facing right/center)
+ // Player 2 (top-left) - 180° (facing down)
+// Player 3 (top-right) - 180° (facing down)
+     // Player 4 (right) - 270° (facing left/center)
+      if (i == 0) { // Player 1 (Left)
+     handWidgets[i]->setRotation(90);
+       } else if (i == 1 || i == 2) { // Player 2 & 3 (Top)
+        handWidgets[i]->setRotation(180);
+   } else if (i == 3) { // Player 4 (Right)
+    handWidgets[i]->setRotation(270);
+      }
+        } else {
+    // Hide empty player slots - no "Waiting..." needed in active game
+   nameLabels[i]->setVisible(false);
+         handWidgets[i]->setCards(std::vector<uint8_t>());
         }
     }
 }
@@ -310,48 +356,50 @@ void GameBoardWidget::updateTurnInfo(const QJsonObject& state)
     QJsonArray players = state["players"].toArray();
     int minCardsToPlay = state["minCardsToPlay"].toInt();
 
-  if (currentIdx >= 0 && currentIdx < players.size()) {
-QString currentPlayer = players[currentIdx].toObject()["username"].toString();
+    if (currentIdx >= 0 && currentIdx < players.size()) {
+    QString currentPlayer = players[currentIdx].toObject()["username"].toString();
 
-  if (currentPlayer == m_username) {
-        // Calculate cards played this turn by comparing hand sizes
-     int currentHandSize = 0;
-if (state.contains("players")) {
-       for (const auto& p : players) {
+        if (currentPlayer == m_username) {
+       // Calculate cards played this turn by comparing hand sizes
+            int currentHandSize = 0;
+   if (state.contains("players")) {
+         for (const auto& p : players) {
         QJsonObject pObj = p.toObject();
             if (pObj["username"].toString() == m_username) {
       currentHandSize = pObj["hand"].toArray().size();
-        break;
-      }
-             }
-      }
-   
-   QString statusMsg = QString("🎯 ESTE RANDUL TAU! (Trebuie să joci minim %1 cărți)").arg(minCardsToPlay);
-      ui->lblStatus->setText(statusMsg);
-    ui->lblStatus->setStyleSheet("font-size: 14pt; font-weight: bold; color: #ffd700; background-color: transparent;");
+break;
+          }
+    }
+            }
 
-     m_stack1->setEnabled(true);
+ QString statusMsg = QString("🎯 YOUR TURN! (Play at least %1 cards)").arg(minCardsToPlay);
+  ui->lblStatus->setText(statusMsg);
+      ui->lblStatus->setStyleSheet("font-size: 14pt; font-weight: bold; color: #ffd700; background-color: transparent;");
+
+      m_stack1->setEnabled(true);
             m_stack2->setEnabled(true);
-    m_stack3->setEnabled(true);
+            m_stack3->setEnabled(true);
      m_stack4->setEnabled(true);
-          ui->btnEndTurn->setEnabled(true);
-  }
-        else {
-            ui->lblStatus->setText("⏳ Asteptam jucatorul: " + currentPlayer);
-      ui->lblStatus->setStyleSheet("font-size: 14pt; color: white; background-color: transparent;");
+      ui->btnEndTurn->setEnabled(true);
+   }
+     else {
+     ui->lblStatus->setText("⏳ Waiting for player: " + currentPlayer);
+  ui->lblStatus->setStyleSheet("font-size: 14pt; color: white; background-color: transparent;");
 
-            m_stack1->setEnabled(false);
-     m_stack2->setEnabled(false);
-     m_stack3->setEnabled(false);
-     m_stack4->setEnabled(false);
-            ui->btnEndTurn->setEnabled(false);
-        }
-  }
+m_stack1->setEnabled(false);
+            m_stack2->setEnabled(false);
+            m_stack3->setEnabled(false);
+    m_stack4->setEnabled(false);
+   ui->btnEndTurn->setEnabled(false);
+    }
+    }
 }
 
 void GameBoardWidget::onCardSelected(int cardIndex)
 {
     m_selectedCardIndex = cardIndex;
+    qDebug() << "Card selected:" << cardIndex;
+    // Card stays visually selected until played or another card is selected
 }
 
 void GameBoardWidget::handleStackClick(int stackId)
@@ -362,7 +410,9 @@ void GameBoardWidget::handleStackClick(int stackId)
     }
 
     m_net->sendMove(m_selectedCardIndex, stackId);
-    m_selectedCardIndex = -1; // Reset selection after move attempt
+    
+    // Card will be deselected when hand updates after successful move
+    // Don't reset here - let updateHand() handle it when new state arrives
 }
 
 void GameBoardWidget::onStack1Clicked() { handleStackClick(0); }

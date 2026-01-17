@@ -1,6 +1,8 @@
 #include "CardHandWidget.h"
 #include <cmath>
 #include <QMouseEvent>
+#include <QDebug>
+#include <QPainter>
 
 CardHandWidget::CardHandWidget(QWidget* parent)
     : QWidget(parent)
@@ -11,7 +13,8 @@ CardHandWidget::CardHandWidget(QWidget* parent)
 void CardHandWidget::setCards(const std::vector<uint8_t>& cards)
 {
     m_cards = cards;
-    m_selectedIndex = -1; // Reset selection when cards change
+    // Don't reset selection - keep card selected until explicitly changed
+    // m_selectedIndex = -1; // REMOVED
     updateHand();
 }
 
@@ -26,6 +29,14 @@ void CardHandWidget::setOrientation(Orientation orientation)
     updateHand();
 }
 
+void CardHandWidget::setRotation(int degrees)
+{
+    m_rotationDegrees = degrees;
+    updateHand(); // Redraw with rotation
+}
+
+// clearSelection() is now defined inline in the header
+
 void CardHandWidget::updateHand()
 {
     for (auto* w : m_cardWidgets) {
@@ -37,7 +48,7 @@ void CardHandWidget::updateHand()
     int n = static_cast<int>(m_cards.size());
     if (n == 0) return;
 
-    int cardWidth = 50, cardHeight = 70, overlap = 40;
+    int cardWidth = 50, cardHeight = 70, overlap = 35;
 
     if (m_orientation == Orientation::Horizontal) {
         // Horizontal layout (bottom/top players)
@@ -45,17 +56,26 @@ void CardHandWidget::updateHand()
         int startX = std::max(0, (width() - totalWidth) / 2);
         int y = 10;
 
+        // If rotated 180°, cards should be flipped
+        bool flipped = (m_rotationDegrees == 180);
+        
         for (int i = 0; i < n; ++i) {
             CardWidget* card = new CardWidget(m_cards[i], this);
 
-            // If this card is selected, raise it up
+            // If this card is selected, offset it
             if (i == m_selectedIndex) {
-                card->move(startX + i * overlap, y - 20); // 20px higher
-                card->setStyleSheet("border: 3px solid yellow; background: white;");
-                card->raise(); // Bring to front (z-index)
+                 int offsetY = flipped ? 20 : -20;
+                card->move(startX + i * overlap, y + offsetY);
+     card->setStyleSheet("border: 3px solid yellow; background: white;");
+           card->raise();
             } else {
-                card->move(startX + i * overlap, y);
-                card->setStyleSheet("");
+     card->move(startX + i * overlap, y);
+              card->setStyleSheet("");
+            }
+
+   // Apply rotation for top players (180°)
+    if (m_rotationDegrees == 180) {
+              card->setRotationAngle(180);
             }
 
             card->show();
@@ -63,25 +83,48 @@ void CardHandWidget::updateHand()
         }
     } else {
         // Vertical layout (left/right players)
-        int totalHeight = cardHeight + (n - 1) * overlap;
-        int startY = std::max(0, (height() - totalHeight) / 2);
-        int x = 10;
+        // When cards are rotated 90° or 270°, width becomes height
+        bool isRotatedSideways = (m_rotationDegrees == 90 || m_rotationDegrees == 270);
+        
+        // For rotated cards, ensure widget size accommodates the rotation
+        int effectiveCardHeight = isRotatedSideways ? cardWidth : cardHeight;
+        int effectiveCardWidth = isRotatedSideways ? cardHeight : cardWidth;
+        
+        int totalHeight = effectiveCardHeight + (n - 1) * overlap;
+    int startY = std::max(0, (height() - totalHeight) / 2);
+        
+        // Center cards horizontally, accounting for rotated width
+        // Add extra margin to prevent clipping
+        int x = std::max(15, (width() - effectiveCardWidth) / 2);
 
-        for (int i = 0; i < n; ++i) {
-            CardWidget* card = new CardWidget(m_cards[i], this);
+   for (int i = 0; i < n; ++i) {
+  CardWidget* card = new CardWidget(m_cards[i], this);
+    
+       // For rotated cards, we need to ensure the widget is large enough
+  // Set widget size to accommodate rotation without clipping
+   if (isRotatedSideways) {
+      // Widget should be (height+margin) x (width+margin) for 90°/270° rotation
+ card->setFixedSize(80, 60); // Accommodate 70x50 rotated card
+   }
 
-            // If this card is selected, push it out
-            if (i == m_selectedIndex) {
-                card->move(x - 15, startY + i * overlap); // 15px to the left
+   if (i == m_selectedIndex) {
+  card->move(x - 15, startY + i * overlap);
                 card->setStyleSheet("border: 3px solid yellow; background: white;");
-                card->raise(); // Bring to front
-            } else {
-                card->move(x, startY + i * overlap);
-                card->setStyleSheet("");
-            }
+        card->raise();
+ } else {
+      card->move(x, startY + i * overlap);
+     card->setStyleSheet("");
+    }
 
-            card->show();
-            m_cardWidgets.push_back(card);
+     // Apply rotation for side players (90° or 270°)
+   if (m_rotationDegrees == 90) {
+  card->setRotationAngle(90); // Left player
+  } else if (m_rotationDegrees == 270) {
+        card->setRotationAngle(270); // Right player
+      }
+
+       card->show();
+   m_cardWidgets.push_back(card);
         }
     }
 }
