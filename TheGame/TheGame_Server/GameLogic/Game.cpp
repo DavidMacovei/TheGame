@@ -62,8 +62,8 @@ namespace game
 			currentPlayer.AddCardToHand(std::move(newCard));
 		}
 
-		NextPlayer();
 		UpdateGameStatus();
+		NextPlayer();
 
 		return true;
 	}
