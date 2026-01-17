@@ -16,7 +16,6 @@ public:
 
 signals:
     void backToLobby();
-    void viewStats();
 
 private:
     void setupUI();
@@ -27,5 +26,4 @@ private:
     QLabel* m_messageLabel;
     QLabel* m_statsLabel;
     QPushButton* m_backButton;
-    QPushButton* m_statsButton;
 };
