@@ -44,17 +44,8 @@ void GameOverWidget::setupUI()
     );
     connect(m_backButton, &QPushButton::clicked, this, &GameOverWidget::backToLobby);
     
-    m_statsButton = new QPushButton("View Stats", this);
-    m_statsButton->setMinimumSize(150, 50);
-    m_statsButton->setStyleSheet(
-        "QPushButton { background-color: #95a5a6; color: white; border-radius: 5px; font-size: 16px; }"
-        "QPushButton:hover { background-color: #7f8c8d; }"
-    );
-    connect(m_statsButton, &QPushButton::clicked, this, &GameOverWidget::viewStats);
-    
     buttonLayout->addStretch();
     buttonLayout->addWidget(m_backButton);
-    buttonLayout->addWidget(m_statsButton);
     buttonLayout->addStretch();
     
     mainLayout->addStretch();
