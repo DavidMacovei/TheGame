@@ -8,8 +8,8 @@ class CardHandWidget : public QWidget
     Q_OBJECT
 public:
     enum class Orientation {
-        Horizontal,  // For bottom/top players
-      Vertical     // For left/right players
+        Horizontal, 
+      Vertical 
     };
 
     explicit CardHandWidget(QWidget* parent = nullptr);
@@ -17,9 +17,9 @@ public:
     void setCards(const std::vector<uint8_t>& cards);
     int cardCount() const;
     void setOrientation(Orientation orientation);
-    void setRotation(int degrees); // Support 0, 90, 180, 270 degrees
+    void setRotation(int degrees); 
     
-    // Inline definition to avoid linker issues
+   
     void clearSelection() {
         m_selectedIndex = -1;
      updateHand();
@@ -37,6 +37,6 @@ private:
   std::vector<uint8_t> m_cards;
     int m_selectedIndex = -1;
     Orientation m_orientation = Orientation::Horizontal;
-    int m_rotationDegrees = 0; // Store rotation (0 or 180)
+    int m_rotationDegrees = 0;
     void updateHand();
 };

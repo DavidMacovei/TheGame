@@ -50,7 +50,6 @@ void TheGame_Client::setupUI()
 {
     m_stackedWidget = new QStackedWidget(this);
     
-    // Make stacked widget transparent to allow child backgrounds
     m_stackedWidget->setStyleSheet("QStackedWidget { background-color: transparent; }");
     
     setCentralWidget(m_stackedWidget);
@@ -96,7 +95,6 @@ void TheGame_Client::connectSignals()
     connect(m_preGameNet, &PreGameNetworkManager::networkError, this, &TheGame_Client::onNetworkError);
 }
 
-// ============== NAVIGATION SLOTS ==============
 void TheGame_Client::onLoginSuccess(QString username)
 {
     m_currentUsername = username;

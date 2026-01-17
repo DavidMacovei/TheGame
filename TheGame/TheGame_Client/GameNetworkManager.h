@@ -35,7 +35,7 @@ private slots:
 private:
     QJsonObject convertGameStateToJson(const GameState& state);
     
-    ClientApi* m_api;  // Pointer, not unique_ptr - shared with PreGameNetworkManager
+    ClientApi* m_api; 
     QTimer m_gameTimer;
     QString m_username;
     int m_playerIndex = -1;
