@@ -14,9 +14,38 @@
    <string>The Game - Playing</string>
   </property>
   <property name="styleSheet">
-   <string>background-color: #2d5a27;</string>
+   <string>QWidget#GameBoardWidget { 
+    background: qradialgradient(cx:0.5, cy:0.5, radius:1, fx:0.5, fy:0.5, 
+        stop:0 #2d5a27, stop:0.5 #1e4620, stop:1 #0f2310);
+}
+
+/* Fundal pentru toate widget-urile interne */
+QWidget {
+    background-color: transparent;
+}
+
+/* Fundal explicit verde pentru layout principal */
+#gameAreaLayout, QVBoxLayout {
+ background-color: transparent;
+}
+</string>
   </property>
   <layout class="QHBoxLayout" name="mainLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <layout class="QVBoxLayout" name="gameAreaLayout">
      <item>
@@ -132,10 +161,10 @@
          </item>
        <item>
      <widget class="CardHandWidget" name="player1Hand">
-           <property name="minimumSize">
+     <property name="minimumSize">
           <size>
-    <width>100</width>
-    <height>200</height>
+    <width>150</width>
+    <height>300</height>
     </size>
    </property>
       </widget>
@@ -272,8 +301,8 @@
  <widget class="CardHandWidget" name="player4Hand">
        <property name="minimumSize">
 <size>
-       <width>100</width>
-     <height>200</height>
+       <width>150</width>
+     <height>300</height>
    </size>
     </property>
 </widget>
