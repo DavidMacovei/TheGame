@@ -48,12 +48,12 @@ namespace game
 		{
 			if (CurrentPlayerCanPlay())
 				return false;
+			m_status = GameStatus::Lost;
+			return true;
 		}
 
 		Player& currentPlayer = m_players[m_currentPlayerIndex];
 		int cardsToDraw = m_cardsPlayedThisTurn;
-
-		UpdateGameStatus();
 
 		for (int i = 0; i < cardsToDraw; i++)
 		{
@@ -65,6 +65,7 @@ namespace game
 		}
 
 		NextPlayer();
+		UpdateGameStatus();
 
 		return true;
 	}
