@@ -7,14 +7,12 @@
 CardHandWidget::CardHandWidget(QWidget* parent)
     : QWidget(parent)
 {
-    setMinimumHeight(90); // Adjust as needed for card size
+    setMinimumHeight(90);
 }
 
 void CardHandWidget::setCards(const std::vector<uint8_t>& cards)
 {
     m_cards = cards;
-    // Don't reset selection - keep card selected until explicitly changed
-    // m_selectedIndex = -1; // REMOVED
     updateHand();
 }
 
@@ -35,8 +33,6 @@ void CardHandWidget::setRotation(int degrees)
     updateHand(); // Redraw with rotation
 }
 
-// clearSelection() is now defined inline in the header
-
 void CardHandWidget::updateHand()
 {
     for (auto* w : m_cardWidgets) {
@@ -51,18 +47,14 @@ void CardHandWidget::updateHand()
     int cardWidth = 50, cardHeight = 70, overlap = 35;
 
     if (m_orientation == Orientation::Horizontal) {
-        // Horizontal layout (bottom/top players)
         int totalWidth = cardWidth + (n - 1) * overlap;
         int startX = std::max(0, (width() - totalWidth) / 2);
         int y = 10;
 
-        // If rotated 180°, cards should be flipped
         bool flipped = (m_rotationDegrees == 180);
         
         for (int i = 0; i < n; ++i) {
             CardWidget* card = new CardWidget(m_cards[i], this);
-
-            // If this card is selected, offset it
             if (i == m_selectedIndex) {
                  int offsetY = flipped ? 20 : -20;
                 card->move(startX + i * overlap, y + offsetY);
@@ -73,7 +65,6 @@ void CardHandWidget::updateHand()
               card->setStyleSheet("");
             }
 
-   // Apply rotation for top players (180°)
     if (m_rotationDegrees == 180) {
               card->setRotationAngle(180);
             }
@@ -82,29 +73,22 @@ void CardHandWidget::updateHand()
             m_cardWidgets.push_back(card);
         }
     } else {
-        // Vertical layout (left/right players)
-        // When cards are rotated 90° or 270°, width becomes height
+
         bool isRotatedSideways = (m_rotationDegrees == 90 || m_rotationDegrees == 270);
-        
-        // For rotated cards, ensure widget size accommodates the rotation
+
         int effectiveCardHeight = isRotatedSideways ? cardWidth : cardHeight;
         int effectiveCardWidth = isRotatedSideways ? cardHeight : cardWidth;
         
         int totalHeight = effectiveCardHeight + (n - 1) * overlap;
     int startY = std::max(0, (height() - totalHeight) / 2);
-        
-        // Center cards horizontally, accounting for rotated width
-        // Add extra margin to prevent clipping
+
         int x = std::max(15, (width() - effectiveCardWidth) / 2);
 
    for (int i = 0; i < n; ++i) {
   CardWidget* card = new CardWidget(m_cards[i], this);
-    
-       // For rotated cards, we need to ensure the widget is large enough
-  // Set widget size to accommodate rotation without clipping
+
    if (isRotatedSideways) {
-      // Widget should be (height+margin) x (width+margin) for 90°/270° rotation
- card->setFixedSize(80, 60); // Accommodate 70x50 rotated card
+ card->setFixedSize(80, 60);
    }
 
    if (i == m_selectedIndex) {
@@ -116,11 +100,10 @@ void CardHandWidget::updateHand()
      card->setStyleSheet("");
     }
 
-     // Apply rotation for side players (90° or 270°)
    if (m_rotationDegrees == 90) {
-  card->setRotationAngle(90); // Left player
+  card->setRotationAngle(90);
   } else if (m_rotationDegrees == 270) {
-        card->setRotationAngle(270); // Right player
+        card->setRotationAngle(270);
       }
 
        card->show();
@@ -141,7 +124,7 @@ void CardHandWidget::mousePressEvent(QMouseEvent* event)
             m_selectedIndex = i;
             emit cardClicked(i);
 
-            updateHand(); // Redraw to show selection
+            updateHand();
             break;
         }
     }

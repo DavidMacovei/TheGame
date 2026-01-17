@@ -15,8 +15,6 @@ PreGameNetworkManager::PreGameNetworkManager(QObject* parent)
         this, &PreGameNetworkManager::onLobbyPollTimeout);
 }
 
-// =================== AUTH ==========================
-
 void PreGameNetworkManager::login(const QString& username,
     const QString& password)
 {
@@ -58,8 +56,6 @@ void PreGameNetworkManager::registerUser(const QString& username,
             }, Qt::QueuedConnection);
         });
 }
-
-// =================== LOBBY ==========================
 
 void PreGameNetworkManager::joinLobby(const QString& username)
 {
@@ -168,8 +164,6 @@ void PreGameNetworkManager::onLobbyPollTimeout()
         }, Qt::QueuedConnection);
     });
 }
-
-// =================== PROFILE (stub) ==================
 
 void PreGameNetworkManager::fetchProfile(const QString& username)
 {

@@ -14,11 +14,9 @@ class PreGameNetworkManager : public QObject
 public:
     explicit PreGameNetworkManager(QObject* parent = nullptr);
 
-    // Auth
     void login(const QString& username, const QString& password);
     void registerUser(const QString& username, const QString& password);
 
-    // Lobby
     void joinLobby(const QString& username);
     void leaveLobby(const QString& username);
     void startLobbyPolling();   
@@ -27,18 +25,15 @@ public:
 
     void fetchProfile(const QString& username);
 
-    // Access to ClientApi for GameNetworkManager
     ClientApi* getClientApi() { return &m_api; }
 
 signals:
-    // Auth
     void loginSuccess(const QString& username);
     void loginFailed(const QString& message);
 
     void registerSuccess(const QString& username);
     void registerFailed(const QString& message);
 
-    // Lobby
     void lobbyWaiting(QStringList waitingPlayers,
         int currentPlayers,
         int neededPlayers,
@@ -48,7 +43,6 @@ signals:
 
     void networkError(const QString& message);
 
-    // Profile
     void profileLoaded(const QString& username,
         int score,
         double hoursPlayed,

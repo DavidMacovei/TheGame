@@ -141,7 +141,6 @@ void TheGame_Client::onGameStarted(QStringList players)
   delete m_gamePage;
     }
     
-    // Pass ClientApi from PreGameNetworkManager to GameBoardWidget
     m_gamePage = new GameBoardWidget(m_currentUsername, m_preGameNet->getClientApi(), this);
     m_stackedWidget->addWidget(m_gamePage);
     m_stackedWidget->setCurrentWidget(m_gamePage);
@@ -168,7 +167,6 @@ void TheGame_Client::onBackToLobby()
     m_stackedWidget->setCurrentWidget(m_lobbyPage);
 }
 
-// ============== ERROR HANDLING ==============
 void TheGame_Client::onNetworkError(QString message)
 {
     showConnectionErrorOverlay(message);
