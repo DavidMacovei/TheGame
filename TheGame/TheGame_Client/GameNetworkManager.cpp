@@ -94,13 +94,11 @@ QJsonObject GameNetworkManager::convertGameStateToJson(const GameState& state)
 {
     QJsonObject obj;
     
-    // Status
     obj["status"] = QString::fromStdString(state.status);
     obj["currentPlayer"] = state.currentPlayer;
     obj["drawDeckCount"] = state.drawDeckCount;
     obj["minCardsToPlay"] = state.minCardsToPlay;
     
-    // Placing stacks
     QJsonArray stacksArray;
     for (const auto& stack : state.placingStacks) {
         QJsonObject stackObj;
@@ -110,14 +108,12 @@ QJsonObject GameNetworkManager::convertGameStateToJson(const GameState& state)
     }
     obj["placingStacks"] = stacksArray;
     
-    // Players
     QJsonArray playersArray;
     for (const auto& player : state.players) {
         QJsonObject playerObj;
   playerObj["username"] = QString::fromStdString(player.username);
         playerObj["cardCount"] = player.cardCount;
         
-        // Add hand array if available
         QJsonArray handArray;
         for (int card : player.hand) {
      handArray.append(card);
@@ -128,7 +124,6 @@ QJsonObject GameNetworkManager::convertGameStateToJson(const GameState& state)
     }
     obj["players"] = playersArray;
     
-    // Fetch chat messages separately
     try {
         ChatHistory chatHistory = m_api->GetChatHistory();
         QJsonArray chatArray;
@@ -142,7 +137,7 @@ QJsonObject GameNetworkManager::convertGameStateToJson(const GameState& state)
     }
     catch (const std::exception& e) {
       qWarning() << "Failed to get chat history:" << e.what();
-    obj["chatMessages"] = QJsonArray(); // Empty array on error
+    obj["chatMessages"] = QJsonArray();
 }
     
     return obj;

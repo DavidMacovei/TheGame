@@ -44,7 +44,7 @@ void CardHandWidget::updateHand()
     int n = static_cast<int>(m_cards.size());
     if (n == 0) return;
 
-    int cardWidth = 50, cardHeight = 70, overlap = 35;
+    int cardWidth = 50, cardHeight = 70, overlap = 40;
 
     if (m_orientation == Orientation::Horizontal) {
         int totalWidth = cardWidth + (n - 1) * overlap;
