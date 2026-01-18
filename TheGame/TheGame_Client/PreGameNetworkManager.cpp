@@ -10,7 +10,7 @@ PreGameNetworkManager::PreGameNetworkManager(QObject* parent)
     : QObject(parent)
     , m_api(m_baseUrl.toStdString())
 {
-    m_lobbyTimer.setInterval(1000); // 1s
+    m_lobbyTimer.setInterval(1000);
     connect(&m_lobbyTimer, &QTimer::timeout,
         this, &PreGameNetworkManager::onLobbyPollTimeout);
 }

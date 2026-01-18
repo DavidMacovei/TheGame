@@ -30,7 +30,7 @@ void CardHandWidget::setOrientation(Orientation orientation)
 void CardHandWidget::setRotation(int degrees)
 {
     m_rotationDegrees = degrees;
-    updateHand(); // Redraw with rotation
+    updateHand();
 }
 
 void CardHandWidget::updateHand()
