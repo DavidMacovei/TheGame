@@ -28,15 +28,15 @@ public:
 
 	double CalculatePerformanceRating() const;
 
-	NLOHMANN_DEFINE_TYPE_INTRUSIVE(User, m_id, m_username, m_score, m_hours_played, m_games_played, m_games_won, m_total_cards_left_on_loss)
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(User, m_id, m_username, m_score, m_hoursPlayed, m_gamesPlayed, m_gamesWon, m_totalCardsLeftOnLoss)
 
 private:
 	int m_id = 0;
 	std::string m_username;
-	std::string m_password_hash;
+	std::string m_passwordHash;
 	int m_score = 0;
-	double m_hours_played = 0.0;
-	int m_games_played = 0;
-	int m_games_won = 0;
-	int m_total_cards_left_on_loss = 0;
+	double m_hoursPlayed = 0.0;
+	int m_gamesPlayed = 0;
+	int m_gamesWon = 0;
+	int m_totalCardsLeftOnLoss = 0;
 };
